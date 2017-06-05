@@ -1,12 +1,12 @@
 # Hungarian models for spaCy
 
-This repositor contains releases of Hungarian models for the spaCy library. For more info on how to download, install and use the models, see the [models documentation](https://spacy.io/docs/usage/models).
+This repository contains releases of Hungarian models for the spaCy library. For more info on how to download, install and use the models, see the [models documentation](https://spacy.io/docs/usage/models).
 
 ## Releases
 
-| Date | Model | Version | Voc | Dep | Ent | Vec | Size | License | | |
-| --- | --- | --- | :---: | :---: | :---: | :---: | ---: | --- | --- | --- |
-| `2017-06-05` | `hu_vectors_web_lg` | 0.1.0 | X | | | X | 1.8 GB | CC BY-NC | [![][i]][i-hu_vectors_web_lg-0.1.0] | [![][dl]][hu_vectors_web_lg-0.1.0]
+| Date | Model | Spacy compatibility | Version | Voc | PoS | Dep | Ent | Vec | Size | License | | |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | ---: | --- | --- | --- |
+| `2017-06-05` | `hu_vectors_web_lg` | 1.8<, <2.0 | 0.1.0 | X | | | | X | 1.8 GB | CC BY-NC | [![][i]][i-hu_vectors_web_lg-0.1.0] | [![][dl]][hu_vectors_web_lg-0.1.0]
 
 [hu_vectors_web_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_lg-0.1.0/hu_vectors_web_lg-0.1.0.tar.gz
 [i-hu_vectors_web_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_vectors_web_lg-0.1.0
