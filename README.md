@@ -20,10 +20,10 @@ This repository contains releases of Hungarian models for the spaCy library. For
 ## Downloading models
 
 ```python
-pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_md-0.1.0/hu_vectors_web_lg-0.1.0.tar.gz
+pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_md-0.1.0/hu_vectors_web_md-0.1.0.tar.gz
 
 # set up shortcut link to load installed package as "hu"
-python -m spacy link hu_vectors_web_lg hu
+python -m spacy link hu_vectors_web_md hu
 ```
 
 ## Loading and using models
@@ -32,7 +32,7 @@ To load a model, use `spacy.load()` with the model's shortcut link:
 
 ```python
 import spacy
-nlp = spacy.load('hu_vectors_web_lg')
+nlp = spacy.load('hu_vectors_web_md')
 doc = nlp(u'Sziasztok, megjöttem.')
 ```
 
@@ -42,8 +42,8 @@ older models in previous versions of spaCy.
 
 ```python
 import spacy
-import hu_vectors_web_lg
+import hu_vectors_web_md
 
-nlp = hu_vectors_web_lg.load()
+nlp = hu_vectors_web_md.load()
 doc = nlp(u'Sziasztok, megjöttem.')
 ```
