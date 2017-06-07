@@ -4,13 +4,15 @@ This repository contains releases of Hungarian models for the spaCy library. For
 
 ## Releases
 
-| Date | Model | Spacy compatibility | Version | Features | Size | Memory consumption| License | | |
+| Date | Model | Version | Spacy compatibility | Features | Size | Memory consumption| License | Details | Download |
 | --- | --- | --- | ---: | --- | ---: | ---: | --- | --- | --- |
-| `2017-06-05` | `hu_vectors_web_lg` | 1.8=<, <2.0 | 0.1.0 | Vocabulary, Word vectors | 1.8 GB | 7G | CC BY-NC | [![][i]][i-hu_vectors_web_lg-0.1.0] | [![][dl]][hu_vectors_web_lg-0.1.0] |
-| `2017-06-05` | `hu_vectors_web_md` | 1.8=<, <2.0 | 0.1.0 | Vocabulary, Word vectors | 1.0 GB | 2.9G | CC BY-NC | [![][i]][i-hu_vectors_web_lg-0.1.0] | [![][dl]][hu_vectors_web_lg-0.1.0] |
+| `2017-06-05` | `hu_vectors_web_lg` | 0.1.0 |>=1.8, <2.0 | Vocabulary, Word vectors | 1.8 GB | 7G | <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a> | [![][i]][i-hu_vectors_web_lg-0.1.0] | [![][dl]][hu_vectors_web_lg-0.1.0] 
+| `2017-06-07` | `hu_vectors_web_md` | 0.1.0 | >=1.8, <2.0 | Vocabulary, Word vectors | 1.0 GB | 2.9G | <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a> | [![][i]][i-hu_vectors_web_md-0.1.0] | [![][dl]][hu_vectors_web_md-0.1.0] 
 
 [hu_vectors_web_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_lg-0.1.0/hu_vectors_web_lg-0.1.0.tar.gz
 [i-hu_vectors_web_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_vectors_web_lg-0.1.0
+[hu_vectors_web_md-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_md-0.1.0/hu_vectors_web_lg-0.1.0.tar.gz
+[i-hu_vectors_web_md-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_vectors_web_md-0.1.0
 
 [dl]: http://i.imgur.com/gQvPgr0.png
 [i]: http://i.imgur.com/OpLOcKn.png
