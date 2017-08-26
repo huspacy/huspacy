@@ -2,6 +2,8 @@
 
 This repository contains releases of Hungarian models for the spaCy library. For more info on how to download, install and use the models, see the [models documentation](https://spacy.io/docs/usage/models).
 
+**All the models are experimental, consider them as pre-release alphas.**
+
 ## Releases
 
 | Date | Model | Version | Spacy version | Features | Size | Memory | License | Info | Get |
