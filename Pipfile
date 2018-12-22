@@ -7,6 +7,8 @@ name = "pypi"
 
 [packages]
 spacy = "*"
+gensim = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"
