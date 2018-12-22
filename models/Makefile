@@ -24,3 +24,9 @@ external/webcorpuswiki.clusters:
 
 interim/hu.szte.w2v.txt:
 	PYTHONPATH="../src" pipenv run python -m models convert-bin2txt ./external/hu.szte.w2v.bin ./interim/hu.szte.w2v.txt
+
+interim/vocab_v0.1: external/webcorpuswiki.clusters interim/hu.szte.w2v.txt
+	pipenv run python -m spacy init-model hu interim/vocab_v0.1 -c ./external/webcorpuswiki.clusters -v ./interim/hu.szte.w2v.txt
+
+interim/ud_v0.1: interim/vocab_v0.1
+	pipenv run python -m spacy train hu -N -n 30  -v interim/vocab_v0.1  interim/ud_v0.1 ../data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json ../data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json

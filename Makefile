@@ -9,5 +9,5 @@ get_models:
 	cd models && make get
 
 v0.1:
-	cd models && make interim/hu.szte.w2v.txt
-	pipenv run python -m spacy init-model hu ./models/interim/v0.1 -c ./models/external/webcorpuswiki.clusters -v ./models/interim/hu.szte.w2v.txt
+	cd data && make interim/UD_Hungarian-Szeged
+	cd models && make interim/ud_v0.1
