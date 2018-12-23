@@ -1,3 +1,5 @@
+.PHONY: build get_data get_models v0.1
+
 build:
 	pipenv install
 	cd src/emtsv && docker build . -t emtsv
