@@ -30,10 +30,13 @@ def convert_vectors_to_txt(from_path, to_path):
 @click.argument("vectors_path")
 def eval_vectors(vectors_path):
     model = KeyedVectors.load_word2vec_format(
-        vectors_path, binary=False, unicode_errors="replace"
+        vectors_path, binary=not vectors_path.endswith(".txt"), unicode_errors="replace"
     )
     analogies_result = model.wv.evaluate_word_analogies(
-        path.join(RESOURCES_ROOT, "questions-words-hu.txt")
+        path.join(RESOURCES_ROOT, "questions-words-hu.txt"),
+        dummy4unknown=True,
+        restrict_vocab=None,
+        case_insensitive=False
     )
     pprint(analogies_result[0])
 
@@ -42,8 +45,8 @@ def eval_vectors(vectors_path):
 @click.argument("model_path")
 def test_model(model_path):
     nlp = spacy.load(model_path)
-    1  # FIXME: Why "Ez" is not a stopword?
-    doc = nlp("Ez, ez egy ház.")
+    # FIXME: Why "Ez" is not a stopword?
+    doc = nlp("Ez egy ház.")
     pprint(
         [
             dict(
@@ -54,6 +57,7 @@ def test_model(model_path):
                 dep=t.dep_,
                 head=t.head,
                 is_stop=t.is_stop,
+                has_vector=t.has_vector,
                 brown_cluser=t.cluster,
                 prob=t.prob,
             )

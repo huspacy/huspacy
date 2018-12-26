@@ -1,9 +1,9 @@
 {
-    "name": "ud",
+    "name": "ud_lg",
     "lang": "hu",
     "version": "0.1",
     "spacy_version": ">=2.0.0,<3.0.0",
-    "description": "Example model for spaCy",
+    "description": "Hungarian model trained on the Universal Dependencies Corpus",
     "author": "György Orosz",
     "email": "gyorgy@orosz.link",
     "license": "CC BY-NC-SA 4.0",

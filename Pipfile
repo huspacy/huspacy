@@ -9,6 +9,7 @@ name = "pypi"
 spacy = "*"
 gensim = "*"
 click = "*"
+ftfy = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
