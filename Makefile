@@ -1,10 +1,13 @@
+UD_LG_VERSION:=0.1
+ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 .PHONY: init
 
 init: init_models init_data
 	pipenv install
 	cd src/emtsv && docker build . -t emtsv
 
-###################################################### DATA ######################################################
+######################################################### DATA #########################################################
 
 init_data:
 	mkdir -p data/raw
@@ -12,21 +15,28 @@ init_data:
 
 data/raw/UD_Hungarian-Szeged:
 	git clone git@github.com:UniversalDependencies/UD_Hungarian-Szeged.git ./data/raw/UD_Hungarian-Szeged
+#
+#data/raw/unimorph_hun:
+#	git clone git@github.com:unimorph/hun.git ./data/raw/unimorph_hun
+#
+#data/raw/webcorpus_hu:
+#	mkdir -p data/raw/webcorpus_hu
+#	cd data/raw/webcorpus_hu && for i in `seq 0 9`; do wget ftp://ftp.mokk.bme.hu/Language/Hungarian/Crawl/Web2/web2-4p-$$i.tar.gz; done
 
-data/raw/unimorph_hun:
-	git clone git@github.com:unimorph/hun.git ./data/raw/unimorph_hun
+data/raw/magyarlanc_data:
+	mkdir -p data/raw/magyarlanc_data && cd data/raw/magyarlanc_data \
+	&& git init && git config core.sparseCheckout true \
+	&& git remote add -f origin https://github.com/oroszgy/magyarlanc.git \
+	&& echo "data/szk_univ_dep_2.0" > .git/info/sparse-checkout \
+	&& echo "data/web_univ_dep" >> .git/info/sparse-checkout \
+	&& git checkout master
 
-data/raw/webcorpus_hu:
-	mkdir -p data/raw/webcorpus_hu
-	cd data/raw/webcorpus_hu && for i in `seq 0 9`; do wget ftp://ftp.mokk.bme.hu/Language/Hungarian/Crawl/Web2/web2-4p-$$i.tar.gz; done
+#data/raw/Hungarian-annotated-conll17.tar:
+#	mkdir -p data/raw
+#	wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-1989/Hungarian-annotated-conll17.tar?sequence=21&isAllowed=y -O ./data/raw/Hungarian-annotated-conll17.tar
 
-#data/raw/magyarlanc_data:
-#	mkdir -p data/raw/magyarlanc_data
-#	wget https://github.com/oroszgy/magyarlanc/archive/master.zip -O data/raw/magyarlanc.zip
-#	unzip ./magyarlanc.zip
-
-data/raw/Hungarian-annotated-conll17.tar:
-	wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-1989/Hungarian-annotated-conll17.tar?sequence=21&isAllowed=y -O ./data/raw/Hungarian-annotated-conll17.tar
+#data/interim/X:
+#	cat data/raw/X | docker run -i emtsv > data/interim/X
 
 data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json: data/raw/UD_Hungarian-Szeged
 	mkdir -p ./data/interim/UD_Hungarian-Szeged
@@ -40,26 +50,52 @@ data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json: data/raw/UD_Hungarian-S
 	mkdir -p ./data/interim/UD_Hungarian-Szeged
 	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ./data/interim/UD_Hungarian-Szeged/
 
+data/interim/szk_univ_dep_ud: data/raw/magyarlanc_data
+	mkdir -p data/interim/szk_univ_dep_ud
+	PYTHONPATH="./src" pipenv run python -m models convert-szk-to-conllu "data/raw/magyarlanc_data/data/szk_univ_dep_2.0/*.ud" \
+	data/interim/szk_univ_dep_ud/all_train.conllu \
+	./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
+	./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+	pipenv run python -m spacy convert data/interim/szk_univ_dep_ud/all_train.conllu data/interim/szk_univ_dep_ud
+
 data/interim/UD_Hungarian-Szeged: data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json \
 									data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
 									data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
-###################################################### MODELS ######################################################
+################################################### EXTERNAL MODELS ###################################################
 
 init_models:
 	mkdir -p ./models/external/vectors
 	mkdir -p ./models/interim/vectors
 	mkdir -p ./models/spacy
+	mkdir -p ./models/packaged
 
-models/external/vectors/hunembed.bin:
-	wget http://corpus.nytud.hu/efnilex-vect/data/hunembed0.0 -O ./models/external/vectors/hunembed.bin
+models/external/vectors/cc.hu.300.vec.gz:
+	wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/word-vectors-v2/cc.hu.300.vec.gz -O models/external/vectors/cc.hu.300.vec.gz
 
-models/external/vectors/hu.szte.w2v.bin:
-	wget http://rgai.inf.u-szeged.hu/project/nlp/research/w2v/hu.szte.w2v.bin -O ./models/external/vectors/hu.szte.w2v.bin
+models/interim/vectors/cc.hu.300.txt: models/external/vectors/cc.hu.300.vec.gz
+	pv models/external/vectors/cc.hu.300.vec.gz | gzip -d > ./models/interim/vectors/cc.hu.300.txt
+	PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/cc.hu.300.txt
+
+#models/external/vectors/hunembed.bin:
+#	wget http://corpus.nytud.hu/efnilex-vect/data/hunembed0.0 -O ./models/external/vectors/hunembed.bin
+
+#models/external/vectors/hu.szte.w2v.bin:
+#	wget http://rgai.inf.u-szeged.hu/project/nlp/research/w2v/hu.szte.w2v.bin -O ./models/external/vectors/hu.szte.w2v.bin
+
+#models/interim/vectors/hu.szte.w2v.txt: models/external/vectors/hu.szte.w2v.bin
+#	PYTHONPATH="./src" pipenv run python -m models convert-vectors-to-txt ./models/external/vectors/hu.szte.w2v.bin \
+#		./models/interim/vectors/hu.szte.w2v.txt
+#	 PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/hu.szte.w2v.txt
 
 models/external/vectors/webcorpuswiki.word2vec.bz2:
 	wget https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2 \
 		-O ./models/external/vectors/webcorpuswiki.word2vec.bz2
+
+models/interim/vectors/webcorpuswiki.word2vec.txt: models/external/vectors/webcorpuswiki.word2vec.bz2
+	bzcat ./models/external/vectors/webcorpuswiki.word2vec.bz2 > ./models/interim/vectors/webcorpuswiki.word2vec.txt
+	# PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/webcorpuswiki.word2vec.txt
+
 
 models/external/webcorpuswiki.freqs:
 	wget https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_freqs_v0.1/webcorpuswiki.freqs \
@@ -69,30 +105,53 @@ models/external/webcorpuswiki.clusters:
 	wget https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_brownclusters_v0.1/paths \
 		-O ./models/external/webcorpuswiki.clusters
 
-models/interim/vectors/hu.szte.w2v.txt: models/external/vectors/hu.szte.w2v.bin
-	PYTHONPATH="./src" pipenv run python -m models convert-vectors-to-txt ./models/external/vectors/hu.szte.w2v.bin \
-		./models/interim/vectors/hu.szte.w2v.txt
-	# PYTHONPATH="./src" pipenv run python -m models eval_vectors ./models/interim/vectors/hu.szte.w2v.txt
+################################################### GENERATED MODELS ###################################################
 
-models/interim/vectors/webcorpuswiki.word2vec.txt: models/external/vectors/webcorpuswiki.word2vec.bz2
-	bzcat ./models/external/vectors/webcorpuswiki.word2vec.bz2 > ./models/interim/vectors/webcorpuswiki.word2vec.txt
-	# PYTHONPATH="./src" pipenv run python -m models eval_vectors ./models/interim/vectors/webcorpuswiki.word2vec.txt
+#models/spacy/szk_lg: #models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
+#	mkdir -p ./models/spacy/szk_lg
+#	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V 0.1 -N \
+#		-n 30 -v models/spacy/vectors_lg  models/spacy/szk_lg \
+#		 data/interim/szk_univ_dep_ud/all_train.json ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
+#	pipenv run python -m spacy evaluate ./models/spacy/szk_lg/model-final \
+#		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
+#	PYTHONPATH="./src" pipenv run python -m models test-model models/spacy/ud_lg/model-final
+
+models/spacy/lemmy: data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
+	mkdir -p models/spacy/lemmy
+	PYTHONPATH="./src" pipenv run python -m models train-lemmy data/interim/szk_univ_dep_ud/all_train.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu models/spacy/lemmy/rules.json
 
 models/spacy/vectors_lg: models/external/webcorpuswiki.clusters models/external/webcorpuswiki.freqs models/interim/vectors/webcorpuswiki.word2vec.txt
-	# FIXME: brown clusters and frequencies are not present in the model
+	mkdir -p ./models/spacy/vectors_lg
 	pipenv run python -m spacy init-model hu models/spacy/vectors_lg models/external/webcorpuswiki.freqs \
 		-c ./models/external/webcorpuswiki.clusters -v ./models/interim/vectors/webcorpuswiki.word2vec.txt
 
-
-models/spacy/ud_lg: models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
-	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V 0.1 -N \
-		-n 30 -v models/spacy/vectors_lg  models/spacy/ud_lg \
+models/spacy/ud_lg: # models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
+	mkdir -p ./models/spacy/ud_lg
+	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V $(UD_LG_VERSION) -N \
+		-pt dep_tag_offset \
+		-n 8 \
+		-v models/spacy/vectors_lg  models/spacy/ud_lg \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
+
 	pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 	PYTHONPATH="./src" pipenv run python -m models test-model models/spacy/ud_lg/model-final
 
-models/packaged/ud_lg: models/spacy/ud_lg
+models/packaged/ud_lg: models/spacy/ud_lg models/spacy/lemmy
+	mkdir -p ./models/packaged
 	pipenv run python -m spacy package --force models/spacy/ud_lg/model-final/ models/packaged/
-	cd ./models/packaged/hu_ud_lg-0.1 && python3 setup.py sdist bdist_wheel
-	#TODO: release
+
+	mkdir -p ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/hu_ud_lg-$(UD_LG_VERSION)/lemmy/
+	cp models/spacy/lemmy/rules.json ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/hu_ud_lg-$(UD_LG_VERSION)/lemmy/
+
+	cp src/resources/package_init.py ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/__init__.py
+	cd ./models/packaged/hu_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
+
+	mkdir -p /tmp/test_env && cd /tmp/test_env \
+	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
+	&& /tmp/test_env/.env/bin/python -m ensurepip \
+	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/hu_ud_lg-$(UD_LG_VERSION)/dist/hu_ud_lg-$(UD_LG_VERSION)-py3-none-any.whl \
+	&& /tmp/test_env/.env/bin/python -c "import hu_ud_lg; nlp = hu_ud_lg.load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+
+	rm -rf /tmp/test_env
+

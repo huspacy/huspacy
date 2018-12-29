@@ -29,5 +29,4 @@ ENV LC_ALL en_US.UTF-8
 
 RUN make -C emtokenpy/ all
 
-RUN echo "A kutya elment sétálni." > inputfile
-CMD ["make", "RAWINPUT=inputfile", "test-morph-tag"]
+CMD ["python3", "./emtsv.py", "tok,morph,pos"]
