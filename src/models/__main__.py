@@ -23,7 +23,36 @@ TAG_MAP = {
 }
 
 
-def parse_szk(path):
+def parse_szk_morph(path):
+    with open(path) as f:
+        tok_id = 1
+        sentence = []
+        for line in f:
+            line = line.strip()
+            if len(line) == 0 or line.startswith("#"):
+                yield "\n".join("\t".join(tok) for tok in sentence)
+                sentence = []
+                tok_id = 1
+            else:
+                parts = line.split("\t")
+                sentence.append((
+                    str(tok_id),
+                    parts[0],
+                    parts[1],
+                    parts[2],
+                    "_",
+                    parts[3],
+                    "0",
+                    "_",
+                    "_",
+                    "_"
+                ))
+                tok_id += 1
+        if len(sentence):
+            yield "\n".join("\t".join(tok) for tok in sentence)
+
+
+def parse_szk_dep(path):
     with open(path) as f:
         sentence = []
         for line in f:
@@ -42,8 +71,8 @@ def parse_szk(path):
                     parts[4],
                     parts[5],
                     parts[7],
-                    parts[9],
-                    parts[11],
+                    "0",  # parts[9],
+                    "_",  # parts[11],
                     parts[13],
                     "_"
                 ))
@@ -116,16 +145,19 @@ def test_model(model_path):
 @click.argument("to_path")
 @click.argument("dev_path")
 @click.argument("test_path")
-def convert_szk_to_conllu(from_glob, to_path, dev_path, test_path):
+@click.option('--morph/--dep', default=False)
+def convert_szk_to_conllu(from_glob, to_path, dev_path, test_path, morph):
     ignored = []
     for fpath in [dev_path, test_path]:
         with open(fpath) as f:
             ignored.extend(map(sentence_repr, conllu.parse(f.read())))
 
+    parser = parse_szk_morph if morph else parse_szk_dep
+
     ignored = set(ignored)
     parsed = []
     for fpath in glob.glob(from_glob):
-        for sent in conllu.parse("\n\n".join(parse_szk(fpath))):
+        for sent in conllu.parse("\n\n".join(parser(fpath))):
             if sentence_repr(sent) not in ignored:
                 parsed.append(sent)
 
@@ -181,6 +213,10 @@ def train_lemmy(train_path, test_path, model_path):
     calculate_accuracy(lemmatizer, X_test, y_test)
     with open(model_path, "w") as f:
         json.dump(lemmatizer.rules, f)
+
+
+def exec_spacy_conllu(test_path, out_path):
+    pass
 
 
 if __name__ == "__main__":
