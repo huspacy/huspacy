@@ -42,7 +42,7 @@ class HunLemmatizer(object):
         return doc
 
     def add_hook(self, nlp):
-        nlp.add_pipe(self, after="tagger")
+        nlp.add_pipe(self, after="tagger", name="lemmatizer")
 
 
 def load(**overrides):
