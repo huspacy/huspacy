@@ -120,16 +120,16 @@ models/spacy/lemmy: data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
 	mkdir -p models/spacy/lemmy
 	PYTHONPATH="./src" pipenv run python -m models train-lemmy data/interim/szk_univ_dep_ud/all_train.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu models/spacy/lemmy/rules.json
 
-models/spacy/vectors_lg: models/external/webcorpuswiki.clusters models/external/webcorpuswiki.freqs models/interim/vectors/webcorpuswiki.word2vec.txt
+models/spacy/vectors_lg: models/external/webcorpuswiki.clusters models/external/webcorpuswiki.freqs models/interim/vectors/webcorpuswiki.word2vec.txt #models/interim/vectors/cc.hu.300.txt
 	mkdir -p ./models/spacy/vectors_lg
 	pipenv run python -m spacy init-model hu models/spacy/vectors_lg models/external/webcorpuswiki.freqs \
-		-c ./models/external/webcorpuswiki.clusters -v ./models/interim/vectors/webcorpuswiki.word2vec.txt
+		-c ./models/external/webcorpuswiki.clusters -v ./models/interim/vectors/webcorpuswiki.word2vec.txt #./models/interim/vectors/cc.hu.300.txt
 
-models/spacy/ud_lg: # models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
+models/spacy/ud_lg: #models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
 	mkdir -p ./models/spacy/ud_lg
 	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V $(UD_LG_VERSION) -N \
-		-pt dep_tag_offset \
 		-n 8 \
+		-pt dep_tag_offset \
 		-v models/spacy/vectors_lg  models/spacy/ud_lg \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
 
@@ -137,21 +137,21 @@ models/spacy/ud_lg: # models/spacy/vectors_lg data/interim/UD_Hungarian-Szeged
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 	PYTHONPATH="./src" pipenv run python -m models test-model models/spacy/ud_lg/model-final
 
-models/packaged/ud_lg: models/spacy/ud_lg models/spacy/lemmy
+models/packaged/ud_lg: #models/spacy/ud_lg models/spacy/lemmy
 	mkdir -p ./models/packaged
 	pipenv run python -m spacy package --force models/spacy/ud_lg/model-final/ models/packaged/
 
-	mkdir -p ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/hu_ud_lg-$(UD_LG_VERSION)/lemmy/
-	cp models/spacy/lemmy/rules.json ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/hu_ud_lg-$(UD_LG_VERSION)/lemmy/
+	mkdir -p ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/hu_core_ud_lg/hu_core_ud_lg-$(UD_LG_VERSION)/lemmy/
+	cp models/spacy/lemmy/rules.json ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/hu_core_ud_lg/hu_core_ud_lg-$(UD_LG_VERSION)/lemmy/
 
-	cp src/resources/package_init.py ./models/packaged/hu_ud_lg-$(UD_LG_VERSION)/hu_ud_lg/__init__.py
-	cd ./models/packaged/hu_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
+	cp src/resources/package_init.py ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/hu_core_ud_lg/__init__.py
+	cd ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
 
 	mkdir -p /tmp/test_env && cd /tmp/test_env \
 	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
 	&& /tmp/test_env/.env/bin/python -m ensurepip \
-	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/hu_ud_lg-$(UD_LG_VERSION)/dist/hu_ud_lg-$(UD_LG_VERSION)-py3-none-any.whl \
-	&& /tmp/test_env/.env/bin/python -c "import hu_ud_lg; nlp = hu_ud_lg.load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/dist/hu_core_ud_lg-$(UD_LG_VERSION)-py3-none-any.whl \
+	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = hu_core_ud_lg.load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
 
 	rm -rf /tmp/test_env
 
