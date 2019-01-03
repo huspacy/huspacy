@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import json
+import re
 from pathlib import Path
 
 from lemmy import Lemmatizer
@@ -45,14 +46,31 @@ class HunLemmatizer(object):
         nlp.add_pipe(self, after="tagger", name="lemmatizer")
 
 
+class HunSentencizer(object):
+    def __init__(self):
+        self.boundary_punct_pattern = re.compile("^((\.)|[\?!]+)$")
+
+    def __call__(self, doc):
+        for token in doc[:-1]:
+            if self.boundary_punct_pattern.match(token.text):
+                doc[token.i + 1].is_sent_start = True
+        return doc
+
+    def add_hook(self, nlp):
+        nlp.add_pipe(self, first=True, name="sentencizer")
+
+
 def load(**overrides):
     nlp = load_model_from_init_py(__file__, **overrides)
 
     init_path = Path(__file__)
     model_path = init_path.parent
     meta = get_model_meta(model_path)
-    data_dir = '%s_%s-%s' % (meta['lang'], meta['name'], meta['version'])
+    data_dir = "%s_%s-%s" % (meta["lang"], meta["name"], meta["version"])
     data_path = model_path / data_dir
     lemmatizer = HunLemmatizer(data_path / "lemmy" / "rules.json")
     lemmatizer.add_hook(nlp)
+
+    sentencizer = HunSentencizer()
+    sentencizer.add_hook(nlp)
     return nlp

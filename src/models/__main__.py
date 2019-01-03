@@ -1,6 +1,8 @@
 import glob
+import importlib
 import json
 import logging
+from io import StringIO
 from os import path
 from pprint import pprint
 
@@ -12,15 +14,13 @@ from gensim.models.keyedvectors import KeyedVectors
 from lemmy import Lemmatizer
 from tqdm import tqdm
 
+from src import conll17_ud_eval
+
 logging.basicConfig(level=logging.INFO)
 
 RESOURCES_ROOT = path.abspath(path.join(path.dirname(__file__), "..", "resources"))
 
-TAG_MAP = {
-    "CONJ": "CCONJ",
-    "Y": "X",
-    "VAN": "X"
-}
+TAG_MAP = {"CONJ": "CCONJ", "Y": "X", "VAN": "X"}
 
 
 def parse_szk_morph(path):
@@ -35,18 +35,20 @@ def parse_szk_morph(path):
                 tok_id = 1
             else:
                 parts = line.split("\t")
-                sentence.append((
-                    str(tok_id),
-                    parts[0],
-                    parts[1],
-                    parts[2],
-                    "_",
-                    parts[3],
-                    "0",
-                    "_",
-                    "_",
-                    "_"
-                ))
+                sentence.append(
+                    (
+                        str(tok_id),
+                        parts[0],
+                        parts[1],
+                        parts[2],
+                        "_",
+                        parts[3],
+                        "0",
+                        "_",
+                        "_",
+                        "_",
+                    )
+                )
                 tok_id += 1
         if len(sentence):
             yield "\n".join("\t".join(tok) for tok in sentence)
@@ -64,18 +66,20 @@ def parse_szk_dep(path):
                 parts = line.split("\t")
                 if parts[3] in {"ELL", "VAN"}:
                     continue
-                sentence.append((
-                    parts[0],
-                    parts[1],
-                    TAG_MAP.get(parts[3], parts[3]),
-                    parts[4],
-                    parts[5],
-                    parts[7],
-                    "0",  # parts[9],
-                    "_",  # parts[11],
-                    parts[13],
-                    "_"
-                ))
+                sentence.append(
+                    (
+                        parts[0],
+                        parts[1],
+                        TAG_MAP.get(parts[3], parts[3]),
+                        parts[4],
+                        parts[5],
+                        parts[7],
+                        "0",  # parts[9],
+                        "_",  # parts[11],
+                        parts[13],
+                        "_",
+                    )
+                )
         if len(sentence):
             yield "\n".join("\t".join(tok) for tok in sentence)
 
@@ -109,7 +113,7 @@ def eval_vectors(vectors_path):
         path.join(RESOURCES_ROOT, "questions-words-hu.txt"),
         dummy4unknown=True,
         restrict_vocab=None,
-        case_insensitive=False
+        case_insensitive=False,
     )
     pprint(analogies_result[0])
 
@@ -145,7 +149,7 @@ def test_model(model_path):
 @click.argument("to_path")
 @click.argument("dev_path")
 @click.argument("test_path")
-@click.option('--morph/--dep', default=False)
+@click.option("--morph/--dep", default=False)
 def convert_szk_to_conllu(from_glob, to_path, dev_path, test_path, morph):
     ignored = []
     for fpath in [dev_path, test_path]:
@@ -196,7 +200,10 @@ def calculate_accuracy(lemmatizer, X, y):
 def read_lemmatization_data(path):
     with open(path) as f:
         df = pd.DataFrame(tok for sent in tqdm(conllu.parse(f.read())) for tok in sent)
-        X = [(word_class, full_form) for _, (word_class, full_form) in df[["upostag", "form"]].iterrows()]
+        X = [
+            (word_class, full_form)
+            for _, (word_class, full_form) in df[["upostag", "form"]].iterrows()
+        ]
         y = [lemma for _, (lemma,) in df[["lemma"]].iterrows()]
         return X, y
 
@@ -215,8 +222,60 @@ def train_lemmy(train_path, test_path, model_path):
         json.dump(lemmatizer.rules, f)
 
 
-def exec_spacy_conllu(test_path, out_path):
-    pass
+@cli.command()
+@click.argument("model_path")
+@click.argument("model_name")
+@click.argument("test_data_path")
+def benchmark_model(model_path, model_name, test_data_path):
+    import sys
+    sys.path.append((model_path))
+
+    def sentences_to_conllu(doc, sent_id, prefix=""):
+        res = []
+        for sent in list(doc.sents):
+            #         res.append("# sent_id = %s"%(prefix+str(sent_id)))
+            #         res.append("# text = %s"%sent.sent)
+
+            for i, word in enumerate(sent):
+                if word.dep_.lower().strip() == "root":
+                    head_idx = 0
+                else:
+                    head_idx = word.head.i - sent[0].i + 1
+
+                linetuple = (
+                    str(i + 1),  # ID
+                    word.text,  # FORM
+                    word.lemma_,  # LEMMA
+                    word.pos_,  # UPOSTAG
+                    "_",  # XPOSTAG
+                    "_",  # FEATS
+                    str(head_idx),  # HEAD
+                    word.dep_,  # DEPREL
+                    "_",  # DEPS
+                    "_",  # MISC
+                )
+                res.append("\t".join(linetuple))
+
+            sent_id += 1
+            res.append("")
+        return "\n".join(res) + "\n"
+
+    with open(test_data_path) as f:
+        data = conllu.parse(f.read())
+        text = " ".join(d.metadata["text"] for d in data)
+
+    load_model = getattr(importlib.import_module(model_name), "load")
+    nlp = load_model()
+
+    _parsed = StringIO(sentences_to_conllu(nlp(text), 1))
+    parsed = conll17_ud_eval.load_conllu(_parsed)
+    gold = conll17_ud_eval.load_conllu_file(test_data_path)
+
+    results = pd.DataFrame(
+        {k: v.__dict__ for k, v in conll17_ud_eval.evaluate(gold, parsed).items()}
+    ).T
+
+    print(results)
 
 
 if __name__ == "__main__":

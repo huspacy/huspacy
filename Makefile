@@ -63,7 +63,7 @@ data/interim/szk_univ_morph: | data/raw/magyarlanc_data
 data/raw/UD_Hungarian-Szeged: | data
 	git clone git@github.com:UniversalDependencies/UD_Hungarian-Szeged.git ./data/raw/UD_Hungarian-Szeged
 
-data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json: | data/raw/UD_Hungarian-Szeged
+data/interim/UD_Hungarian-Szeged: | data/raw/UD_Hungarian-Szeged
 	mkdir -p ./data/interim/UD_Hungarian-Szeged
 	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ./data/interim/UD_Hungarian-Szeged/
 	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/interim/UD_Hungarian-Szeged/
@@ -148,18 +148,24 @@ models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spac
 	pipenv run python -m spacy package --force models/spacy/ud_lg/model-final/ models/packaged/
 
 	# Add lemmatizer
-	cp models/spacy/lemmy/rules.json ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/hu_core_ud_lg/hu_core_ud_lg-$(UD_LG_VERSION)/lemmy/
-	cp src/resources/package_init.py ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/hu_core_ud_lg/__init__.py
+	mkdir ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
+	cp models/spacy/lemmy/rules.json ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
+	cp src/resources/package_init.py ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/__init__.py
 
 	# Build packages
 	cd ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
+
+	# Benchmark
+	PYTHONPATH="./src" pipenv run python -m models benchmark-model ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) \
+		$(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
 	# Tests
 	mkdir -p /tmp/test_env && cd /tmp/test_env \
 	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
 	&& /tmp/test_env/.env/bin/python -m ensurepip \
-	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/dist/hu_core_ud_lg-$(UD_LG_VERSION)-py3-none-any.whl \
-	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = hu_core_ud_lg.load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl \
+	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = $(UD_LG_NAME).load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+
 
 	# Cleanup
 	rm -rf /tmp/test_env
