@@ -2,12 +2,12 @@ UD_LG_VERSION:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r ".version")
 UD_LG_NAME:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r '(.lang + "_" + .name)')
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: init all
+.PHONY: init all echo
 
 all: models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)
 
 echo:
-	echo $(UD_LG_VERSION)
+	echo $(UD_LG_NAME) $(UD_LG_VERSION)
 
 init:
 	pipenv install
