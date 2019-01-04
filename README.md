@@ -5,9 +5,9 @@ This repository contains the building blocks and the releases of Hungarian model
 
 | Date | Model | Version | Spacy version | Features | Size | Memory | License | Info | Get |
 | --- | --- | --- | ---: | --- | ---: | ---: | --- | --- | --- |
-| 2019--01-4 | `hu_core_ud_lg` | `0.1.0` | >=2.0.0,<3.0.0 | Word vectors, Brown clusters, Token frequencies, Sentencizer, PoS Tagger, Lemmatizer, Dependency parser | 1.3G | 6G | <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a> | [![][i]][i-hu_core_ud_lg-0.1.0] | [![][dl]][hu_core_ud_lg-0.1.0]
+| 2019--01-4 | `hu_core_ud_lg` | `0.1.0` | >=2.0.0,<3.0.0 | Word vectors, Brown clusters, Token frequencies, Sentencizer, PoS Tagger, Lemmatizer, Dependency parser | 1.3G | 6G | <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a> | [![][i]][i-hu_core_ud_lg-0.1.0] | [![][dl]][hu_core_ud_lg-0.1.0]
 
-[hu_core_ud_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_lg-0.1.0/hu_core_ud_lg-0.1.0-py3-none-any.whl
+[hu_core_ud_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.1.0/hu_core_ud_lg-0.1.0-py3-none-any.whl
 [i-hu_core_ud_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_core_ud_lg-0.1.0
 
 
@@ -17,7 +17,7 @@ This repository contains the building blocks and the releases of Hungarian model
 ## Install
 
 ```bash
-pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.1.0/hu_core_ud_lg-0.1.0-py3-none-any.wh
+pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.1.0/hu_core_ud_lg-0.1.0-py3-none-any.whl  
 ```
 
 ## Usage
@@ -34,6 +34,10 @@ doc = nlp('Sziasztok, megjöttem.')
 
 For detailed documentation on spaCy models check [spaCy docs](https://spacy.io/usage/processing-pipelines).
 
+## Development
+
+Issuing `make all` fetches all the resources needed and builds a release.
+
 ## Changelog
 
 - 2019-01-04 UD corpus based core pipeline release for SpaCy 2.x
@@ -42,4 +46,9 @@ For detailed documentation on spaCy models check [spaCy docs](https://spacy.io/u
 ## Roadmap
 
 - Add a NER component using huwikiner / Szeged NER Corpus
-- Improve on the parsing pipeline accuracy
+- Benchmarking word vectors available
+- Improve on the parsing pipeline accuracy by
+   - incorporating better word vectors
+   - fine-tuning the underlying model
+   - gathering more training data
+- Make the package `pip` installable from PyPI
