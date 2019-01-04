@@ -14,7 +14,7 @@ from setuptools import setup, Command
 # Package meta-data.
 NAME = "spacy-hu"
 DESCRIPTION = "SpaCy model for Hungarian"
-URL = "https://github.com/oroszgy/spacy-hungarian-models"
+URL = "https://github.com/oroszgy/spacy-hungarian-model_builder"
 EMAIL = "gyorgy@orosz.link"
 AUTHOR = "György Orosz"
 REQUIRES_PYTHON = ">=3.6.0"
@@ -84,7 +84,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     dependency_links=[
-        "https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_vectors_web_lg-0.1.0/hu_ud_lg-0.1.0.tar.gz"
+        "https://github.com/oroszgy/spacy-hungarian-model_builder/releases/download/hu_vectors_web_lg-0.1.0/hu_ud_lg-0.1.0.tar.gz"
     ],
     include_package_data=True,
     license="MIT",

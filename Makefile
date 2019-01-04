@@ -1,8 +1,10 @@
-UD_LG_VERSION:=$(shell cat ./models/spacy/ud_lg/model-final/meta.json | jq -r ".version")
-UD_LG_NAME:=$(shell  cat ./models/spacy/ud_lg/model-final/meta.json | jq -r '(.lang + "_" + .name)')
+UD_LG_VERSION:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r ".version")
+UD_LG_NAME:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r '(.lang + "_" + .name)')
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: init
+.PHONY: init all
+
+all: models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)
 
 echo:
 	echo $(UD_LG_VERSION)
@@ -37,7 +39,7 @@ data/raw/magyarlanc_data: | data
 data/interim/szk_univ_dep_ud: | data/raw/magyarlanc_data
 	mkdir -p data/interim/szk_univ_dep_ud
 
-	PYTHONPATH="./src" pipenv run python -m models convert-szk-to-conllu --dep 	\
+	PYTHONPATH="./src" pipenv run python -m model_builder convert-szk-to-conllu --dep 	\
 		"data/raw/magyarlanc_data/data/szk_univ_dep_2.0/*.ud" data/interim/szk_univ_dep_ud/all_train.conllu \
 		./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
@@ -46,7 +48,7 @@ data/interim/szk_univ_dep_ud: | data/raw/magyarlanc_data
 data/interim/szk_univ_morph: | data/raw/magyarlanc_data
 	mkdir -p data/interim/szk_univ_morph
 
-	PYTHONPATH="./src" pipenv run python -m models convert-szk-to-conllu --morph \
+	PYTHONPATH="./src" pipenv run python -m model_builder convert-szk-to-conllu --morph \
 		"data/raw/magyarlanc_data/data/szk_univ_morph_2.5/*.ud" data/interim/szk_univ_morph/all_train.conllu \
 		./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
@@ -69,7 +71,24 @@ data/interim/UD_Hungarian-Szeged: | data/raw/UD_Hungarian-Szeged
 	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/interim/UD_Hungarian-Szeged/
 	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ./data/interim/UD_Hungarian-Szeged/
 
+data/raw/hunnerwiki: data
+	mkdir -p ./data/raw/hunnerwiki
+	wget http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.1.ner.tsv.gz -O ./data/raw/hunnerwiki/huwiki.1.ner.tsv.gz
+	wget http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.2.ner.tsv.gz -O ./data/raw/hunnerwiki/huwiki.2.ner.tsv.gz
+	wget http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.3.ner.tsv.gz -O ./data/raw/hunnerwiki/huwiki.3.ner.tsv.gz
+	wget http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.4.ner.tsv.gz -O ./data/raw/hunnerwiki/huwiki.4.ner.tsv.gz
+
+	pv ./data/raw/hunnerwiki/*.tsv.gz | zcat > ./data/raw/hunnerwiki/huwiki.tsv
+
+data/raw/szeged_ner: data
+	mkdir -p data/raw/szeged_ner
+	wget http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/business_NER.zip -O data/raw/szeged_ner/business_NER.zip
+	unzip data/raw/szeged_ner/business_NER.zip -d data/raw/szeged_ner/
+	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hun_ner_corpus.txt | tail -n +2 > data/raw/szeged_ner/hun_ner_corpus_utf8.txt
+
+
 ################################################### EXTERNAL MODELS ###################################################
+
 
 models:
 	mkdir -p ./models/external/vectors
@@ -82,18 +101,19 @@ models/external/vectors/cc.hu.300.vec.gz: | models
 
 models/interim/vectors/cc.hu.300.txt: | models/external/vectors/cc.hu.300.vec.gz
 	pv models/external/vectors/cc.hu.300.vec.gz | gzip -d > ./models/interim/vectors/cc.hu.300.txt
-	PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/cc.hu.300.txt
+	PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./models/interim/vectors/cc.hu.300.txt
 
-#models/external/vectors/hunembed.bin:
-#	wget http://corpus.nytud.hu/efnilex-vect/data/hunembed0.0 -O ./models/external/vectors/hunembed.bin
+models/external/vectors/hunembed.tgz:
+	wget http://corpus.nytud.hu/efnilex-vect/data/hunembed0.0 -O ./models/external/vectors/hunembed.tgz
+	tar -xvzf ./models/external/vectors/hunembed.tgz -C ./models/external/vectors/
 
-#models/external/vectors/hu.szte.w2v.bin:
-#	wget http://rgai.inf.u-szeged.hu/project/nlp/research/w2v/hu.szte.w2v.bin -O ./models/external/vectors/hu.szte.w2v.bin
+#model_builder/external/vectors/hu.szte.w2v.bin:
+#	wget http://rgai.inf.u-szeged.hu/project/nlp/research/w2v/hu.szte.w2v.bin -O ./model_builder/external/vectors/hu.szte.w2v.bin
 
-#models/interim/vectors/hu.szte.w2v.txt: models/external/vectors/hu.szte.w2v.bin
-#	PYTHONPATH="./src" pipenv run python -m models convert-vectors-to-txt ./models/external/vectors/hu.szte.w2v.bin \
-#		./models/interim/vectors/hu.szte.w2v.txt
-#	 PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/hu.szte.w2v.txt
+#model_builder/interim/vectors/hu.szte.w2v.txt: model_builder/external/vectors/hu.szte.w2v.bin
+#	PYTHONPATH="./src" pipenv run python -m model_builder convert-vectors-to-txt ./model_builder/external/vectors/hu.szte.w2v.bin \
+#		./model_builder/interim/vectors/hu.szte.w2v.txt
+#	 PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./model_builder/interim/vectors/hu.szte.w2v.txt
 
 models/external/vectors/webcorpuswiki.word2vec.bz2: | models
 	wget https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2 \
@@ -101,7 +121,7 @@ models/external/vectors/webcorpuswiki.word2vec.bz2: | models
 
 models/interim/vectors/webcorpuswiki.word2vec.txt: | models/external/vectors/webcorpuswiki.word2vec.bz2
 	bzcat ./models/external/vectors/webcorpuswiki.word2vec.bz2 > ./models/interim/vectors/webcorpuswiki.word2vec.txt
-	# PYTHONPATH="./src" pipenv run python -m models eval-vectors ./models/interim/vectors/webcorpuswiki.word2vec.txt
+	# PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./model_builder/interim/vectors/webcorpuswiki.word2vec.txt
 
 
 models/external/webcorpuswiki.freqs: | models
@@ -125,7 +145,7 @@ models/spacy/szk_lg: | models/spacy/vectors_lg data/interim/szk_univ_morph data/
 
 models/spacy/lemmy: | data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
 	mkdir -p models/spacy/lemmy
-	PYTHONPATH="./src" pipenv run python -m models train-lemmy data/interim/szk_univ_dep_ud/all_train.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu models/spacy/lemmy/rules.json
+	PYTHONPATH="./src" pipenv run python -m model_builder train-lemmy data/interim/szk_univ_dep_ud/all_train.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu models/spacy/lemmy/rules.json
 
 models/spacy/vectors_lg: |  models/external/webcorpuswiki.freqs models/interim/vectors/webcorpuswiki.word2vec.txt models/external/webcorpuswiki.clusters
 	mkdir -p ./models/spacy/vectors_lg
@@ -156,15 +176,15 @@ models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spac
 	cd ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
 
 	# Benchmark
-	PYTHONPATH="./src" pipenv run python -m models benchmark-model ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) \
+	PYTHONPATH="./src" pipenv run python -m model_builder benchmark-model ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) \
 		$(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
 	# Tests
-	mkdir -p /tmp/test_env && cd /tmp/test_env \
-	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
-	&& /tmp/test_env/.env/bin/python -m ensurepip \
-	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl \
-	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = $(UD_LG_NAME).load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+#	mkdir -p /tmp/test_env && cd /tmp/test_env \
+#	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
+#	&& /tmp/test_env/.env/bin/python -m ensurepip \
+#	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/model_builder/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl \
+#	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = $(UD_LG_NAME).load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
 
 
 	# Cleanup

@@ -13,6 +13,7 @@ RUN apt-get -y install git-lfs
 
 # Use git lfs for clone to make the process foolproof
 RUN git lfs clone --recurse-submodules https://github.com/dlt-rilmta/e-magyar-tsv .
+# RUN git checkout 1c618d89493cda9510adecc9fcb6811636988e4c
 
 RUN pip3 install Cython
 RUN pip3 install -r emmorphpy/requirements.txt
