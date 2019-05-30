@@ -125,14 +125,9 @@ def train_lemmy(train_path, test_path, model_path):
 
 
 @cli.command()
-@click.argument("model_path")
 @click.argument("model_name")
 @click.argument("test_data_path")
-def benchmark_model(model_path, model_name, test_data_path):
-    import sys
-
-    sys.path.append(model_path)
-
+def benchmark_model(model_name, test_data_path):
     with open(test_data_path) as f:
         data = conllu.parse(f.read())
         text = " ".join(d.metadata["text"] for d in data)

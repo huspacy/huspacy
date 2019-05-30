@@ -55,8 +55,6 @@ data/interim/szk_univ_morph: | data/raw/magyarlanc_data
 #	mkdir -p data/raw
 #	wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-1989/Hungarian-annotated-conll17.tar?sequence=21&isAllowed=y -O ./data/raw/Hungarian-annotated-conll17.tar
 
-#data/interim/X:
-#	cat data/raw/X | docker run -i emtsv > data/interim/X
 
 data/raw/UD_Hungarian-Szeged:
 	mkdir -p ./data/raw/UD_Hungarian-Szeged
@@ -87,33 +85,19 @@ data/raw/szeged_ner:
 ################################################### EXTERNAL MODELS ###################################################
 
 
-#models:
-#	mkdir -p ./models/external/vectors
-#	mkdir -p ./models/interim/vectors
-#	mkdir -p ./models/spacy
-#	mkdir -p ./models/packaged
-
 models/external/vectors/cc.hu.300.vec.gz:
 	mkdir -p models/external/vectors
-	wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/word-vectors-v2/cc.hu.300.vec.gz -O models/external/vectors/cc.hu.300.vec.gz
+	wget https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.hu.300.vec.gz -O models/external/vectors/cc.hu.300.vec.gz
 
 models/interim/vectors/cc.hu.300.txt: | models/external/vectors/cc.hu.300.vec.gz
 	mkdir -p models/interim/vectors
 	pv models/external/vectors/cc.hu.300.vec.gz | gzip -d > ./models/interim/vectors/cc.hu.300.txt
-	PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./models/interim/vectors/cc.hu.300.txt
+#	PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./models/interim/vectors/cc.hu.300.txt
 
 models/external/vectors/hunembed.tgz:
 	mkdir -p models/external/vectors
 	wget http://corpus.nytud.hu/efnilex-vect/data/hunembed0.0 -O ./models/external/vectors/hunembed.tgz
 	tar -xvzf ./models/external/vectors/hunembed.tgz -C ./models/external/vectors/
-
-#model_builder/external/vectors/hu.szte.w2v.bin:
-#	wget http://rgai.inf.u-szeged.hu/project/nlp/research/w2v/hu.szte.w2v.bin -O ./model_builder/external/vectors/hu.szte.w2v.bin
-
-#model_builder/interim/vectors/hu.szte.w2v.txt: model_builder/external/vectors/hu.szte.w2v.bin
-#	PYTHONPATH="./src" pipenv run python -m model_builder convert-vectors-to-txt ./model_builder/external/vectors/hu.szte.w2v.bin \
-#		./model_builder/interim/vectors/hu.szte.w2v.txt
-#	 PYTHONPATH="./src" pipenv run python -m model_builder eval-vectors ./model_builder/interim/vectors/hu.szte.w2v.txt
 
 models/external/vectors/webcorpuswiki.word2vec.bz2:
 	mkdir -p ./models/external/vectors
@@ -138,60 +122,93 @@ models/external/webcorpuswiki.clusters:
 
 ################################################### GENERATED MODELS ###################################################
 
-models/spacy/szk_lg: | models/spacy/vectors_lg data/interim/szk_univ_morph data/interim/UD_Hungarian-Szeged
-	mkdir -p ./models/spacy/szk_lg
-	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V 0.1 -P -N \
-		-n 30 -v models/spacy/vectors_lg  models/spacy/szk_lg \
-		 data/interim/szk_univ_morph/all_train.json \
-		 ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
-	pipenv run python -m spacy evaluate ./models/spacy/szk_lg/model-final \
-		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
+#models/spacy/szk_lg: | models/spacy/vectors_lg data/interim/szk_univ_morph data/interim/UD_Hungarian-Szeged
+#	mkdir -p ./models/spacy/szk_lg
+#	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V 0.1 -P -N \
+#		-n 30 -v models/spacy/vectors_lg  models/spacy/szk_lg \
+#		 data/interim/szk_univ_morph/all_train.json \
+#		 ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
+#	pipenv run python -m spacy evaluate \
+#		./models/spacy/szk_lg/model-final \
+#		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
 models/spacy/lemmy: | data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
 	mkdir -p models/spacy/lemmy
-	PYTHONPATH="./src" pipenv run python -m model_builder train-lemmy data/interim/szk_univ_dep_ud/all_train.conllu ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu models/spacy/lemmy/rules.json
+	PYTHONPATH="./src" pipenv run python -m model_builder train-lemmy \
+		data/interim/szk_univ_dep_ud/all_train.conllu \
+		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
+		models/spacy/lemmy/rules.json
 
 models/spacy/vectors_lg: |  models/external/webcorpuswiki.freqs models/interim/vectors/webcorpuswiki.word2vec.txt models/external/webcorpuswiki.clusters
 	mkdir -p ./models/spacy/vectors_lg
-	pipenv run python -m spacy init-model hu models/spacy/vectors_lg -f models/external/webcorpuswiki.freqs \
-		-c ./models/external/webcorpuswiki.clusters -v ./models/interim/vectors/webcorpuswiki.word2vec.txt
+	pipenv run python -m spacy init-model \
+		hu \
+		models/spacy/vectors_lg \
+		-f models/external/webcorpuswiki.freqs \
+		-c models/external/webcorpuswiki.clusters \
+		-v models/interim/vectors/webcorpuswiki.word2vec.txt
+
+models/spacy/ft_vectors_lg: |  models/external/webcorpuswiki.freqs models/external/webcorpuswiki.clusters models/interim/vectors/cc.hu.300.txt
+	mkdir -p ./models/spacy/ft_vectors_lg
+	pipenv run python -m spacy init-model \
+		hu \
+		models/spacy/ft_vectors_lg \
+		-f models/external/webcorpuswiki.freqs \
+		-c models/external/webcorpuswiki.clusters \
+		-v models/interim/vectors/cc.hu.300.txt
 
 models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 	mkdir -p ./models/spacy/ud_lg
-	pipenv run python -m spacy train hu -m ./src/resources/ud_lg_meta.json -V $(UD_LG_VERSION) \
+	pipenv run python -m spacy train \
+		hu \
+		models/spacy/ud_lg \
+		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json \
+		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
+		--version $(UD_LG_VERSION) \
 		--pipeline tagger,parser \
-		-n 8 \
-		-pt dep_tag_offset \
-		-v models/spacy/vectors_lg  models/spacy/ud_lg \
-		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json
+		--n-iter 30 \
+		--n-early-stopping 5 \
+		--parser-multitasks dep_tag_offset \
+		--vectors models/spacy/vectors_lg \
+		--meta-path ./src/resources/ud_lg_meta.json \
+
 	pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
 models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spacy/ud_lg
 	# Package spacy
 	mkdir -p ./models/packaged
-	pipenv run python -m spacy package --force -m src/resources/ud_lg_meta.json models/spacy/ud_lg/model-final/ models/packaged/
+	pipenv run python -m spacy package \
+		models/spacy/ud_lg/model-final/ \
+		models/packaged/ \
+		--force \
+		--meta-path src/resources/ud_lg_meta.json
+
+	# Dirty hack for fixing the wrong vector name generated
+	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/tagger/ \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
+		&& mv cfg.new cfg
+	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/parser/ \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
+		&& mv cfg.new cfg
+
+	cp models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/meta.json models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/meta.json
 
 	# Add lemmatizer
-	mkdir ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
+	mkdir ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
 	cp models/spacy/lemmy/rules.json ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
 	cp src/resources/package_init.py ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/__init__.py
 
 	# Build packages
-	cd ./models/packaged/hu_core_ud_lg-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
+	cd ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
 
-	# Benchmark
-	PYTHONPATH="./src" pipenv run python -m model_builder benchmark-model ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) \
-		$(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+tests:
+	cp $(ROOT_DIR)/models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl ./src/
 
-	# Tests
-#	mkdir -p /tmp/test_env && cd /tmp/test_env \
-#	&& python3 -m venv /tmp/test_env/.env && bash -c "source /tmp/test_env/.env/bin/activate" \
-#	&& /tmp/test_env/.env/bin/python -m ensurepip \
-#	&& /tmp/test_env/.env/bin/pip install -I $(ROOT_DIR)/model_builder/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl \
-#	&& /tmp/test_env/.env/bin/python -c "import hu_core_ud_lg; nlp = $(UD_LG_NAME).load(); print([tok.lemma_ for tok in nlp('Józsiék házainak szépek az ablakaik.')])" \
+	cd src \
+	&& docker build -t smoke_test . \
+	&& docker run -it --rm smoke_test \
+	&& docker run -it --rm -v $(ROOT_DIR)/data:/app/data smoke_test \
+		/usr/local/bin/python -m model_builder benchmark-model $(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
-
-	# Cleanup
-	rm -rf /tmp/test_env
-
+	rm src/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl

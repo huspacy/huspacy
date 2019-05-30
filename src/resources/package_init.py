@@ -6,7 +6,8 @@ import re
 from pathlib import Path
 
 from lemmy import Lemmatizer
-from spacy.util import load_model_from_init_py, get_model_meta
+from spacy.language import Language
+from spacy.util import get_model_meta, load_model_from_init_py
 
 __version__ = get_model_meta(Path(__file__).parent)["version"]
 
@@ -42,13 +43,10 @@ class HunLemmatizer(object):
 
         return doc
 
-    def add_hook(self, nlp):
-        nlp.add_pipe(self, after="tagger", name="lemmatizer")
-
 
 class HunSentencizer(object):
     def __init__(self):
-        self.boundary_punct_pattern = re.compile("^((\.)|[\?!]+)$")
+        self.boundary_punct_pattern = re.compile(r"^((\.)|[\?!]+)$")
 
     def __call__(self, doc):
         for token in doc[:-1]:
@@ -56,21 +54,23 @@ class HunSentencizer(object):
                 doc[token.i + 1].is_sent_start = True
         return doc
 
-    def add_hook(self, nlp):
-        nlp.add_pipe(self, first=True, name="sentencizer")
 
-
-def load(**overrides):
-    nlp = load_model_from_init_py(__file__, **overrides)
-
+def get_lemmarules_path():
     init_path = Path(__file__)
     model_path = init_path.parent
     meta = get_model_meta(model_path)
     data_dir = "%s_%s-%s" % (meta["lang"], meta["name"], meta["version"])
     data_path = model_path / data_dir
-    lemmatizer = HunLemmatizer(data_path / "lemmy" / "rules.json")
-    lemmatizer.add_hook(nlp)
+    lemma_rules_path = data_path / "lemmy" / "rules.json"
+    return lemma_rules_path
 
-    sentencizer = HunSentencizer()
-    sentencizer.add_hook(nlp)
+
+Language.factories["hun_sentencizer"] = lambda nlp, **cfg: HunSentencizer()
+Language.factories["hun_lemmatizer"] = lambda nlp, **cfg: HunLemmatizer(
+    get_lemmarules_path()
+)
+
+
+def load(**overrides):
+    nlp = load_model_from_init_py(__file__, **overrides)
     return nlp
