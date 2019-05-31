@@ -7,8 +7,5 @@ WORKDIR app
 COPY hu_core_ud_lg-0.2.0-py3-none-any.whl /app/
 COPY model_builder /app/model_builder
 COPY conll17_ud_eval.py /app/
-COPY tests/smoke_test.py /app/
 
 RUN pip install -I /app/hu_core_ud_lg-0.2.0-py3-none-any.whl
-
-CMD python smoke_test.py

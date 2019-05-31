@@ -58,10 +58,13 @@ def eval_vectors(vectors_path):
 
 
 @cli.command()
-@click.argument("model_path")
-def smoke_test(model_path):
-    nlp = spacy.load(model_path)
-    doc = nlp("Ez egy ház.")
+@click.argument("model_name")
+def smoke_test(model_name):
+    nlp = spacy.load(model_name)
+    doc = nlp(
+        "Csiribiri csiribiri zabszalma - négy csillag közt alszom ma. "
+        "Csiribiri csiribiri bojtorján lélek lép a lajtorján."
+    )
     print(nlp)
     print(doc, type(doc))
     pprint(

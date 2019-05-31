@@ -2,9 +2,9 @@ UD_LG_VERSION:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r ".version")
 UD_LG_NAME:=$(shell cat ./src/resources/ud_lg_meta.json | jq -r '(.lang + "_" + .name)')
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-.PHONY: init all echo
+.PHONY: init all echo tests
 
-all: models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)
+all: models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) | tests
 
 echo:
 	echo $(UD_LG_NAME) $(UD_LG_VERSION)
@@ -166,7 +166,7 @@ models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
 		--version $(UD_LG_VERSION) \
 		--pipeline tagger,parser \
-		--n-iter 30 \
+		--n-iter 60 \
 		--n-early-stopping 5 \
 		--parser-multitasks dep_tag_offset \
 		--vectors models/spacy/vectors_lg \
@@ -206,9 +206,10 @@ tests:
 	cp $(ROOT_DIR)/models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl ./src/
 
 	cd src \
-	&& docker build -t smoke_test . \
-	&& docker run -it --rm smoke_test \
-	&& docker run -it --rm -v $(ROOT_DIR)/data:/app/data smoke_test \
+	&& docker build -t model_tests . \
+	&& docker run -it --rm model_tests \
+		/usr/local/bin/python -m model_builder smoke-test $(UD_LG_NAME)
+	&& docker run -it --rm -v $(ROOT_DIR)/data:/app/data model_tests \
 		/usr/local/bin/python -m model_builder benchmark-model $(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
 	rm src/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl
