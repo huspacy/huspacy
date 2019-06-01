@@ -47,11 +47,14 @@ class HunLemmatizer(object):
 class HunSentencizer(object):
     def __init__(self):
         self.boundary_punct_pattern = re.compile(r"^((\.)|[\?!]+)$")
+        self.quote_or_bracket = {'"', ")"}
 
     def __call__(self, doc):
         for token in doc[:-1]:
             if self.boundary_punct_pattern.match(token.text):
-                doc[token.i + 1].is_sent_start = True
+                next_token = doc[token.i + 1]
+                if not next_token.text in self.quote_or_bracket:
+                    next_token.is_sent_start = True
         return doc
 
 

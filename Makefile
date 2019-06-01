@@ -159,6 +159,8 @@ models/spacy/ft_vectors_lg: |  models/external/webcorpuswiki.freqs models/extern
 
 models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 	mkdir -p ./models/spacy/ud_lg
+	OPENBLAS_NUM_THREADS=8 GOTO_NUM_THREADS=8 OMP_NUM_THREADS=8\
+	embed_size=10000 token_vector_width=256 hidden_width=256 \
 	pipenv run python -m spacy train \
 		hu \
 		models/spacy/ud_lg \
@@ -167,12 +169,12 @@ models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 		--version $(UD_LG_VERSION) \
 		--pipeline tagger,parser \
 		--n-iter 60 \
-		--n-early-stopping 5 \
+		--n-early-stopping 10 \
 		--parser-multitasks dep_tag_offset \
 		--vectors models/spacy/vectors_lg \
-		--meta-path ./src/resources/ud_lg_meta.json \
+		--meta-path ./src/resources/ud_lg_meta.json
 
-	pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
+	token_vector_width=256 pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
 models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spacy/ud_lg
@@ -186,10 +188,13 @@ models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spac
 
 	# Dirty hack for fixing the wrong vector name generated
 	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/tagger/ \
-		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg | \
+		jq -r '.token_vector_width=256' > cfg.new \
 		&& mv cfg.new cfg
+
 	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/parser/ \
-		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg | \
+		jq -r '.token_vector_width=256' > cfg.new \
 		&& mv cfg.new cfg
 
 	cp models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/meta.json models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/meta.json
@@ -208,7 +213,7 @@ tests:
 	cd src \
 	&& docker build -t model_tests . \
 	&& docker run -it --rm model_tests \
-		/usr/local/bin/python -m model_builder smoke-test $(UD_LG_NAME)
+		/usr/local/bin/python -m model_builder smoke-test $(UD_LG_NAME) \
 	&& docker run -it --rm -v $(ROOT_DIR)/data:/app/data model_tests \
 		/usr/local/bin/python -m model_builder benchmark-model $(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
 
