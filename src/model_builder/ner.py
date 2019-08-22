@@ -10,6 +10,8 @@ from spacy.tokens import Doc
 from spacy.util import compounding, minibatch
 from tqdm import tqdm
 
+spacy.prefer_gpu()
+
 TaggedSentence = Tuple[List[str], List[str]]
 
 
