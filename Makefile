@@ -58,7 +58,7 @@ data/interim/szk_univ_morph: | data/raw/magyarlanc_data
 
 data/raw/UD_Hungarian-Szeged:
 	mkdir -p ./data/raw/UD_Hungarian-Szeged
-	git clone git@github.com:UniversalDependencies/UD_Hungarian-Szeged.git ./data/raw/UD_Hungarian-Szeged
+	git clone https://github.com/UniversalDependencies/UD_Hungarian-Szeged.git ./data/raw/UD_Hungarian-Szeged
 
 data/interim/UD_Hungarian-Szeged: | data/raw/UD_Hungarian-Szeged
 	mkdir -p ./data/interim/UD_Hungarian-Szeged
@@ -79,7 +79,11 @@ data/raw/szeged_ner:
 	mkdir -p data/raw/szeged_ner
 	wget http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/business_NER.zip -O data/raw/szeged_ner/business_NER.zip
 	unzip data/raw/szeged_ner/business_NER.zip -d data/raw/szeged_ner/
-	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hun_ner_corpus.txt | tail -n +2 > data/raw/szeged_ner/hun_ner_corpus_utf8.txt
+	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hun_ner_corpus.txt | tail -n +2 > data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt
+
+	wget http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/criminal_NER.zip -O data/raw/szeged_ner/criminal_NER.zip
+	unzip data/raw/szeged_ner/criminal_NER.zip -d data/raw/szeged_ner/
+	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hvg | tail -n +3 > data/raw/szeged_ner/hun_criminal_ner_corpus_utf8.txt
 
 
 ################################################### EXTERNAL MODELS ###################################################
@@ -132,10 +136,21 @@ models/external/webcorpuswiki.clusters:
 #		./models/spacy/szk_lg/model-final \
 #		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
+models/spacy/ner: | data/raw/hunnerwiki data/raw/szeged_ner
+	mkdir -p models/spacy/ner
+	#FIXME: fix the path
+	PYTHONPATH="./src" pipenv run python -m model_builder train-ner \
+		models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION) \
+		models/spacy/ner \
+		data/raw/hunnerwiki/huwiki.tsv \
+		data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt \
+		50
+
 models/spacy/lemmy: | data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
 	mkdir -p models/spacy/lemmy
 	PYTHONPATH="./src" pipenv run python -m model_builder train-lemmy \
-		data/interim/szk_univ_dep_ud/all_train.conllu \
+#		data/interim/szk_univ_dep_ud/all_train.conllu \
+		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
 		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
 		models/spacy/lemmy/rules.json
 
@@ -167,7 +182,7 @@ models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json \
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
 		--version $(UD_LG_VERSION) \
-		--pipeline tagger,parser \
+		--pipeline tagger,parser,ner \
 		--n-iter 60 \
 		--n-early-stopping 10 \
 		--parser-multitasks dep_tag_offset \

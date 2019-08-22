@@ -1,5 +1,6 @@
 import glob
 import importlib
+import itertools
 import json
 import logging
 from io import StringIO
@@ -12,6 +13,7 @@ import pandas as pd
 import spacy
 from gensim.models.keyedvectors import KeyedVectors
 from lemmy import Lemmatizer
+from tqdm import tqdm
 
 import conll17_ud_eval
 from model_builder.eval import lemmy_accuracy
@@ -23,6 +25,7 @@ from model_builder.io import (
     RESOURCES_ROOT,
     format_as_conllu,
 )
+from model_builder.ner import SpacyNerTrainer, DataIterator
 
 logging.basicConfig(level=logging.INFO)
 
@@ -147,6 +150,31 @@ def benchmark_model(model_name, test_data_path):
     ).T
 
     print(results)
+
+
+@cli.command()
+@click.argument("model_name")
+@click.argument("output_path")
+@click.argument("train_data")
+@click.argument("test_data")
+@click.argument("n_iter")
+def train_ner(model_name, output_path, train_data, test_data, n_iter):
+    if model_name in ["None", "False", "", "blank"]:
+        model_name = None
+
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logging.info("Reading train data")
+    diterator = DataIterator()
+    train_sentences = list(tqdm(itertools.islice(diterator.tagged_sentences(train_data), None)))
+    logging.info("Got {} sentences with at least one entity".format(len(train_sentences)))
+
+    logging.info("Reading test data")
+    test_sentences = list(tqdm(diterator.tagged_sentences(test_data)))
+    logging.info("Got {} sentences with at least one entity".format(len(test_sentences)))
+
+    trainer = SpacyNerTrainer(model_name, output_path)
+    trainer(train_sentences, test_sentences, int(n_iter))
+    trainer.store_model()
 
 
 if __name__ == "__main__":
