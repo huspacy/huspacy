@@ -5,6 +5,7 @@
 #   $ pip install twine
 
 import io
+import json
 import os
 import sys
 from shutil import rmtree
@@ -12,13 +13,14 @@ from shutil import rmtree
 from setuptools import setup, Command
 
 # Package meta-data.
-NAME = "spacy-hu"
+NAME = "huspacy"
 DESCRIPTION = "SpaCy model for Hungarian"
-URL = "https://github.com/oroszgy/spacy-hungarian-model_builder"
+URL = "https://github.com/oroszgy/spacy-hungarian-models"
 EMAIL = "gyorgy@orosz.link"
 AUTHOR = "György Orosz"
 REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "0.1.0"
+SETUP_VERSION = 0
+VERSION = json.load(open("../src/resources/ud_lg_meta.json"))["version"] + "." + str(SETUP_VERSION)
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -65,10 +67,6 @@ class UploadCommand(Command):
         self.status("Uploading the package to PyPI via Twine…")
         os.system("twine upload dist/*")
 
-        self.status("Pushing git tags…")
-        os.system("git tag v{0}".format(about["__version__"]))
-        os.system("git push --tags")
-
         sys.exit()
 
 
@@ -83,13 +81,16 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    dependency_links=[
-        "https://github.com/oroszgy/spacy-hungarian-model_builder/releases/download/hu_vectors_web_lg-0.1.0/hu_ud_lg-0.1.0.tar.gz"
+    install_requires=[
+        "hu_core_ud_lg@https://github.com/oroszgy/spacy-hungarian-models/releases/download/"
+        "hu_core_ud_lg-{version}/hu_core_ud_lg-{version}-py3-none-any.whl".format(
+            version=VERSION)
     ],
     include_package_data=True,
     license="MIT",
     classifiers=[
-        "Development Status :: 3 - Alpha" "License :: OSI Approved :: MIT License",
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
