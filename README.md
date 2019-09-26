@@ -13,8 +13,8 @@ This repository contains the building blocks and the releases of Hungarian model
 [i-hu_core_ud_lg-0.1.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_core_ud_lg-0.1.0
 [hu_core_ud_lg-0.2.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.2.0/hu_core_ud_lg-0.2.0-py3-none-any.whl
 [i-hu_core_ud_lg-0.2.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_core_ud_lg-0.2.0
-[hu_core_ud_lg-0.2.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.3.0/hu_core_ud_lg-0.3.0-py3-none-any.whl
-[i-hu_core_ud_lg-0.2.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_core_ud_lg-0.3.0
+[hu_core_ud_lg-0.3.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.3.0/hu_core_ud_lg-0.3.0-py3-none-any.whl
+[i-hu_core_ud_lg-0.3.0]: https://github.com/oroszgy/spacy-hungarian-models/releases/hu_core_ud_lg-0.3.0
 
 
 [dl]: http://i.imgur.com/gQvPgr0.png
