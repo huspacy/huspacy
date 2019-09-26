@@ -4,7 +4,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: init all echo tests
 
-all: models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) | tests
+all: models/packaged | tests
 
 echo:
 	echo $(UD_LG_NAME) $(UD_LG_VERSION)
@@ -85,6 +85,23 @@ data/raw/szeged_ner:
 	unzip data/raw/szeged_ner/criminal_NER.zip -d data/raw/szeged_ner/
 	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hvg | tail -n +3 > data/raw/szeged_ner/hun_criminal_ner_corpus_utf8.txt
 
+data/interim/ner: | data/raw/hunnerwiki data/raw/szeged_ner
+	mkdir -p data/interim/ner
+	PYTHONPATH="./src" pipenv run python -m model_builder split-ner-data \
+		data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt \
+		data/interim/ner/business_train.tsv \
+		data/interim/ner/business_dev.tsv \
+		data/interim/ner/business_test.tsv
+
+	PYTHONPATH="./src" pipenv run python -m model_builder split-ner-data \
+		data/raw/szeged_ner/hun_criminal_ner_corpus_utf8.txt \
+		data/interim/ner/criminal_train.tsv \
+		data/interim/ner/criminal_dev.tsv \
+		data/interim/ner/criminal_test.tsv
+
+	cat data/interim/ner/*_train.tsv > data/interim/ner/train_data.tsv
+	cat data/interim/ner/*_dev.tsv > data/interim/ner/dev_data.tsv
+	cat data/interim/ner/*_test.tsv > data/interim/ner/test_data.tsv
 
 ################################################### EXTERNAL MODELS ###################################################
 
@@ -136,21 +153,23 @@ models/external/webcorpuswiki.clusters:
 #		./models/spacy/szk_lg/model-final \
 #		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
-models/spacy/ner: | data/raw/hunnerwiki data/raw/szeged_ner
+models/spacy/ner: | data/interim/ner
 	mkdir -p models/spacy/ner
-	#FIXME: fix the path
+
 	PYTHONPATH="./src" pipenv run python -m model_builder train-ner \
-		models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION) \
+		models/spacy/vectors_lg \
 		models/spacy/ner \
-		data/raw/hunnerwiki/huwiki.tsv \
-		data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt \
-		50
+		data/interim/ner/train_data.tsv \
+		data/interim/ner/dev_data.tsv \
+		data/interim/ner/test_data.tsv \
+		0.4 \
+		50 \
+		10
 
 models/spacy/lemmy: | data/raw/UD_Hungarian-Szeged data/interim/szk_univ_dep_ud
 	mkdir -p models/spacy/lemmy
 	PYTHONPATH="./src" pipenv run python -m model_builder train-lemmy \
-#		data/interim/szk_univ_dep_ud/all_train.conllu \
-		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
+		data/interim/szk_univ_dep_ud/all_train.conllu \
 		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
 		models/spacy/lemmy/rules.json
 
@@ -173,26 +192,27 @@ models/spacy/ft_vectors_lg: |  models/external/webcorpuswiki.freqs models/extern
 		-v models/interim/vectors/cc.hu.300.txt
 
 models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
+	#	embed_size=10000 token_vector_width=256 hidden_width=256 \
 	mkdir -p ./models/spacy/ud_lg
-	OPENBLAS_NUM_THREADS=8 GOTO_NUM_THREADS=8 OMP_NUM_THREADS=8\
-	embed_size=10000 token_vector_width=256 hidden_width=256 \
+	OPENBLAS_NUM_THREADS=8 GOTO_NUM_THREADS=8 OMP_NUM_THREADS=8 \
 	pipenv run python -m spacy train \
 		hu \
 		models/spacy/ud_lg \
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.json \
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
 		--version $(UD_LG_VERSION) \
-		--pipeline tagger,parser,ner \
+		--pipeline tagger,parser \
 		--n-iter 60 \
 		--n-early-stopping 10 \
 		--parser-multitasks dep_tag_offset \
 		--vectors models/spacy/vectors_lg \
 		--meta-path ./src/resources/ud_lg_meta.json
 
-	token_vector_width=256 pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
+	#	token_vector_width=256
+	pipenv run python -m spacy evaluate ./models/spacy/ud_lg/model-final \
 		./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.json
 
-models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spacy/ud_lg
+models/packaged: | models/spacy/lemmy models/spacy/ud_lg models/spacy/ner
 	# Package spacy
 	mkdir -p ./models/packaged
 	pipenv run python -m spacy package \
@@ -201,15 +221,20 @@ models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spac
 		--force \
 		--meta-path src/resources/ud_lg_meta.json
 
+	# Add NER
+	cp -R models/spacy/ner/model-final/ner models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/ner
+
 	# Dirty hack for fixing the wrong vector name generated
 	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/tagger/ \
-		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg | \
-		jq -r '.token_vector_width=256' > cfg.new \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
 		&& mv cfg.new cfg
 
 	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/parser/ \
-		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg | \
-		jq -r '.token_vector_width=256' > cfg.new \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
+		&& mv cfg.new cfg
+
+	cd models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/ner/ \
+		&& jq -r '.pretrained_vectors="$(UD_LG_NAME).vectors"' cfg > cfg.new \
 		&& mv cfg.new cfg
 
 	cp models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/meta.json models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/meta.json
@@ -219,6 +244,8 @@ models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION): | models/spacy/lemmy models/spac
 	cp models/spacy/lemmy/rules.json ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/$(UD_LG_NAME)-$(UD_LG_VERSION)/lemmy/
 	cp src/resources/package_init.py ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/$(UD_LG_NAME)/__init__.py
 
+
+
 	# Build packages
 	cd ./models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION) && python3 setup.py sdist bdist_wheel
 
@@ -226,10 +253,12 @@ tests:
 	cp $(ROOT_DIR)/models/packaged/$(UD_LG_NAME)-$(UD_LG_VERSION)/dist/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl ./src/
 
 	cd src \
-	&& docker build -t model_tests . \
+	&& docker build -t model_tests --build-arg model_name=$(UD_LG_NAME)-$(UD_LG_VERSION) . \
 	&& docker run -it --rm model_tests \
 		/usr/local/bin/python -m model_builder smoke-test $(UD_LG_NAME) \
 	&& docker run -it --rm -v $(ROOT_DIR)/data:/app/data model_tests \
-		/usr/local/bin/python -m model_builder benchmark-model $(UD_LG_NAME) data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+		/usr/local/bin/python -m model_builder benchmark-model $(UD_LG_NAME) \
+		data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu \
+		data/interim/ner/test_data.tsv
 
 	rm src/$(UD_LG_NAME)-$(UD_LG_VERSION)-py3-none-any.whl

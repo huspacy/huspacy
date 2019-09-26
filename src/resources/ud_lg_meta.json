@@ -1,7 +1,7 @@
 {
     "name": "core_ud_lg",
     "lang": "hu",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "spacy_version": ">=2.1.0,<3.0.0",
     "description": "Hungarian model trained on the Universal Dependencies Corpus",
     "author": "György Orosz",
@@ -10,7 +10,7 @@
     "vectors": {
         "name": "hu_core_ud_lg.vectors"
     },
-    "pipeline": ["hun_sentencizer", "tagger", "hun_lemmatizer","parser"],
+    "pipeline": ["hun_sentencizer", "tagger", "hun_lemmatizer","parser", "ner"],
     "setup_requires": ["lemmy==0.1"],
     "url": "https://github.com/oroszgy/spacy-hungarian-models"
 }
