@@ -26,7 +26,7 @@ This repository contains the building blocks and the releases of Hungarian model
 ## Install
 
 ```bash
-pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.3.0/hu_core_ud_lg-0.3.0-py3-none-any.whl  
+pip install https://github.com/oroszgy/spacy-hungarian-models/releases/download/hu_core_ud_lg-0.3.1/hu_core_ud_lg-0.3.1-py3-none-any.whl  
 ```
 
 ## Usage
@@ -38,10 +38,10 @@ call its `load()` method with no arguments.
 import hu_core_ud_lg
 
 nlp = hu_core_ud_lg.load()
-doc = nlp('Sziasztok, megjöttem.')
+doc = nlp('Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.')
 ```
 
-For detailed documentation on spaCy models check [spaCy docs](https://spacy.io/usage/processing-pipelines).
+For detailed documentation and tutorials, check [spaCy docs](https://spacy.io/usage/processing-pipelines).
 
 ## Development
 
@@ -49,6 +49,7 @@ Issuing `make all` fetches all the resources needed and builds a release.
 
 ## Changelog
 
+- 2019-10-03 Fixing compatibility issue with spaCy 2.2
 - 2019-09-26 Added named entity recognition
 - 2019-06-02 Made the pipeline compatible with spaCy 2.1, minor sentence segmentation improvements
 - 2019-01-04 UD corpus based core pipeline release for spaCy 2.x
