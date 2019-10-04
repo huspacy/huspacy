@@ -1,8 +1,8 @@
 {
     "name": "core_ud_lg",
     "lang": "hu",
-    "version": "0.3.0",
-    "spacy_version": ">=2.1.0,<3.0.0",
+    "version": "0.3.1",
+    "spacy_version": ">=2.2.0,<2.3.0.",
     "description": "Hungarian model trained on the Universal Dependencies Corpus",
     "author": "György Orosz",
     "email": "gyorgy@orosz.link",

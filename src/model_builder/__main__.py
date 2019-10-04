@@ -94,6 +94,23 @@ def smoke_test(model_name):
 
 
 @cli.command()
+@click.argument("input_file")
+@click.argument("output_file")
+def normalize_ud_corpus(input_file, output_file):
+    with open(input_file) as f, open(output_file, "w") as of:
+        for line in tqdm(f):
+            stripped_line = line.strip()
+            if len(stripped_line) == 0 or stripped_line[0] == "#":
+                of.write(line)
+            else:
+                parts = stripped_line.split("\t")
+                dep_label = parts[7]
+                dep_label = dep_label.split(":")[0]
+                parts[7] = dep_label
+                of.write("\t".join(parts) + "\n")
+
+
+@cli.command()
 @click.argument("from_glob")
 @click.argument("to_path")
 @click.argument("dev_path")

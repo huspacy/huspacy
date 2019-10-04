@@ -62,9 +62,20 @@ data/raw/UD_Hungarian-Szeged:
 
 data/interim/UD_Hungarian-Szeged: | data/raw/UD_Hungarian-Szeged
 	mkdir -p ./data/interim/UD_Hungarian-Szeged
-	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ./data/interim/UD_Hungarian-Szeged/
-	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/interim/UD_Hungarian-Szeged/
-	pipenv run python -m spacy convert ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ./data/interim/UD_Hungarian-Szeged/
+	PYTHONPATH="./src" pipenv run python -m model_builder normalize-ud-corpus \
+	 ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu \
+	 ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+	pipenv run python -m spacy convert ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ./data/interim/UD_Hungarian-Szeged/
+
+	PYTHONPATH="./src" pipenv run python -m model_builder normalize-ud-corpus \
+	 ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu \
+	 ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+	pipenv run python -m spacy convert ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ./data/interim/UD_Hungarian-Szeged/
+
+	PYTHONPATH="./src" pipenv run python -m model_builder normalize-ud-corpus \
+	 ./data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu \
+	 ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+	pipenv run python -m spacy convert ./data/interim/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ./data/interim/UD_Hungarian-Szeged/
 
 data/raw/hunnerwiki:
 	mkdir -p ./data/raw/hunnerwiki
@@ -182,14 +193,14 @@ models/spacy/vectors_lg: |  models/external/webcorpuswiki.freqs models/interim/v
 		-c models/external/webcorpuswiki.clusters \
 		-v models/interim/vectors/webcorpuswiki.word2vec.txt
 
-models/spacy/ft_vectors_lg: |  models/external/webcorpuswiki.freqs models/external/webcorpuswiki.clusters models/interim/vectors/cc.hu.300.txt
-	mkdir -p ./models/spacy/ft_vectors_lg
-	pipenv run python -m spacy init-model \
-		hu \
-		models/spacy/ft_vectors_lg \
-		-f models/external/webcorpuswiki.freqs \
-		-c models/external/webcorpuswiki.clusters \
-		-v models/interim/vectors/cc.hu.300.txt
+#models/spacy/vectors_lg: |  models/external/webcorpuswiki.freqs models/external/webcorpuswiki.clusters models/interim/vectors/cc.hu.300.txt
+#	mkdir -p ./models/spacy/vectors_lg
+#	pipenv run python -m spacy init-model \
+#		hu \
+#		models/spacy/vectors_lg \
+#		-f models/external/webcorpuswiki.freqs \
+#		-c models/external/webcorpuswiki.clusters \
+#		-v models/interim/vectors/cc.hu.300.txt
 
 models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 	#	embed_size=10000 token_vector_width=256 hidden_width=256 \
@@ -202,7 +213,7 @@ models/spacy/ud_lg: | data/interim/UD_Hungarian-Szeged models/spacy/vectors_lg
 		data/interim/UD_Hungarian-Szeged/hu_szeged-ud-dev.json \
 		--version $(UD_LG_VERSION) \
 		--pipeline tagger,parser \
-		--n-iter 60 \
+		--n-iter 40 \
 		--n-early-stopping 10 \
 		--parser-multitasks dep_tag_offset \
 		--vectors models/spacy/vectors_lg \
