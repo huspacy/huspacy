@@ -85,3 +85,6 @@ target/
 
 # Mac OS-specific storage files
 .DS_Store
+
+# Virtual envs
+.venv/
