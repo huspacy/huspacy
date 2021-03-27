@@ -55,6 +55,9 @@ data/interim/szk_univ_morph: | data/raw/magyarlanc_data
 #	mkdir -p data/raw
 #	wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-1989/Hungarian-annotated-conll17.tar?sequence=21&isAllowed=y -O ./data/raw/Hungarian-annotated-conll17.tar
 
+data/raw/NerKor:
+	mkdir -p data/raw/NerKor
+	git clone https://github.com/dlt-rilmta/NerKor.git data/raw/NerKor
 
 data/raw/UD_Hungarian-Szeged:
 	mkdir -p ./data/raw/UD_Hungarian-Szeged
@@ -88,23 +91,23 @@ data/raw/hunnerwiki:
 
 data/raw/szeged_ner:
 	mkdir -p data/raw/szeged_ner
-	wget http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/business_NER.zip -O data/raw/szeged_ner/business_NER.zip
+	wget https://rgai.sed.hu/sites/rgai.sed.hu/files/business_NER.zip -O data/raw/szeged_ner/business_NER.zip
 	unzip data/raw/szeged_ner/business_NER.zip -d data/raw/szeged_ner/
 	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hun_ner_corpus.txt | tail -n +2 > data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt
 
-	wget http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/criminal_NER.zip -O data/raw/szeged_ner/criminal_NER.zip
+	wget https://rgai.sed.hu/sites/rgai.sed.hu/files/HVGNER.ZIP -O data/raw/szeged_ner/criminal_NER.zip
 	unzip data/raw/szeged_ner/criminal_NER.zip -d data/raw/szeged_ner/
 	iconv -f iso-8859-2 --t utf8 data/raw/szeged_ner/hvg | tail -n +3 > data/raw/szeged_ner/hun_criminal_ner_corpus_utf8.txt
 
 data/interim/ner: | data/raw/hunnerwiki data/raw/szeged_ner
 	mkdir -p data/interim/ner
-	PYTHONPATH="./src" pipenv run python -m model_builder split-ner-data \
+	PYTHONPATH="./src" poetry run python -m model_builder split-ner-data \
 		data/raw/szeged_ner/hun_business_ner_corpus_utf8.txt \
 		data/interim/ner/business_train.tsv \
 		data/interim/ner/business_dev.tsv \
 		data/interim/ner/business_test.tsv
 
-	PYTHONPATH="./src" pipenv run python -m model_builder split-ner-data \
+	PYTHONPATH="./src" poetry run python -m model_builder split-ner-data \
 		data/raw/szeged_ner/hun_criminal_ner_corpus_utf8.txt \
 		data/interim/ner/criminal_train.tsv \
 		data/interim/ner/criminal_dev.tsv \
