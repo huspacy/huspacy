@@ -16,6 +16,8 @@ gensim = "^4.0.0"
 sklearn = "^0.0"
 conllu = "^4.4"
 mlflow = "^1.15.0"
+spacy-ray = "^0.1.0"
+wandb = "^0.10.23"
 
 [tool.poetry.dev-dependencies]
 
