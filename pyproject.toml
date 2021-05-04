@@ -3,19 +3,12 @@ name = "spacy-hungarian-models"
 version = "0.4.0"
 description = "Hungarian models for spaCy"
 authors = ["Gyorgy Orosz <gyorgy@orosz.link>"]
-license = "GPL-3.0"
+license = "AGPL-3.0"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-spacy = "^3.0.5"
-click = "^7.1.2"
-ftfy = "^5.9"
-pandas = "1.1.0"
+spacy = "~3.0.5"
 lemmy = "^2.1.0"
-gensim = "^4.0.0"
-sklearn = "^0.0"
-conllu = "^4.4"
-mlflow = "^1.15.0"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
 
