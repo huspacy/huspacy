@@ -1,0 +1,126 @@
+title: "NerKor model"
+description: "Large model built on the NerKor corpus"
+
+# Variables can be referenced across the project.yml using ${vars.var_name}
+
+vars:
+  config: "default"
+  lang: "hu"
+  treebank: "UD_Hungarian-Szeged"
+  nerkor: "NerKor"
+  ud_train_name: "hu_szeged-ud-train"
+  ud_dev_name: "hu_szeged-ud-dev"
+  ud_test_name: "hu_szeged-ud-test"
+  package_name: "hu_core_web_lg"
+  package_version: "0.1.0"
+  gpu: 0
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+
+directories: ["assets", "corpus", "training", "metrics", "configs", "packages"]
+
+assets:
+  - dest: "assets/${vars.treebank}"
+    git:
+      repo: https://github.com/UniversalDependencies/${vars.treebank}
+      branch: master
+      path: ""
+  - dest: "assets/${vars.nerkor}"
+    git:
+      repo: https://github.com/oroszgy/NYTK-NerKor
+      branch: data
+      path: annotated-data
+  - dest: "assets/vectors/webcorpuswiki.word2vec.bz2"
+    url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
+
+workflows:
+  all:
+    - vectors
+    - preprocess
+    - train
+    - evaluate
+    - package
+
+commands:
+  - name: vectors
+    help: "Convert vectors"
+    script:
+      - bash -c '/bin/bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
+      - python -m spacy init vectors hu assets/vectors/webcorpuswiki.word2vec.txt assets/vectors/webcorpuswiki.word2vec.vec
+    deps:
+      - assets/vectors/webcorpuswiki.word2vec.bz2
+    outputs:
+      - assets/vectors/webcorpuswiki.word2vec.vec
+
+
+  - name: preprocess
+    help: "Convert the data to spaCy's format"
+    script:
+      - mkdir -p corpus/${vars.treebank}
+      - python -m spacy convert assets/${vars.treebank}/${vars.ud_train_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
+      - python -m spacy convert assets/${vars.treebank}/${vars.ud_dev_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
+      - python -m spacy convert assets/${vars.treebank}/${vars.ud_test_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
+
+      - mkdir -p corpus/${vars.nerkor}
+      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
+      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
+      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
+
+      - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
+      - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
+      - python -m spacy convert assets/${vars.nerkor}/test.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
+
+
+      - mv corpus/${vars.treebank}/${vars.ud_train_name}.spacy corpus/${vars.treebank}/train.spacy
+      - mv corpus/${vars.treebank}/${vars.ud_dev_name}.spacy corpus/${vars.treebank}/dev.spacy
+      - mv corpus/${vars.treebank}/${vars.ud_test_name}.spacy corpus/${vars.treebank}/test.spacy
+    deps:
+      - assets/${vars.treebank}/${vars.ud_train_name}.conllu
+      - assets/${vars.treebank}/${vars.ud_dev_name}.conllu
+      - assets/${vars.treebank}/${vars.ud_test_name}.conllu
+      - assets/${vars.nerkor}/train-devel-test/
+    outputs:
+      - corpus/${vars.treebank}/train.spacy
+      - corpus/${vars.treebank}/dev.spacy
+      - corpus/${vars.treebank}/test.spacy
+
+      - corpus/${vars.nerkor}/train.spacy
+      - corpus/${vars.nerkor}/devel.spacy
+      - corpus/${vars.nerkor}/test.spacy
+  - name: train
+    help: "Train ${vars.treebank}"
+    script:
+      - python -m spacy train configs/${vars.config}.cfg --output training/${vars.treebank} --gpu-id ${vars.gpu} --paths.train corpus/${vars.treebank}/train.spacy --paths.dev corpus/${vars.treebank}/dev.spacy --nlp.lang=${vars.lang}
+    deps:
+      - corpus/${vars.treebank}/train.spacy
+      - corpus/${vars.treebank}/dev.spacy
+      - configs/${vars.config}.cfg
+    outputs:
+      - training/${vars.treebank}/model-best
+
+  - name: evaluate
+    help: "Evaluate on the test data and save the metrics"
+    script:
+      - python -m spacy evaluate ./training/${vars.treebank}/model-best ./corpus/${vars.treebank}/test.spacy --output ./metrics/${vars.treebank}.json --gpu-id ${vars.gpu} -G
+    deps:
+      - training/${vars.treebank}/model-best
+      - corpus/${vars.treebank}/test.spacy
+    outputs:
+      - metrics/${vars.treebank}.json
+
+  - name: package
+    help: "Package the trained model so it can be installed"
+    script:
+      - python -m spacy package training/${vars.treebank}/model-best packages --name ${vars.package_name} --version ${vars.package_version} --force
+    deps:
+      - training/${vars.treebank}/model-best
+    outputs_no_cache:
+      - packages/${vars.lang}_${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz
+
+  - name: clean
+    help: "Remove intermediate files"
+    script:
+      - rm -rf training/*
+      - rm -rf metrics/*
+      - rm -rf corpus/*
