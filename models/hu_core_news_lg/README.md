@@ -9,6 +9,8 @@ The model builds on the [Hungarian UD treebank](https://github.com/UniversalDepe
 
 ## Build the model
 
+Activate the virtual environment: `poetry shell`
+
 1. Fetch datafiles: `python -m spacy projects assets`
 1. Download and transform word vectors:`python -m spacy projects run vectors`
 1. Preprocess corpus: `python -m spacy projects run preprocessing`
