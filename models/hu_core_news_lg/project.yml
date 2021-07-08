@@ -19,7 +19,7 @@ vars:
   test_name: "hu_szeged-ud-test"
   package_name: "ud_hu_szeged"
   package_version: "0.1.0"
-  gpu: 0
+  gpu: -1
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
