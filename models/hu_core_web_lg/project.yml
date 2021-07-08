@@ -13,7 +13,7 @@ vars:
   ud_test_name: "hu_szeged-ud-test"
   package_name: "hu_core_web_lg"
   package_version: "0.1.0"
-  gpu: 0
+  gpu: -1
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -28,9 +28,11 @@ assets:
       path: ""
   - dest: "assets/${vars.nerkor}"
     git:
-      repo: https://github.com/oroszgy/NYTK-NerKor
-      branch: data
-      path: annotated-data
+      repo: https://github.com/nytud/NYTK-NerKor
+#      repo: https://github.com/oroszgy/NYTK-NerKor
+      branch: main
+#      branch: patch-1
+      path: data
   - dest: "assets/vectors/webcorpuswiki.word2vec.bz2"
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
@@ -63,14 +65,13 @@ commands:
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_test_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
 
       - mkdir -p corpus/${vars.nerkor}
-      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
-      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
-      - './concat.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
+      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
+      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
+      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
 
-      - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
-      - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
-      - python -m spacy convert assets/${vars.nerkor}/test.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10 --merge-subtokens
-
+      - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
+      - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
+      - python -m spacy convert assets/${vars.nerkor}/test.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
 
       - mv corpus/${vars.treebank}/${vars.ud_train_name}.spacy corpus/${vars.treebank}/train.spacy
       - mv corpus/${vars.treebank}/${vars.ud_dev_name}.spacy corpus/${vars.treebank}/dev.spacy
@@ -88,16 +89,20 @@ commands:
       - corpus/${vars.nerkor}/train.spacy
       - corpus/${vars.nerkor}/devel.spacy
       - corpus/${vars.nerkor}/test.spacy
+
   - name: train
     help: "Train ${vars.treebank}"
     script:
-      - python -m spacy train configs/${vars.config}.cfg --output training/${vars.treebank} --gpu-id ${vars.gpu} --paths.train corpus/${vars.treebank}/train.spacy --paths.dev corpus/${vars.treebank}/dev.spacy --nlp.lang=${vars.lang}
+      - >-
+        python -m spacy train configs/${vars.config}.cfg --output training/${vars.nerkor}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --paths.train corpus/${vars.nerkor}/train.spacy --paths.dev corpus/${vars.nerkor}/devel.spacy
     deps:
-      - corpus/${vars.treebank}/train.spacy
-      - corpus/${vars.treebank}/dev.spacy
+      - corpus/${vars.nerkor}/train.spacy
+      - corpus/${vars.nerkor}/devel.spacy
       - configs/${vars.config}.cfg
     outputs:
-      - training/${vars.treebank}/model-best
+      - training/${vars.nerkor}/model-best
 
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"

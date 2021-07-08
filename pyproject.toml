@@ -7,7 +7,7 @@ license = "AGPL-3.0"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-spacy = "~3.0.5"
+spacy = "^3.0.6"
 lemmy = "^2.1.0"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"

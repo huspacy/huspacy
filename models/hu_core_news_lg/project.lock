@@ -1,0 +1,29 @@
+preprocess:
+  cmd: python -m spacy run preprocess
+  script:
+    - mkdir -p corpus/UD_Hungarian-Szeged
+    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      corpus/UD_Hungarian-Szeged/ --converter conllu --n-sents 10 --merge-subtokens
+    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu corpus/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      corpus/UD_Hungarian-Szeged/ --converter conllu --n-sents 10 --merge-subtokens
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy corpus/UD_Hungarian-Szeged/train.spacy
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy corpus/UD_Hungarian-Szeged/dev.spacy
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy corpus/UD_Hungarian-Szeged/test.spacy
+  deps:
+    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: 4ed9342cd0e592d98c8463361714e259
+    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: ffdd1d174b6c77aaa2a6046ed7002995
+    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: 82df15045e5e5bc159845185e5f2eef6
+  outs:
+    - path: corpus/UD_Hungarian-Szeged/train.spacy
+      md5: ab4b0cebdfcf0de79cb0ab0a62c29cb4
+    - path: corpus/UD_Hungarian-Szeged/dev.spacy
+      md5: ee7fff1c259982262ad3b640043a6d77
+    - path: corpus/UD_Hungarian-Szeged/test.spacy
+      md5: 15e9e32f81424d497f941e801f5ffbee
+  spacy_version: 3.0.6
+  spacy_git_version: df3444421

@@ -82,3 +82,7 @@ target/
 
 # Virtual envs
 .venv/
+
+/models/*/assets
+/models/*/corpus
+
