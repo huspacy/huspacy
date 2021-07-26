@@ -8,12 +8,14 @@ vars:
   lang: "hu"
   treebank: "UD_Hungarian-Szeged"
   nerkor: "NerKor"
+  hunnerwiki: "hunNERwiki"
+  szegedner: "SzegedNER"
   ud_train_name: "hu_szeged-ud-train"
   ud_dev_name: "hu_szeged-ud-dev"
   ud_test_name: "hu_szeged-ud-test"
   package_name: "hu_core_web_lg"
   package_version: "0.1.0"
-  gpu: -1
+  gpu: 2
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -21,11 +23,13 @@ vars:
 directories: ["assets", "corpus", "training", "metrics", "configs", "packages"]
 
 assets:
+  # Universal dependencies
   - dest: "assets/${vars.treebank}"
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
       branch: master
       path: ""
+  # NerKor
   - dest: "assets/${vars.nerkor}"
     git:
       repo: https://github.com/nytud/NYTK-NerKor
@@ -33,6 +37,19 @@ assets:
       branch: main
 #      branch: patch-1
       path: data
+  # hunNERwiki
+  - dest: "assets/${vars.hunnerwiki}/huwiki.1.ner.tsv.gz"
+    url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.1.ner.tsv.gz
+  - dest: "assets/${vars.hunnerwiki}/huwiki.2.ner.tsv.gz"
+    url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.2.ner.tsv.gz
+  - dest: "assets/${vars.hunnerwiki}/huwiki.3.ner.tsv.gz"
+    url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.3.ner.tsv.gz
+  - dest: "assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz"
+    url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.4.ner.tsv.gz
+  # SzegedNER
+  #- dest: "assets/${vars.szegedner}/criminal_NER.zip"
+  #  url: http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/criminal_NER.zip
+  # Word embeddings
   - dest: "assets/vectors/webcorpuswiki.word2vec.bz2"
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
@@ -48,7 +65,7 @@ commands:
   - name: vectors
     help: "Convert vectors"
     script:
-      - bash -c '/bin/bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
+      - bash -c 'bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
       - python -m spacy init vectors hu assets/vectors/webcorpuswiki.word2vec.txt assets/vectors/webcorpuswiki.word2vec.vec
     deps:
       - assets/vectors/webcorpuswiki.word2vec.bz2
@@ -59,11 +76,17 @@ commands:
   - name: preprocess
     help: "Convert the data to spaCy's format"
     script:
+      # Universal dependencies
       - mkdir -p corpus/${vars.treebank}
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_train_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_dev_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_test_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
 
+      - mv corpus/${vars.treebank}/${vars.ud_train_name}.spacy corpus/${vars.treebank}/train.spacy
+      - mv corpus/${vars.treebank}/${vars.ud_dev_name}.spacy corpus/${vars.treebank}/dev.spacy
+      - mv corpus/${vars.treebank}/${vars.ud_test_name}.spacy corpus/${vars.treebank}/test.spacy
+
+      # NerKor
       - mkdir -p corpus/${vars.nerkor}
       - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
       - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
@@ -72,15 +95,22 @@ commands:
       - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
       - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
       - python -m spacy convert assets/${vars.nerkor}/test.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
+      
+      # hunNERwiki
+      - mkdir -p corpus/${vars.hunnerwiki}
+      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.[12].ner.tsv.gz  assets/${vars.hunnerwiki}/train.iob'
+      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.3.ner.tsv.gz  assets/${vars.hunnerwiki}/devel.iob'
+      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz  assets/${vars.hunnerwiki}/test.iob'      
 
-      - mv corpus/${vars.treebank}/${vars.ud_train_name}.spacy corpus/${vars.treebank}/train.spacy
-      - mv corpus/${vars.treebank}/${vars.ud_dev_name}.spacy corpus/${vars.treebank}/dev.spacy
-      - mv corpus/${vars.treebank}/${vars.ud_test_name}.spacy corpus/${vars.treebank}/test.spacy
+      - python -m spacy convert assets/${vars.hunnerwiki}/devel.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.hunnerwiki}/train.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.hunnerwiki}/test.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
     deps:
       - assets/${vars.treebank}/${vars.ud_train_name}.conllu
       - assets/${vars.treebank}/${vars.ud_dev_name}.conllu
       - assets/${vars.treebank}/${vars.ud_test_name}.conllu
       - assets/${vars.nerkor}/train-devel-test/
+      - assets/${vars.hunnerwiki}/
     outputs:
       - corpus/${vars.treebank}/train.spacy
       - corpus/${vars.treebank}/dev.spacy
@@ -89,20 +119,24 @@ commands:
       - corpus/${vars.nerkor}/train.spacy
       - corpus/${vars.nerkor}/devel.spacy
       - corpus/${vars.nerkor}/test.spacy
+      
+      - corpus/${vars.hunnerwiki}/train.spacy
+      - corpus/${vars.hunnerwiki}/devel.spacy
+      - corpus/${vars.hunnerwiki}/test.spacy
 
   - name: train
     help: "Train ${vars.treebank}"
     script:
       - >-
-        python -m spacy train configs/${vars.config}.cfg --output training/${vars.nerkor}
+        python -m spacy train configs/${vars.config}.cfg --output training/${vars.hunnerwiki}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
-          --paths.train corpus/${vars.nerkor}/train.spacy --paths.dev corpus/${vars.nerkor}/devel.spacy
+          --paths.train corpus/${vars.nerkor}/train.spacy --paths.dev corpus/${vars.hunnerwiki}/devel.spacy
     deps:
-      - corpus/${vars.nerkor}/train.spacy
-      - corpus/${vars.nerkor}/devel.spacy
+      - corpus/${vars.hunnerwiki}/train.spacy
+      - corpus/${vars.hunnerwiki}/devel.spacy
       - configs/${vars.config}.cfg
     outputs:
-      - training/${vars.nerkor}/model-best
+      - training/${vars.hunnerwiki}/model-best
 
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
