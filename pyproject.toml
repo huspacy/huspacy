@@ -4,18 +4,27 @@ version = "0.4.0"
 description = "Hungarian models for spaCy"
 authors = ["Gyorgy Orosz <gyorgy@orosz.link>"]
 license = "MIT"
+packages = [
+    {include = "src/cli"},
+]
+
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.7.1"
 spacy = "^3.1.0"
 lemmy = "^2.1.0"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
 spacy-huggingface-hub = "^0.0.2"
+conllu = "^4.4"
+pandas = "^1.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 poethepoet = "^0.10.0"
+
+[tool.poetry.scripts]
+train-lemmy = 'cli.train_lemmy:app'
 
 [build-system]
 requires = ["poetry>=0.12"]
