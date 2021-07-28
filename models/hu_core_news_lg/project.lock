@@ -40,3 +40,21 @@ vectors:
       md5: 2da0f7354b5a7dc80256c2ccac42cbe1
   spacy_version: 3.1.0
   spacy_git_version: 530b5d72f
+train:
+  cmd: python -m spacy run train
+  script:
+    - python -m spacy train configs/default.cfg --output training/UD_Hungarian-Szeged
+      --gpu-id -1 --paths.train corpus/UD_Hungarian-Szeged/train.spacy --paths.dev
+      corpus/UD_Hungarian-Szeged/dev.spacy --nlp.lang=hu
+  deps:
+    - path: corpus/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: corpus/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: configs/default.cfg
+      md5: a0f8d844febee7b5fd82d9449c29409b
+  outs:
+    - path: training/UD_Hungarian-Szeged/model-best
+      md5: dd846d28a815646ec1b3c600dc7f0574
+  spacy_version: 3.1.0
+  spacy_git_version: 530b5d72f

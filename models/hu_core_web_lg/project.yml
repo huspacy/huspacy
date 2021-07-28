@@ -65,9 +65,9 @@ commands:
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_test_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
 
       - mkdir -p corpus/${vars.nerkor}
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
+      - 'bash ../../scripts/convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
+      - 'bash ../../scripts/convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
+      - 'bash ../../scripts/convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
 
       - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
       - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
