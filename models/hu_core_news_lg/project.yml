@@ -36,10 +36,10 @@ assets:
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
   - dest: "assets/${vars.nerkor}"
     git:
-      repo: https://github.com/nytud/NYTK-NerKor
-#      repo: https://github.com/oroszgy/NYTK-NerKor
-      branch: main
-#      branch: patch-1
+#      repo: https://github.com/nytud/NYTK-NerKor
+      repo: https://github.com/oroszgy/NYTK-NerKor
+#      branch: main
+      branch: dev
       path: data
 
 workflows:

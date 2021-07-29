@@ -39,7 +39,7 @@ def evaluate(lemmatizer: Lemmatizer, X: TaggedWords, y: Lemmata):
         predicted = lemmatizer.lemmatize(word_class, full_form)
         total += 1
         if len(predicted) > 1:
-            ambiguous_words.append((full_form, word_class, predicted))
+            ambiguous_words.append((full_form, word_class, tuple(sorted(predicted))))
             ambiguous += 1
         elif predicted[0] == target:
             correct += 1
