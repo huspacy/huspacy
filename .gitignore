@@ -83,6 +83,7 @@ target/
 # Virtual envs
 .venv/
 
-/models/*/assets
-/models/*/corpus
-
+/data
+/models
+/packages
+/hu_*/metrics

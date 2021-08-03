@@ -1,14 +1,12 @@
 import json
-from collections import defaultdict, Counter
+from collections import Counter
 from pathlib import Path
-from typing import Tuple, List, Dict
+from typing import Tuple, List
 
 import conllu
-import pandas as pd
 import typer
 from conllu import TokenList
 from lemmy import Lemmatizer
-from tqdm import tqdm
 
 app = typer.Typer()
 
@@ -19,12 +17,13 @@ Lemmata = List[str]
 def read_conllu_data_for_lemmy(path: Path) -> Tuple[TaggedWords, Lemmata]:
     with path.open() as f:
         sentences: List[TokenList] = conllu.parse(f.read().strip())
-        df = pd.DataFrame(tok for sent in tqdm(sentences, desc=str(path.name), total=len(sentences)) for tok in sent)
+
         X = [
-            (word_class, full_form)
-            for _, (word_class, full_form) in df[["upos", "form"]].iterrows()
+            (token["upos"], token["form"])
+            for sentence in sentences
+            for token in sentence
         ]
-        y = [lemma for _, (lemma,) in df[["lemma"]].iterrows()]
+        y = [token["lemma"] for sentence in sentences for token in sentence]
         return X, y
 
 
@@ -51,8 +50,9 @@ def evaluate(lemmatizer: Lemmatizer, X: TaggedWords, y: Lemmata):
     print("ambiguous%:", ambiguous / total)
     print("ambiguous + accuracy:", (ambiguous + correct) / total)
 
-    for k,v in Counter(ambiguous_words).most_common(50):
-        print(k,v)
+    for k, v in Counter(ambiguous_words).most_common(50):
+        print(k, v)
+
 
 @app.command()
 def main(train_path: Path, test_path: Path, model_path: Path):
@@ -64,7 +64,7 @@ def main(train_path: Path, test_path: Path, model_path: Path):
     lemmatizer.fit(X_train, y_train)
     evaluate(lemmatizer, X_test, y_test)
     with open(model_path, "w") as f:
-        json.dump(lemmatizer.rules, f)
+        json.dump(lemmatizer.rule_repo, f)
 
 
 if __name__ == "__main__":
