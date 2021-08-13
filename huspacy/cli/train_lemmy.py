@@ -64,7 +64,7 @@ def main(train_path: Path, test_path: Path, model_path: Path):
     lemmatizer.fit(X_train, y_train)
     evaluate(lemmatizer, X_test, y_test)
     with open(model_path, "w") as f:
-        json.dump(lemmatizer.rule_repo, f)
+        json.dump(lemmatizer._rule_repo, f)
 
 
 if __name__ == "__main__":
