@@ -19,7 +19,7 @@ vars:
   test_name: "hu_szeged-ud-test"
   package_name: "ud_hu_szeged"
   package_version: "0.1.0"
-  gpu: -1
+  gpu: 1
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -46,7 +46,7 @@ commands:
   - name: vectors
     help: "Convert vectors"
     script:
-      - "bash -c '/bin/bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'"
+      - "bash -c 'bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'"
       - "python -m spacy init vectors hu assets/vectors/webcorpuswiki.word2vec.txt assets/vectors/webcorpuswiki.word2vec.vec"
     deps:
       - assets/vectors/webcorpuswiki.word2vec.bz2

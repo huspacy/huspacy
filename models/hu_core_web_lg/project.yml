@@ -10,12 +10,14 @@ vars:
   nerkor: "NerKor"
   hunnerwiki: "hunNERwiki"
   szegedner: "SzegedNER"
+  ner_merged: "ner_merged"
   ud_train_name: "hu_szeged-ud-train"
   ud_dev_name: "hu_szeged-ud-dev"
   ud_test_name: "hu_szeged-ud-test"
   package_name: "hu_core_web_lg"
   package_version: "0.1.0"
-  gpu: 2
+  gpu: -1
+  corpus: ${vars.ner_merged}
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -29,6 +31,7 @@ assets:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
       branch: master
       path: ""
+
   # NerKor
   - dest: "assets/${vars.nerkor}"
     git:
@@ -37,6 +40,7 @@ assets:
       branch: main
 #      branch: patch-1
       path: data
+
   # hunNERwiki
   - dest: "assets/${vars.hunnerwiki}/huwiki.1.ner.tsv.gz"
     url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.1.ner.tsv.gz
@@ -46,9 +50,13 @@ assets:
     url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.3.ner.tsv.gz
   - dest: "assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz"
     url: http://hlt.sztaki.hu/resources/hunnerwiki/huwiki.4.ner.tsv.gz
+  
   # SzegedNER
-  #- dest: "assets/${vars.szegedner}/criminal_NER.zip"
-  #  url: http://rgai.inf.u-szeged.hu/project/nlp/download/corpora/criminal_NER.zip
+  - dest: "assets/${vars.szegedner}/business_NER.zip"
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/business_NER.zip
+  - dest: "assets/${vars.szegedner}/criminal_NER.zip"
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/criminal_NER.zip
+    
   # Word embeddings
   - dest: "assets/vectors/webcorpuswiki.word2vec.bz2"
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
@@ -56,7 +64,11 @@ assets:
 workflows:
   all:
     - vectors
-    - preprocess
+    - preprocess_ud
+    - preprocess_nerkor
+    - preprocess_hunnerwiki
+    - preprocess_szegedner
+    - preprocess_merge
     - train
     - evaluate
     - package
@@ -72,11 +84,9 @@ commands:
     outputs:
       - assets/vectors/webcorpuswiki.word2vec.vec
 
-
-  - name: preprocess
-    help: "Convert the data to spaCy's format"
+  - name: preprocess_ud
+    help: "Convert the Universal Dependencies data to spaCy's format"
     script:
-      # Universal dependencies
       - mkdir -p corpus/${vars.treebank}
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_train_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
       - python -m spacy convert assets/${vars.treebank}/${vars.ud_dev_name}.conllu corpus/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens
@@ -85,58 +95,137 @@ commands:
       - mv corpus/${vars.treebank}/${vars.ud_train_name}.spacy corpus/${vars.treebank}/train.spacy
       - mv corpus/${vars.treebank}/${vars.ud_dev_name}.spacy corpus/${vars.treebank}/dev.spacy
       - mv corpus/${vars.treebank}/${vars.ud_test_name}.spacy corpus/${vars.treebank}/test.spacy
-
-      # NerKor
-      - mkdir -p corpus/${vars.nerkor}
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
-      - './convert2conll.sh ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
-
-      - python -m spacy convert assets/${vars.nerkor}/devel.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
-      - python -m spacy convert assets/${vars.nerkor}/train.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
-      - python -m spacy convert assets/${vars.nerkor}/test.conllup corpus/${vars.nerkor}/ --converter conllu --n-sents 10
-      
-      # hunNERwiki
-      - mkdir -p corpus/${vars.hunnerwiki}
-      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.[12].ner.tsv.gz  assets/${vars.hunnerwiki}/train.iob'
-      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.3.ner.tsv.gz  assets/${vars.hunnerwiki}/devel.iob'
-      - './convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz  assets/${vars.hunnerwiki}/test.iob'      
-
-      - python -m spacy convert assets/${vars.hunnerwiki}/devel.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
-      - python -m spacy convert assets/${vars.hunnerwiki}/train.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
-      - python -m spacy convert assets/${vars.hunnerwiki}/test.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+          
     deps:
       - assets/${vars.treebank}/${vars.ud_train_name}.conllu
       - assets/${vars.treebank}/${vars.ud_dev_name}.conllu
       - assets/${vars.treebank}/${vars.ud_test_name}.conllu
-      - assets/${vars.nerkor}/train-devel-test/
-      - assets/${vars.hunnerwiki}/
     outputs:
       - corpus/${vars.treebank}/train.spacy
       - corpus/${vars.treebank}/dev.spacy
       - corpus/${vars.treebank}/test.spacy
 
+  - name: preprocess_nerkor
+    help: "Convert the NerKor data to spaCy's format"
+    script:
+      - mkdir -p corpus/${vars.nerkor}
+      - 'python ../../huspacy/cli/convert2conllu.py ./assets/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup  assets/${vars.nerkor}/devel.conllup'
+      - 'python ../../huspacy/cli/convert2conllu.py ./assets/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup  assets/${vars.nerkor}/train.conllup'
+      - 'python ../../huspacy/cli/convert2conllu.py ./assets/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup  assets/${vars.nerkor}/test.conllup'
+      
+      - '../../huspacy/cli/scripts/convert_nerkor2iob.sh ./assets/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  assets/${vars.nerkor}/devel.iob'
+      - '../../huspacy/cli/scripts/convert_nerkor2iob.sh ./assets/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  assets/${vars.nerkor}/train.iob'
+      - '../../huspacy/cli/scripts/convert_nerkor2iob.sh ./assets/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  assets/${vars.nerkor}/test.iob'
+      
+      - python -m spacy convert assets/${vars.nerkor}/devel.iob corpus/${vars.nerkor}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.nerkor}/train.iob corpus/${vars.nerkor}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.nerkor}/test.iob corpus/${vars.nerkor}/ --converter iob --n-sents 10
+          
+    deps:
+      - assets/${vars.nerkor}/
+    outputs:
       - corpus/${vars.nerkor}/train.spacy
       - corpus/${vars.nerkor}/devel.spacy
       - corpus/${vars.nerkor}/test.spacy
-      
+
+  - name: preprocess_hunnerwiki
+    help: "Convert the hunNERwiki data to spaCy's format"
+    script:
+      - mkdir -p corpus/${vars.hunnerwiki}
+      - '../../huspacy/cli/scripts/convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.[12].ner.tsv.gz  assets/${vars.hunnerwiki}/train.iob'
+      - '../../huspacy/cli/scripts/convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.3.ner.tsv.gz  assets/${vars.hunnerwiki}/devel.iob'
+      - '../../huspacy/cli/scripts/convert_hunerwiki2conll.sh ./assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz  assets/${vars.hunnerwiki}/test.iob'      
+
+      - python -m spacy convert assets/${vars.hunnerwiki}/devel.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.hunnerwiki}/train.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.hunnerwiki}/test.iob corpus/${vars.hunnerwiki}/ --converter iob --n-sents 10
+          
+    deps:
+      - assets/${vars.hunnerwiki}/huwiki.1.ner.tsv.gz
+      - assets/${vars.hunnerwiki}/huwiki.2.ner.tsv.gz
+      - assets/${vars.hunnerwiki}/huwiki.3.ner.tsv.gz
+      - assets/${vars.hunnerwiki}/huwiki.4.ner.tsv.gz
+    outputs:
       - corpus/${vars.hunnerwiki}/train.spacy
       - corpus/${vars.hunnerwiki}/devel.spacy
       - corpus/${vars.hunnerwiki}/test.spacy
+
+  - name: preprocess_szegedner
+    help: "Convert the SzegedNER data to spaCy's format"
+    script:
+      - mkdir -p corpus/${vars.szegedner}
+      - unzip -o assets/${vars.szegedner}/business_NER.zip -d assets/${vars.szegedner}/
+      - bash -c 'iconv -f iso-8859-2 --t utf8 assets/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > assets/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
+      
+      - unzip -o assets/${vars.szegedner}/criminal_NER.zip -d assets/${vars.szegedner}/
+      - bash -c 'iconv -f iso-8859-2 --t utf8 assets/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > assets/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
+      
+      - python ../../huspacy/cli/split_szeged_ner.py assets/${vars.szegedner}/hun_business_ner_corpus_utf8.txt assets/${vars.szegedner}/hun_business_train.iob1 assets/${vars.szegedner}/hun_business_devel.iob1 assets/${vars.szegedner}/hun_business_test.iob1
+      - python ../../huspacy/cli/split_szeged_ner.py assets/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt assets/${vars.szegedner}/hun_criminal_train.iob1 assets/${vars.szegedner}/hun_criminal_devel.iob1 assets/${vars.szegedner}/hun_criminal_test.iob1
+      
+      - bash -c 'cat assets/${vars.szegedner}/hun_*_train.iob1 > assets/${vars.szegedner}/train.iob1'
+      - bash -c 'cat assets/${vars.szegedner}/hun_*_devel.iob1 > assets/${vars.szegedner}/devel.iob1'
+      - bash -c 'cat assets/${vars.szegedner}/hun_*_test.iob1 > assets/${vars.szegedner}/test.iob1'
+      
+      - '../../huspacy/cli/scripts/convert_iob1_2_iob2.sh assets/${vars.szegedner}/train.iob1 assets/${vars.szegedner}/train.iob'
+      - '../../huspacy/cli/scripts/convert_iob1_2_iob2.sh assets/${vars.szegedner}/devel.iob1 assets/${vars.szegedner}/devel.iob'
+      - '../../huspacy/cli/scripts/convert_iob1_2_iob2.sh assets/${vars.szegedner}/test.iob1 assets/${vars.szegedner}/test.iob'
+      
+      - python -m spacy convert assets/${vars.szegedner}/devel.iob corpus/${vars.szegedner}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.szegedner}/train.iob corpus/${vars.szegedner}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.szegedner}/test.iob corpus/${vars.szegedner}/ --converter iob --n-sents 10
+    
+    deps:
+      - assets/${vars.szegedner}/business_NER.zip
+      - assets/${vars.szegedner}/criminal_NER.zip
+    outputs:
+      - corpus/${vars.szegedner}/train.spacy
+      - corpus/${vars.szegedner}/devel.spacy
+      - corpus/${vars.szegedner}/test.spacy
+      
+  - name: preprocess_merge
+    help: "Cancatenate IOB datasets to a new dataset"
+    script:
+      - mkdir -p assets/${vars.ner_merged}
+      - mkdir -p corpus/${vars.ner_merged}
+
+      - bash -c 'cat assets/${vars.szegedner}/train.iob assets/${vars.hunnerwiki}/train.iob assets/${vars.hunnerwiki}/test.iob assets/${vars.hunnerwiki}/devel.iob assets/${vars.nerkor}/train.iob assets/${vars.nerkor}/test.iob assets/${vars.nerkor}/devel.iob > assets/${vars.ner_merged}/train.iob'
+      - bash -c 'cp assets/${vars.szegedner}/devel.iob assets/${vars.ner_merged}/devel.iob'
+      - bash -c 'cp assets/${vars.szegedner}/test.iob assets/${vars.ner_merged}/test.iob'
+      
+      - python -m spacy convert assets/${vars.ner_merged}/devel.iob corpus/${vars.ner_merged}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.ner_merged}/train.iob corpus/${vars.ner_merged}/ --converter iob --n-sents 10
+      - python -m spacy convert assets/${vars.ner_merged}/test.iob corpus/${vars.ner_merged}/ --converter iob --n-sents 10
+    
+    deps:
+      - assets/${vars.szegedner}/train.iob
+      - assets/${vars.hunnerwiki}/train.iob
+      - assets/${vars.hunnerwiki}/test.iob
+      - assets/${vars.hunnerwiki}/devel.iob
+      - assets/${vars.nerkor}/train.iob
+      - assets/${vars.nerkor}/test.iob
+      - assets/${vars.nerkor}/devel.iob
+      - assets/${vars.szegedner}/devel.iob
+      - assets/${vars.szegedner}/test.iob
+      
+    outputs:
+      - corpus/${vars.ner_merged}/train.spacy
+      - corpus/${vars.ner_merged}/devel.spacy
+      - corpus/${vars.ner_merged}/test.spacy
 
   - name: train
     help: "Train ${vars.treebank}"
     script:
       - >-
-        python -m spacy train configs/${vars.config}.cfg --output training/${vars.hunnerwiki}
+        python -m spacy train configs/${vars.config}.cfg --output training/${vars.corpus}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
-          --paths.train corpus/${vars.nerkor}/train.spacy --paths.dev corpus/${vars.hunnerwiki}/devel.spacy
+          --paths.train corpus/${vars.corpus}/train.spacy --paths.dev corpus/${vars.corpus}/devel.spacy
     deps:
-      - corpus/${vars.hunnerwiki}/train.spacy
-      - corpus/${vars.hunnerwiki}/devel.spacy
+      - corpus/${vars.corpus}/train.spacy
+      - corpus/${vars.corpus}/devel.spacy
       - configs/${vars.config}.cfg
     outputs:
-      - training/${vars.hunnerwiki}/model-best
+      - training/${vars.corpus}/model-best
 
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
