@@ -68,6 +68,12 @@ preprocess_nerkor:
       ../data/processed/NerKor/train.conllup
     - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
       ../data/processed/NerKor/test.conllup
+    - python -m spacy convert ../data/processed/NerKor/train.conllup ../data/processed/NerKor
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/NerKor/dev.conllup ../data/processed/NerKor
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/NerKor/test.conllup ../data/processed/NerKor
+      --converter conllu --n-sents 10
   deps:
     - path: ../data/raw/NerKor
       md5: b950c6328675585a8377a7ef04ef6dd3
@@ -78,6 +84,12 @@ preprocess_nerkor:
       md5: f01c64125d2ccea97b8725f23f5814af
     - path: ../data/processed/NerKor/test.conllup
       md5: 7d2c87db8693253457a995493c94c302
+    - path: ../data/processed/NerKor/train.spacy
+      md5: 25903e17770b9a155eadc9c1610ef7e4
+    - path: ../data/processed/NerKor/dev.spacy
+      md5: 329ad42262adab902e798f1d62ae4c45
+    - path: ../data/processed/NerKor/test.spacy
+      md5: e0638600c69e1b357c58177c92f4cce1
   spacy_version: 3.1.0
   spacy_git_version: 530b5d72f
 train_lemmatizer:
@@ -88,5 +100,19 @@ train_lemmatizer:
     - lemmy evaluate ../models/lemmy-0.1.0.bin ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
   deps: []
   outs: []
+  spacy_version: 3.1.0
+  spacy_git_version: 530b5d72f
+convert_vectors:
+  cmd: python -m spacy run convert_vectors
+  script:
+    - bash -c '/bin/bzcat ../data/external/webcorpuswiki.word2vec.bz2 > ../data/external/webcorpuswiki.word2vec.txt'
+    - python -m spacy init vectors hu ../data/external/webcorpuswiki.word2vec.txt
+      ../data/external/webcorpuswiki.word2vec.vec
+  deps:
+    - path: ../data/external/webcorpuswiki.word2vec.bz2
+      md5: 4a3055c54a6f9a5f806ba09b21cb4583
+  outs:
+    - path: ../data/external/webcorpuswiki.word2vec.vec
+      md5: 2da0f7354b5a7dc80256c2ccac42cbe1
   spacy_version: 3.1.0
   spacy_git_version: 530b5d72f

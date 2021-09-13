@@ -19,8 +19,9 @@ This repository contains the building blocks and the releases of Hungarian model
 ├── hu_core_news_lg    -- Spacy 3.x project files for building a model for news texts
 ├── hu_core_web_lg     -- Spacy 3.x project files for building a model for web texts
 ├── huspacy            -- Source package
-│   └── cli            -- Command line scripts
+│   └── cli            -- Command line scripts (Python)
 ├── models             -- Trained models and related metadata
+├── scripts            -- Bash scripts
 ├── LICENSE            -- License file
 ├── poetry.lock        -- Locked poetry dependencies files
 ├── poetry.toml        -- Poetry configurations

@@ -87,3 +87,4 @@ target/
 /models
 /packages
 /hu_*/metrics
+hu_core_news_lg/wandb

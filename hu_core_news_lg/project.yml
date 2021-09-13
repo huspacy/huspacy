@@ -26,9 +26,13 @@ vars:
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg
 
-  config: default
+  parser_config: parser
+  ner_config: ner
   gpu: -1
 
+#TODO: remove GPU settings
+#TODO: remove WAND options settings
+#TODO: provide examples for WANDB and GPU settings
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -58,6 +62,7 @@ workflows:
     - preprocess_nerkor
     - train_lemmatizer
     - train_parser
+    - train_ner
     - evaluate
     - package
     - push
@@ -111,18 +116,24 @@ commands:
           ${vars.processed_data_path}/${vars.nerkor}/train.conllup"
       - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
+
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.conllup ${vars.processed_data_path}/${vars.nerkor} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.conllup ${vars.processed_data_path}/${vars.nerkor} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test.conllup ${vars.processed_data_path}/${vars.nerkor} --converter conllu --n-sents 10
     deps:
       - ${vars.raw_data_path}/${vars.nerkor}
     outputs:
       - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
       - ${vars.processed_data_path}/${vars.nerkor}/dev.conllup
       - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
+      - ${vars.processed_data_path}/${vars.nerkor}/train.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
 
   - name: train_lemmatizer
     help: "Train the lemmatizer"
     script:
       - "lemmy train ${vars.processed_data_path}/${vars.nerkor}/train.conllup ${vars.models_path}/lemmy-${vars.package_version}.bin"
-#      - "lemmy train ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.models_path}/lemmy-${vars.package_version}.bin"
       - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
       - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
     deps:
@@ -133,10 +144,10 @@ commands:
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
 
   - name: train_parser
-    help: "Train ${vars.treebank}"
+    help: "Train the parser/tagger"
     script:
       - "bash -c 'WANDB_ENTITY=${vars.wandb_entity} WANDB_PROJECT=${vars.wandb_project}
-          python -m spacy train configs/${vars.config}.cfg
+          python -m spacy train configs/${vars.parser_config}.cfg
             --output ${vars.models_path}/${vars.package_name}-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
@@ -145,9 +156,25 @@ commands:
     deps:
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-      - configs/${vars.config}.cfg
+      - configs/${vars.parser_config}.cfg
     outputs:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}/model-best
+
+  - name: train_ner
+    help: "Train the NER model"
+    script:
+      - "python -m spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          --paths.train ${vars.processed_data_path}/${vars.nerkor}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.nerkor}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.nerkor}/train.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
 
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
