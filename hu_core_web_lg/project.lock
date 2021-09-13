@@ -8,6 +8,9 @@ preprocess:
       --converter conllu --n-sents 10 --merge-subtokens
     - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
       corpus/UD_Hungarian-Szeged/ --converter conllu --n-sents 10 --merge-subtokens
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy corpus/UD_Hungarian-Szeged/train.spacy
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy corpus/UD_Hungarian-Szeged/dev.spacy
+    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy corpus/UD_Hungarian-Szeged/test.spacy
     - mkdir -p corpus/NerKor
     - ./convert2conll.sh ./assets/NerKor/train-devel-test/devel/*/morph/*.conllup  assets/NerKor/devel.conllup
     - ./convert2conll.sh ./assets/NerKor/train-devel-test/train/*/morph/*.conllup  assets/NerKor/train.conllup
@@ -18,43 +21,58 @@ preprocess:
       conllu --n-sents 10
     - python -m spacy convert assets/NerKor/test.conllup corpus/NerKor/ --converter
       conllu --n-sents 10
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy corpus/UD_Hungarian-Szeged/train.spacy
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy corpus/UD_Hungarian-Szeged/dev.spacy
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy corpus/UD_Hungarian-Szeged/test.spacy
+    - mkdir -p corpus/hunNERwiki
+    - ./convert_hunerwiki2conll.sh ./assets/hunNERwiki/huwiki.[12].ner.tsv.gz  assets/hunNERwiki/train.iob
+    - ./convert_hunerwiki2conll.sh ./assets/hunNERwiki/huwiki.3.ner.tsv.gz  assets/hunNERwiki/devel.iob
+    - ./convert_hunerwiki2conll.sh ./assets/hunNERwiki/huwiki.4.ner.tsv.gz  assets/hunNERwiki/test.iob
+    - python -m spacy convert assets/hunNERwiki/devel.iob corpus/hunNERwiki/ --converter
+      iob --n-sents 10
+    - python -m spacy convert assets/hunNERwiki/train.iob corpus/hunNERwiki/ --converter
+      iob --n-sents 10
+    - python -m spacy convert assets/hunNERwiki/test.iob corpus/hunNERwiki/ --converter
+      iob --n-sents 10
   deps:
     - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
-      md5: 4ed9342cd0e592d98c8463361714e259
+      md5: e8581e733642908c106841fc1469ae89
     - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
-      md5: ffdd1d174b6c77aaa2a6046ed7002995
+      md5: 80ff7f86872655c1d7e3d5764387bc46
     - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-      md5: 82df15045e5e5bc159845185e5f2eef6
+      md5: dc824da852ac546914c331b58b0eb8f8
     - path: assets/NerKor/train-devel-test/
-      md5: d3ccdfed3accd00d614cdd5faa99d6d1
+      md5: b20a5a999c676887f363412e6fca6c97
+    - path: assets/hunNERwiki/
+      md5: c9991f770bcd15c2d240a9b560e5831d
   outs:
     - path: corpus/UD_Hungarian-Szeged/train.spacy
-      md5: ab4b0cebdfcf0de79cb0ab0a62c29cb4
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
     - path: corpus/UD_Hungarian-Szeged/dev.spacy
-      md5: ee7fff1c259982262ad3b640043a6d77
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: corpus/UD_Hungarian-Szeged/test.spacy
-      md5: 15e9e32f81424d497f941e801f5ffbee
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
     - path: corpus/NerKor/train.spacy
-      md5: 2fe8f7fde274508a90d7856f7d586001
+      md5: 91c8705f8b3410f6a0a716e626c954a2
     - path: corpus/NerKor/devel.spacy
-      md5: 329ad42262adab902e798f1d62ae4c45
+      md5: 669ca834a57d27304c9103ee14c8636c
     - path: corpus/NerKor/test.spacy
-      md5: e0638600c69e1b357c58177c92f4cce1
-  spacy_version: 3.0.6
-  spacy_git_version: df3444421
+      md5: 8bd57e5d6bf1dd8670da2327e175757c
+    - path: corpus/hunNERwiki/train.spacy
+      md5: 41358faa49dcc8c8c5856cf5ef384ff1
+    - path: corpus/hunNERwiki/devel.spacy
+      md5: 6b88d7413042701955b80c37f77cf38e
+    - path: corpus/hunNERwiki/test.spacy
+      md5: 8d709b406ced62ed7a25b880c34d89e8
+  spacy_version: 3.1.1
+  spacy_git_version: ffaead8fe
 vectors:
   cmd: python -m spacy run vectors
   script:
-    - bash -c '/bin/bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
+    - bash -c 'bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
     - python -m spacy init vectors hu assets/vectors/webcorpuswiki.word2vec.txt assets/vectors/webcorpuswiki.word2vec.vec
   deps:
     - path: assets/vectors/webcorpuswiki.word2vec.bz2
       md5: 4a3055c54a6f9a5f806ba09b21cb4583
   outs:
     - path: assets/vectors/webcorpuswiki.word2vec.vec
-      md5: 4eee7839fabe60af6563d9332109d527
-  spacy_version: 3.0.6
-  spacy_git_version: df3444421
+      md5: 2da0f7354b5a7dc80256c2ccac42cbe1
+  spacy_version: 3.1.0
+  spacy_git_version: 530b5d72f
