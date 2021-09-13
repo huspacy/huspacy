@@ -12,7 +12,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.7.1"
 spacy = "3.1.0"
-lemmy = "^2.1.0"
+lemmy3 = "^3.0.0a"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
 spacy-huggingface-hub = "^0.0.2"
@@ -24,7 +24,6 @@ pytest = "^6.2.4"
 poethepoet = "^0.10.0"
 
 [tool.poetry.scripts]
-train-lemmy = 'huspacy.cli.train_lemmy:app'
 convert2conllu = 'huspacy.cli.convert_to_conllu:app'
 find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
 

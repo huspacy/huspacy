@@ -121,9 +121,16 @@ commands:
   - name: train_lemmatizer
     help: "Train the lemmatizer"
     script:
-      - "train-lemmy ${vars.processed_data_path}/${vars.nerkor}/train.conllup
-          ${vars.processed_data_path}/${vars.nerkor}/dev.conllup
-          ${vars.models_path}/${vars.models_path}/lemmy.${vars.package_name}-${vars.package_version}.json"
+      - "lemmy train ${vars.processed_data_path}/${vars.nerkor}/train.conllup ${vars.models_path}/lemmy-${vars.package_version}.bin"
+#      - "lemmy train ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.models_path}/lemmy-${vars.package_version}.bin"
+      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
+      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
+    deps:
+      - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
+      - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+    outputs:
+      - ${vars.models_path}/lemmy-${vars.package_version}.bin
 
   - name: train_parser
     help: "Train ${vars.treebank}"
