@@ -83,6 +83,9 @@ workflows:
     - convert_vectors
     - preprocess_ud
     - preprocess_nerkor
+    - preprocess_hunnerwiki
+    - preprocess_szegedner
+    - preprocess_merge
     - train_lemmatizer
     - train_parser
     - train_ner
