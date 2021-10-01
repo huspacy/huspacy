@@ -207,11 +207,12 @@ train_ner:
 package:
   cmd: python -m spacy run package
   script:
-    - python -m spacy package ../models/hu_core_news_lg-0.1.0/model-best ../packages
-      --build 'sdist, wheel' --name core_news_lg --version 0.1.0 --force
+    - python -m spacy package ../models/hu_core_news_lg-0.1.0 ../packages --build
+      'sdist, wheel' --code ../resources/package_init.py --name core_news_lg --version
+      0.1.0 --force
   deps:
-    - path: ../models/hu_core_news_lg-0.1.0/model-best
-      md5: 9cbb0818f2fb6a902dce1c9888b67b11
+    - path: ../models/hu_core_news_lg-0.1.0
+      md5: 0de3e2e41ff6151546932a9ec4ee51cd
   outs:
     - path: ../packages/hu_core_news_lg-0.1.0/dist/en_hu_core_news_lg-0.1.0.tar.gz
       md5: null
@@ -228,6 +229,8 @@ assemble:
       md5: 9cbb0818f2fb6a902dce1c9888b67b11
     - path: ../models/hu_core_news_lg-ner-0.1.0/model-best
       md5: 4da107fcb3db302bb8cd96f11a04e1a1
+    - path: ../resources/package_init.py
+      md5: 1b220fcec072b4061f56275083f0ffe4
   outs:
     - path: ../models/hu_core_news_lg-0.1.0/model-best
       md5: null

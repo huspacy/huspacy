@@ -23,7 +23,7 @@ vars:
   test_name: hu_szeged-ud-test
   nerkor: NerKor
 
-  package_init: ../resources/package_init.py
+  package_init: ../huspacy/components.py
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg

@@ -88,3 +88,4 @@ target/
 /packages
 /hu_*/metrics
 hu_core_news_lg/wandb
+.pytest_cache
