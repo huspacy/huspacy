@@ -219,3 +219,17 @@ package:
       md5: null
   spacy_version: 3.1.0
   spacy_git_version: 530b5d72f
+assemble:
+  cmd: python -m spacy run assemble
+  script:
+    - spacy assemble configs/assemble.cfg -c ../resources/package_init.py -VV ../models/hu_core_news_lg-0.1.0
+  deps:
+    - path: ../models/hu_core_news_lg-parser-0.1.0/model-best
+      md5: 9cbb0818f2fb6a902dce1c9888b67b11
+    - path: ../models/hu_core_news_lg-ner-0.1.0/model-best
+      md5: 4da107fcb3db302bb8cd96f11a04e1a1
+  outs:
+    - path: ../models/hu_core_news_lg-0.1.0/model-best
+      md5: null
+  spacy_version: 3.1.0
+  spacy_git_version: 530b5d72f
