@@ -31,7 +31,6 @@ vars:
   gpu: -1
 
 #TODO: remove GPU settings
-#TODO: remove WAND options settings
 #TODO: provide examples for WANDB and GPU settings
 
 # These are the directories that the project needs. The project CLI will make
@@ -47,8 +46,8 @@ assets:
 
   - dest: ${vars.raw_data_path}/${vars.nerkor}
     git:
-      repo: https://github.com/oroszgy/NYTK-NerKor
-      branch: dev
+      repo: https://github.com/nytud/NYTK-NerKor
+      branch: main
       path: data
 
   - dest: ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
@@ -57,7 +56,7 @@ assets:
 
 workflows:
   all:
-    - convert_vectors
+    - init_vectors
     - preprocess_ud
     - preprocess_nerkor
     - train_lemmatizer
@@ -68,8 +67,8 @@ workflows:
     - push
 
 commands:
-  - name: convert_vectors
-    help: "Convert vectors"
+  - name: init_vectors
+    help: "Initialize vectors"
 
     script:
       - "bash -c '/bin/bzcat ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
@@ -146,13 +145,12 @@ commands:
   - name: train_parser
     help: "Train the parser/tagger"
     script:
-      - "bash -c 'WANDB_ENTITY=${vars.wandb_entity} WANDB_PROJECT=${vars.wandb_project}
-          python -m spacy train configs/${vars.parser_config}.cfg
+      - "python -m spacy train configs/${vars.parser_config}.cfg
             --output ${vars.models_path}/${vars.package_name}-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
-            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy'"
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
     deps:
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy

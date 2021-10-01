@@ -17,7 +17,6 @@ This repository contains the building blocks and the releases of Hungarian model
 │   ├── processed      -- Processed data ready to feed spacy
 │   └── raw            -- Raw corpora being transformed
 ├── hu_core_news_lg    -- Spacy 3.x project files for building a model for news texts
-├── hu_core_web_lg     -- Spacy 3.x project files for building a model for web texts
 ├── huspacy            -- Source package
 │   └── cli            -- Command line scripts (Python)
 ├── models             -- Trained models and related metadata
