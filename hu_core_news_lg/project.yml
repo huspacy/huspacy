@@ -31,7 +31,7 @@ vars:
   assemble_config: assemble
   parser_config: parser
   ner_config: ner
-  gpu: -1
+  gpu: 0
 
 #TODO: remove GPU settings
 #TODO: provide examples for WANDB and GPU settings

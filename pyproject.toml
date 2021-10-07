@@ -29,7 +29,7 @@ convert2conllu = 'huspacy.cli.convert_to_conllu:app'
 find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
 
 [tool.poe.tasks]
-cuda92 = "python -m pip install 'spacy[cuda92]'"
+cuda112 = "python -m pip install 'spacy[cuda112]'"
 
 [build-system]
 requires = ["poetry>=1.1.10", "pip>=21.2.4"]
