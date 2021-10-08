@@ -142,7 +142,7 @@ commands:
     help: "Convert the NerKor data to spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.nerkor}"
-      - "convert2conllu ../conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
+      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/dev.conllup"
       - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/train.conllup"
@@ -227,13 +227,13 @@ commands:
 
 
   - name: preprocess_merge
-    help: "Cancatenate IOB datasets to a new dataset"
+    help: "Concatenate IOB datasets to a new dataset"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.ner_merged}
 
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob > ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
 
       - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
