@@ -29,6 +29,7 @@ poethepoet = "^0.10.0"
 convert2conllu = 'huspacy.cli.convert_to_conllu:app'
 split_szeged_ner = 'huspacy.cli.split_szeged_ner:app'
 find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
+merge-eval-results = 'huspacy.cli.merge_eval_jsons:app'
 
 [tool.poe.tasks]
 cuda112 = "python -m pip install 'spacy[cuda112]'"

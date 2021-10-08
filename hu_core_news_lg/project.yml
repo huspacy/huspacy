@@ -340,15 +340,29 @@ commands:
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
     script:
-      - "python -m spacy evaluate
-          ${vars.models_path}/${vars.package_name}-${vars.package_version}/model-best
-          ${vars.processed_data_path}/${vars.treebank}/test.spacy
-          --output ${vars.models_path}/${vars.package_name}-${vars.package_version}.json --gpu-id ${vars.gpu} -G"
+      # Intentionally using the CPU to measure tok/sec correctly
+      - "spacy evaluate
+            --code ${vars.package_init}
+            ${vars.models_path}/${vars.package_name}-${vars.package_version}
+            ${vars.processed_data_path}/${vars.treebank}/test.spacy
+            --output ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json"
+      - "spacy evaluate
+            --code ${vars.package_init}
+            ${vars.models_path}/${vars.package_name}-${vars.package_version}
+            ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+            --output ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
+      - "merge-eval-results
+            ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
+            ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
+            ${vars.models_path}/eval-${vars.package_name}-${vars.package_version}.json"
+
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
       - ${vars.processed_data_path}/${vars.treebank}/test.spacy
     outputs:
-      - "metrics/${vars.treebank}.json"
+      - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
+      - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
+      - ${vars.models_path}/eval-${vars.package_name}-${vars.package_version}.json
 
 
   - name: package
