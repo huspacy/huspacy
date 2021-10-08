@@ -224,9 +224,9 @@ commands:
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.ner_merged}
       
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob > ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
       
       - python -m spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
