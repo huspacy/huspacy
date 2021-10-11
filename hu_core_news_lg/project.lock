@@ -1,0 +1,13 @@
+publish:
+  cmd: python -m spacy run publish
+  script:
+    - huggingface-cli login
+    - spacy huggingface-hub push ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      --org spacy-hu --local-repo ../hub --msg "Update spacy pipeline to 0.1.0" --verbose
+    - huggingface-cli logout
+  deps:
+    - path: ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      md5: cd7a70c3e13d61fb14ce53a22b75d76f
+  outs: []
+  spacy_version: 3.1.3
+  spacy_git_version: 8bda39f08
