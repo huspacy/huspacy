@@ -22,6 +22,7 @@ vars:
   dev_name: hu_szeged-ud-dev
   test_name: hu_szeged-ud-test
   nerkor: NerKor
+  szegedcorpus: SzegedCorpus
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg
@@ -54,12 +55,16 @@ assets:
   - dest: ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
+  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univmorph.hu.zip
+    checksum: 55768c77029b0e0f0bf10afd906e20a7
 
 workflows:
   all:
     - convert_vectors
     - preprocess_ud
     - preprocess_nerkor
+    - preprocess_szegedcorpus
     - train_lemmatizer
     - train_parser
     - train_ner
@@ -129,6 +134,29 @@ commands:
       - ${vars.processed_data_path}/${vars.nerkor}/train.spacy
       - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
       - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
+
+  - name: preprocess_szegedcorpus
+    help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
+    script:
+      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}"
+      - "unzip -o ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip -d ${vars.raw_data_path}/${vars.szegedcorpus}/zip/"
+      - "split-conllu '${vars.raw_data_path}/${vars.szegedcorpus}/zip/*.conllu' '${vars.raw_data_path}/${vars.treebank}/*.conllu' ${vars.processed_data_path}/${vars.szegedcorpus}/"
+
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+    deps:
+      - ${vars.raw_data_path}/${vars.szegedcorpus}
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+    outputs:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.spacy
 
   - name: train_lemmatizer
     help: "Train the lemmatizer"

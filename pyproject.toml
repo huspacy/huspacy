@@ -26,6 +26,7 @@ poethepoet = "^0.10.0"
 [tool.poetry.scripts]
 convert2conllu = 'huspacy.cli.convert_to_conllu:app'
 find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
+split-conllu = 'huspacy.cli.split_conllu:app'
 
 [tool.poe.tasks]
 cuda92 = "python -m pip install 'spacy[cuda92]'"
