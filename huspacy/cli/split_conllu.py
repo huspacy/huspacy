@@ -54,12 +54,12 @@ def main(input_file_pattern: str, ud_hungarian_szeged_pattern: str, output_path:
             print(sentence, file=out, end='\n\n')
 
 
-def process_sentence(sentence: str) -> List[Tuple[int, str, str, str]]:
+def process_sentence(sentence: str) -> List[Tuple[int, str, str]]:
     parsed = parse(sentence)[0]
     lines = list()
 
     for i in parsed:
-        lines.append((i["id"], i["form"], i["lemma"], i["upos"]))
+        lines.append((i["id"], i["form"], i["lemma"]))
 
     return lines
 
