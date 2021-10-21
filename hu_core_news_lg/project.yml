@@ -320,6 +320,23 @@ commands:
       - ${vars.models_path}/${vars.package_name}-${vars.nerkor}-${vars.package_version}/model-best
 
 
+  - name: train_szegedner
+    help: "Train the nerkor NER model"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          --paths.train ${vars.processed_data_path}/${vars.szegedner}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.szegedner}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/test.spacy
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}/model-best
+
+
   - name: assemble
     help: "Assemble the parser, the lemmatizer and the NER components"
     script:
