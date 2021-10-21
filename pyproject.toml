@@ -12,7 +12,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.7.1"
 spacy = "^3.1.2"
-lemmy3 = "^3.0.0a"
+lemmy3 = "^3.1.0a"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
 spacy-huggingface-hub = "^0.0.4"
