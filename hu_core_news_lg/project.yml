@@ -365,6 +365,7 @@ commands:
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
             --output ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
+            --gold-preproc
             --code ${vars.package_init}
             ${vars.models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
