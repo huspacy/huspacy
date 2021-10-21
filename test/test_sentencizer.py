@@ -21,7 +21,10 @@ def nlp():
     ["Mizujs?", "Hogy vagy?"],
     ["Szia.", "Hogy vagy?"],
     ["\"Szia!\" - mondta.", "Hogy vagy?"],
+    ["Szia!", "\"Hogy vagy?\""],
     ["(Szia!) - mondta.", "Hogy vagy?"],
+    ["Szinte hihetetlen sebességgel robog az idő.", "A nemrég"],
+    ["Szia!", "Jó estét, Magyarország! című műsor."]
 ])
 def test_sentencizer(nlp: Language, sentences: List[str]):
     doc: Doc = nlp(" ".join(sentences))
