@@ -56,8 +56,8 @@ assets:
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip
-    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univmorph.hu.zip
-    checksum: 55768c77029b0e0f0bf10afd906e20a7
+    url: http://www.inf.u-szeged.hu/~szcantozs/download/ud_converted/univdep.hu.zip
+    checksum: 3e812164922c8ad8644a4408ba62574d
 
 workflows:
   all:
