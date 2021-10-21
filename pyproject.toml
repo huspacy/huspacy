@@ -24,6 +24,7 @@ scikit-learn = "^0.24.2"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 poethepoet = "^0.10.0"
+flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
 convert2conllu = 'huspacy.cli.convert_to_conllu:app'
