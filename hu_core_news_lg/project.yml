@@ -1,5 +1,5 @@
-title: "Part-of-speech Tagging, Lemmatization & Dependency Parsing (Universal Dependencies)"
-description: ""
+title: "Core Hungarian Spacy model (Large) "
+description: "Part-of-speech Tagging, Lemmatization, Dependency Parsing and Named Entity Recognition"
 spacy_version: ">=3.1.0,<3.2.0"
 
 vars:
