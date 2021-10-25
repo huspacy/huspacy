@@ -161,8 +161,8 @@ commands:
   - name: train_lemmatizer
     help: "Train the lemmatizer"
     script:
-      - "lemmy train ${vars.processed_data_path}/${vars.nerkor}/train.conllup ${vars.models_path}/lemmy-${vars.package_version}.bin"
-      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
+      - "lemmy train ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.models_path}/lemmy-${vars.package_version}.bin"
+      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu"
       - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
     deps:
       - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
