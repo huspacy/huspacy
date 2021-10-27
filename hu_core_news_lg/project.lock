@@ -1,118 +1,13 @@
-preprocess:
-  cmd: python -m spacy run preprocess
+publish:
+  cmd: python -m spacy run publish
   script:
-    - mkdir -p corpus/UD_Hungarian-Szeged
-    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
-      corpus/UD_Hungarian-Szeged/ --converter conllu --n-sents 10 --merge-subtokens
-    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu corpus/UD_Hungarian-Szeged/
-      --converter conllu --n-sents 10 --merge-subtokens
-    - python -m spacy convert assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-      corpus/UD_Hungarian-Szeged/ --converter conllu --n-sents 10 --merge-subtokens
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy corpus/UD_Hungarian-Szeged/train.spacy
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy corpus/UD_Hungarian-Szeged/dev.spacy
-    - mv corpus/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy corpus/UD_Hungarian-Szeged/test.spacy
+    - huggingface-cli login
+    - spacy huggingface-hub push ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      --org spacy-hu --local-repo ../hub --msg "Update spacy pipeline to 0.1.0" --verbose
+    - huggingface-cli logout
   deps:
-    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
-      md5: e8581e733642908c106841fc1469ae89
-    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
-      md5: 80ff7f86872655c1d7e3d5764387bc46
-    - path: assets/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-      md5: dc824da852ac546914c331b58b0eb8f8
-  outs:
-    - path: corpus/UD_Hungarian-Szeged/train.spacy
-      md5: ccb7f151ec17c3ba2178ecba612ceb09
-    - path: corpus/UD_Hungarian-Szeged/dev.spacy
-      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
-    - path: corpus/UD_Hungarian-Szeged/test.spacy
-      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
-vectors:
-  cmd: python -m spacy run vectors
-  script:
-    - bash -c '/bin/bzcat assets/vectors/webcorpuswiki.word2vec.bz2 > assets/vectors/webcorpuswiki.word2vec.txt'
-    - python -m spacy init vectors hu assets/vectors/webcorpuswiki.word2vec.txt assets/vectors/webcorpuswiki.word2vec.vec
-  deps:
-    - path: assets/vectors/webcorpuswiki.word2vec.bz2
-      md5: 4a3055c54a6f9a5f806ba09b21cb4583
-  outs:
-    - path: assets/vectors/webcorpuswiki.word2vec.vec
-      md5: 2da0f7354b5a7dc80256c2ccac42cbe1
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
-train:
-  cmd: python -m spacy run train
-  script:
-    - python -m spacy train configs/default.cfg --output training/UD_Hungarian-Szeged
-      --gpu-id -1 --paths.train corpus/UD_Hungarian-Szeged/train.spacy --paths.dev
-      corpus/UD_Hungarian-Szeged/dev.spacy --nlp.lang=hu
-  deps:
-    - path: corpus/UD_Hungarian-Szeged/train.spacy
-      md5: ccb7f151ec17c3ba2178ecba612ceb09
-    - path: corpus/UD_Hungarian-Szeged/dev.spacy
-      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
-    - path: configs/default.cfg
-      md5: a0f8d844febee7b5fd82d9449c29409b
-  outs:
-    - path: training/UD_Hungarian-Szeged/model-best
-      md5: dd846d28a815646ec1b3c600dc7f0574
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
-preprocess_nerkor:
-  cmd: python -m spacy run preprocess_nerkor
-  script:
-    - mkdir -p ../data/processed/NerKor
-    - convert2conllu '../data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
-      ../data/processed/NerKor/dev.conllup
-    - convert2conllu '../data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
-      ../data/processed/NerKor/train.conllup
-    - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
-      ../data/processed/NerKor/test.conllup
-    - python -m spacy convert ../data/processed/NerKor/train.conllup ../data/processed/NerKor
-      --converter conllu --n-sents 10
-    - python -m spacy convert ../data/processed/NerKor/dev.conllup ../data/processed/NerKor
-      --converter conllu --n-sents 10
-    - python -m spacy convert ../data/processed/NerKor/test.conllup ../data/processed/NerKor
-      --converter conllu --n-sents 10
-  deps:
-    - path: ../data/raw/NerKor
-      md5: b950c6328675585a8377a7ef04ef6dd3
-  outs:
-    - path: ../data/processed/NerKor/train.conllup
-      md5: 8bcd48d14fa16768c6915facd6c87ff8
-    - path: ../data/processed/NerKor/dev.conllup
-      md5: f01c64125d2ccea97b8725f23f5814af
-    - path: ../data/processed/NerKor/test.conllup
-      md5: 7d2c87db8693253457a995493c94c302
-    - path: ../data/processed/NerKor/train.spacy
-      md5: 25903e17770b9a155eadc9c1610ef7e4
-    - path: ../data/processed/NerKor/dev.spacy
-      md5: 329ad42262adab902e798f1d62ae4c45
-    - path: ../data/processed/NerKor/test.spacy
-      md5: e0638600c69e1b357c58177c92f4cce1
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
-train_lemmatizer:
-  cmd: python -m spacy run train_lemmatizer
-  script:
-    - lemmy train ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../models/lemmy-0.1.0.bin
-    - lemmy evaluate ../models/lemmy-0.1.0.bin ../data/processed/NerKor/test.conllup
-    - lemmy evaluate ../models/lemmy-0.1.0.bin ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-  deps: []
+    - path: ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      md5: cd7a70c3e13d61fb14ce53a22b75d76f
   outs: []
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
-convert_vectors:
-  cmd: python -m spacy run convert_vectors
-  script:
-    - bash -c '/bin/bzcat ../data/external/webcorpuswiki.word2vec.bz2 > ../data/external/webcorpuswiki.word2vec.txt'
-    - python -m spacy init vectors hu ../data/external/webcorpuswiki.word2vec.txt
-      ../data/external/webcorpuswiki.word2vec.vec
-  deps:
-    - path: ../data/external/webcorpuswiki.word2vec.bz2
-      md5: 4a3055c54a6f9a5f806ba09b21cb4583
-  outs:
-    - path: ../data/external/webcorpuswiki.word2vec.vec
-      md5: 2da0f7354b5a7dc80256c2ccac42cbe1
-  spacy_version: 3.1.0
-  spacy_git_version: 530b5d72f
+  spacy_version: 3.1.3
+  spacy_git_version: 8bda39f08
