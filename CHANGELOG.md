@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - NER model built on ...
 - Improved lemmatization for numbers and sentence starting tokens
+- Improved lemmatization by using the whole Szeged Corpus
 - Improved PoS tagging
 ### Fixed
 - Compatibility w/ Spacy 3.x

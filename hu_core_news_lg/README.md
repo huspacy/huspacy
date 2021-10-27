@@ -16,9 +16,10 @@ Activate the virtual environment: `poetry shell`
 2. Download and transform word vectors:`python -m spacy project run convert_vectors`
 3. Preprocess the UD corpus: `python -m spacy project run preprocess_ud`
 4. Preprocess the NerKor corpus: `python -m spacy project run preprocess_nerkor`
-5. Train the tagger / parser model `python -m spacy project run train_praser`
-6. Train the lemmatizer `python -m spacy project run train_lemmatizer`
-7. Train the NER `python -m spacy project run train_ner`
+5. Preprocess the Szeged corpus: `python -m spacy project run preprocess_szegedcorpus`
+6. Train the tagger / parser model `python -m spacy project run train_praser`
+7. Train the lemmatizer `python -m spacy project run train_lemmatizer`
+8. Train the NER `python -m spacy project run train_ner`
 
 
 
