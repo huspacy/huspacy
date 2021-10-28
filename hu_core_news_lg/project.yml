@@ -1,5 +1,5 @@
 title: "Core Hungarian Spacy model (Large) "
-description: "Part-of-speech Tagging, Lemmatization, Dependency Parsing and Named Entity Recognition"
+description: "Tokenization, Sentence splitting, Part-of-speech Tagging, Lemmatization, Dependency Parsing and Named Entity Recognition"
 spacy_version: ">=3.1.0,<3.2.0"
 
 vars:
@@ -82,8 +82,8 @@ assets:
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip
-    url: http://www.inf.u-szeged.hu/~szcantozs/download/ud_converted/univdep.hu.zip
-    checksum: 3e812164922c8ad8644a4408ba62574d
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.zip
+#    checksum: 3e812164922c8ad8644a4408ba62574d
 
 workflows:
   all:
@@ -100,7 +100,12 @@ workflows:
     - assemble
     - evaluate
     - package
-    - publish
+  lemmatizer:
+    - preprocess_szegedcorpus
+    - preprocess_ud
+    - train_lemmatizer
+  publish:
+    - push
 
 commands:
   - name: init_vectors
@@ -175,7 +180,7 @@ commands:
   - name: preprocess_szegedcorpus
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
-      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}"
+      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}/zip/"
       - "unzip -o ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip -d ${vars.raw_data_path}/${vars.szegedcorpus}/zip/"
       - "split-conllu '${vars.raw_data_path}/${vars.szegedcorpus}/zip/*.conllu' '${vars.raw_data_path}/${vars.treebank}/*.conllu' ${vars.processed_data_path}/${vars.szegedcorpus}/"
 
@@ -431,7 +436,7 @@ commands:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
 
 
-  - name: publish #TODO: hun_lemmy is no tracked automatically
+  - name: push #TODO: hun_lemmy is no tracked automatically
     help: "Upload the trained model to the Hugging Face Hub"
     script:
       - "huggingface-cli login"
