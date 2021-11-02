@@ -34,11 +34,11 @@ nlp = hu_core_news_lg.load()
 doc = nlp('Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.')
 ```
 
-For detailed usage guides, please refer to [spaCy's documentation](https://spacy.io/usage/linguistic-features).
+For a detailed guide on usgae, check [spaCy's documentation](https://spacy.io/usage/linguistic-features).
 
 ## Available Models 
 
-Currently we only support a single large model aiming to balance between accuracy and speed. 
+Currently, we only support a single large model which has a good balance between accuracy and speed. 
 
 [`hu_core_news_lg`](https://huggingface.co/spacy-hu/hu_core_news_lg) provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word vectors.
 
@@ -49,7 +49,7 @@ Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spac
 ### Installing requirements
 
 - `poetry install` will install all the dependencies
-- For better performance you might need to [reinstall spacy with GPU support](https://spacy.io/usage), e.g. `poetry add spacy[cuda92]` will add support for CUDA 9.2 (`poetry run poe cuda92`)
+- For better performance you might need to [reinstall spacy with GPU support](https://spacy.io/usage), e.g. `poetry add spacy[cuda92]` will add support for CUDA 9.2 
 
 ### Repository structure
 
@@ -58,7 +58,7 @@ Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spac
 ├── data               -- Data files
 │   ├── external       -- External models required to train models (e.g. word vectors)
 │   ├── processed      -- Processed data ready to feed spacy
-│   └── raw            -- Raw corpora being transformed
+│   └── raw            -- Raw data, mostly corpora as they are obtained from the web
 ├── hu_core_news_lg    -- Spacy 3.x project files for building a model for news texts
 │   ├── configs        -- Spacy pipeline configuration files
 │   ├── project.lock               -- Auto-generated project script
@@ -66,17 +66,19 @@ Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spac
 │   └── README.md                  -- Instructions on building a model from scratch
 ├── huspacy            -- Source package
 │   └── cli            -- Command line scripts (Python)
-├── models             -- Trained models and related metadata
+├── models             -- Trained models and their metadata
+├── resources          -- Resource files
 ├── scripts            -- Bash scripts
 ├── tests              -- Test files 
-├── CHANGELOG.md       -- Kepss the changelog
+├── CHANGELOG.md       -- Keeps the changelog
 ├── LICENSE            -- License file
 ├── poetry.lock        -- Locked poetry dependencies files
 ├── poetry.toml        -- Poetry configurations
 ├── pyproject.toml     -- Python project configutation, including dependencies managed with Poetry 
-├── README.md          -- This file
-└── resources          -- Resources
+└── README.md          -- This file
 ```
+
+<!-- TODO
 ## Citing
 
 If you use the models or this library in your research please cite the [paper]().</br>
@@ -84,6 +86,8 @@ Additionally, please indicate the version of the model you used so that your res
 
 ```bibtex
 ```
+
+-->
 
 
 ## License
