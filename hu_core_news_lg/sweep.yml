@@ -1,0 +1,53 @@
+command:
+- python
+- -m
+- spacy
+- train
+- configs/default.cfg
+- --output
+- training/sweep_ner_merged
+- --gpu-id
+- 0
+- ${args}
+method: random
+parameters:
+  components.ner.model.extra_state_tokens:
+    values:
+    - true
+    - false
+  components.ner.model.hidden_width:
+    values:
+    - 32
+    - 64
+    - 128
+    - 512
+  components.ner.model.maxout_pieces:
+    values:
+    - 1
+    - 2
+    - 3
+  nlp.lang:
+    values:
+    - hu
+  paths.dev:
+    values:
+    - corpus/ner_merged/devel.spacy
+  paths.train:
+    values:
+    - corpus/ner_merged/train.spacy
+  training.dropout:
+    values:
+    - 0.1
+    - 0.3
+    - 0.5
+  training.optimizer.L2:
+    values:
+    - 0.1
+    - 0.01
+    - 0.001
+  training.optimizer.learn_rate:
+    values:
+    - 0.1
+    - 0.01
+    - 0.001
+    - 0.0001

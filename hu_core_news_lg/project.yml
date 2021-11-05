@@ -26,13 +26,14 @@ vars:
   hunnerwiki: hunNERwiki
   szegedner: SzegedNER
   ner_merged: ner_merged
+  szfsszegedner: SZFSSzegedNER
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg
 
   parser_config: parser
   ner_config: ner
-  gpu: -1
+  gpu: 0
 
 #TODO: remove GPU settings
 #TODO: remove WAND options settings
@@ -80,19 +81,8 @@ assets:
 
 workflows:
   all:
-    - convert_vectors
-    - preprocess_ud
-    - preprocess_nerkor
-    - preprocess_hunnerwiki
-    - preprocess_szegedner
     - preprocess_merge
-    - train_lemmatizer
-    - train_parser
     - train_ner
-    - train_nerkor
-    - evaluate
-    - package
-    - push
 
 commands:
   - name: convert_vectors
@@ -148,9 +138,33 @@ commands:
       - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
       - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
 
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/fiction/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test_fiction.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/legal/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test_legal.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/news/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test_news.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/web/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test_web.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/wikipedia/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test_wikipedia.iob'
+
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/fiction/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev_fiction.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/legal/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev_legal.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/news/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev_news.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/web/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev_web.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/wikipedia/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev_wikipedia.iob'
+
       - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test_fiction.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test_legal.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test_news.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test_web.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/test_wikipedia.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev_fiction.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev_legal.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev_news.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev_web.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev_wikipedia.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
     deps:
       - ${vars.raw_data_path}/${vars.nerkor}
     outputs:
@@ -186,15 +200,35 @@ commands:
       - ${vars.processed_data_path}/${vars.hunnerwiki}/dev.spacy
       - ${vars.processed_data_path}/${vars.hunnerwiki}/test.spacy
 
+
+  - name: preprocess_SZFS
+    help: "Convert the SZFS_SzegedNER data to spaCy's format"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.szfsszegedner}
+
+      - python -m spacy convert ${vars.raw_data_path}/${vars.szfsszegedner}/dev.iob ${vars.processed_data_path}/${vars.szfsszegedner}/ --converter iob --n-sents 10
+      - python -m spacy convert ${vars.raw_data_path}/${vars.szfsszegedner}/train.iob ${vars.processed_data_path}/${vars.szfsszegedner}/ --converter iob --n-sents 10
+      - python -m spacy convert ${vars.raw_data_path}/${vars.szfsszegedner}/test.iob ${vars.processed_data_path}/${vars.szfsszegedner}/ --converter iob --n-sents 10
+
+    deps:
+      - ${vars.raw_data_path}/${vars.szfsszegedner}/train.iob
+      - ${vars.raw_data_path}/${vars.szfsszegedner}/dev.iob
+      - ${vars.raw_data_path}/${vars.szfsszegedner}/test.iob
+
+    outputs:
+      - ${vars.processed_data_path}/${vars.szfsszegedner}/train.spacy
+      - ${vars.processed_data_path}/${vars.szfsszegedner}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szfsszegedner}/test.spacy
+
   - name: preprocess_szegedner
     help: "Convert the SzegedNER data to spaCy's format"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
       - unzip -o ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
       
       - unzip -o ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
       
       - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_business_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_test.iob1
       - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_test.iob1
@@ -223,10 +257,10 @@ commands:
     help: "Cancatenate IOB datasets to a new dataset"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.ner_merged}
-      
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
-      - bash -c 'cp ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
+
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob ${vars.processed_data_path}/${vars.hunnerwiki}/test.iob ${vars.processed_data_path}/${vars.hunnerwiki}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob > ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
       
       - python -m spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10

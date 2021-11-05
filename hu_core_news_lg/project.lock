@@ -79,20 +79,20 @@ preprocess_nerkor:
       --converter iob --n-sents 10
   deps:
     - path: ../data/raw/NerKor
-      md5: ef254b3d05e7271c6470cfcfa97805e1
+      md5: b950c6328675585a8377a7ef04ef6dd3
   outs:
     - path: ../data/processed/NerKor/train.iob
-      md5: 10381a815fb260911756bb811afecde5
+      md5: 019cb9ccca28837032aff5c7f66c83b4
     - path: ../data/processed/NerKor/dev.iob
-      md5: 005e2aeae5c04a795d8ea8a4dfa1b90a
+      md5: 3fa4ff252ebe8c487501b59dead60154
     - path: ../data/processed/NerKor/test.iob
-      md5: 4b84a8d05dc28154bc54dd84865ea477
+      md5: b9f40b8e80cb51f411fb4d49f2d17053
     - path: ../data/processed/NerKor/train.spacy
-      md5: ec1fb16c7dc4c3a95ef0e1bcf07f9452
+      md5: 73eff46826c3b567ae375589fe6f0818
     - path: ../data/processed/NerKor/dev.spacy
-      md5: 3603d5fce38eed6e9b808a8b5f8f25a7
+      md5: 1c3a3c54f37108a1002d585c0169cce7
     - path: ../data/processed/NerKor/test.spacy
-      md5: a171a6c0c738edfd12805637c0df56a2
+      md5: cbae80a7ac51f59094fdeb63597995eb
   spacy_version: 3.1.2
   spacy_git_version: e1f88de72
 train_lemmatizer:
@@ -252,21 +252,65 @@ preprocess_merge:
     - path: ../data/processed/hunNERwiki/dev.iob
       md5: a06e01c5bfa42eae5bb798a571168aca
     - path: ../data/processed/NerKor/train.iob
-      md5: 10381a815fb260911756bb811afecde5
+      md5: 019cb9ccca28837032aff5c7f66c83b4
     - path: ../data/processed/NerKor/test.iob
-      md5: 4b84a8d05dc28154bc54dd84865ea477
+      md5: b9f40b8e80cb51f411fb4d49f2d17053
     - path: ../data/processed/NerKor/dev.iob
-      md5: 005e2aeae5c04a795d8ea8a4dfa1b90a
+      md5: 3fa4ff252ebe8c487501b59dead60154
     - path: ../data/processed/SzegedNER/dev.iob
       md5: 317b45c89f2e8f1b6d25446966ab47fa
     - path: ../data/processed/SzegedNER/test.iob
       md5: 59d88e473365cd2fb515bd4b869d33f6
   outs:
     - path: ../data/processed/ner_merged/train.spacy
-      md5: 6167773ee10815994ee490f74053acff
+      md5: c3cf516c15d79e462b0286bb62852af4
     - path: ../data/processed/ner_merged/dev.spacy
       md5: 77960946522fea210f3d3f58d054ee2d
     - path: ../data/processed/ner_merged/test.spacy
       md5: 4b28ed2b9ac2755d8798462247fe6c99
+  spacy_version: 3.1.2
+  spacy_git_version: e1f88de72
+train_ner:
+  cmd: python -m spacy run train_ner
+  script:
+    - python -m spacy train configs/ner.cfg --output ../models/hu_core_news_lg-ner_merged-0.1.0
+      --nlp.lang=hu --gpu-id -1 --paths.vectors ../data/external/webcorpuswiki.word2vec.vec
+      --paths.train ../data/processed/ner_merged/train.spacy --paths.dev ../data/processed/ner_merged/dev.spacy
+  deps:
+    - path: ../data/processed/ner_merged/train.spacy
+      md5: 927cb13a70f4aa2825b47d6ba80e4516
+    - path: ../data/processed/ner_merged/dev.spacy
+      md5: a2baa84bc2fe6f85345e3ae3908e0eea
+    - path: ../data/processed/ner_merged/test.spacy
+      md5: 541af6067df69e444d77529777f75edf
+  outs:
+    - path: ../models/hu_core_news_lg-ner_merged-0.1.0/model-best
+      md5: 665732ba128d47a41356fc42eca4636b
+  spacy_version: 3.1.2
+  spacy_git_version: e1f88de72
+preprocess_SZFS:
+  cmd: python -m spacy run preprocess_SZFS
+  script:
+    - mkdir -p ../data/processed/SZFSSzegedNER
+    - python -m spacy convert ../data/raw/SZFSSzegedNER/dev.iob ../data/processed/SZFSSzegedNER/
+      --converter iob --n-sents 10
+    - python -m spacy convert ../data/raw/SZFSSzegedNER/train.iob ../data/processed/SZFSSzegedNER/
+      --converter iob --n-sents 10
+    - python -m spacy convert ../data/raw/SZFSSzegedNER/test.iob ../data/processed/SZFSSzegedNER/
+      --converter iob --n-sents 10
+  deps:
+    - path: ../data/raw/SZFSSzegedNER/train.iob
+      md5: da82b1b731c924d89ce303ff4baf2eba
+    - path: ../data/raw/SZFSSzegedNER/dev.iob
+      md5: 166517e945bda00495f2f3dafd3b025b
+    - path: ../data/raw/SZFSSzegedNER/test.iob
+      md5: 81d15cf6719a91ca761468c9ecd4dc85
+  outs:
+    - path: ../data/processed/SZFSSzegedNER/train.spacy
+      md5: 2881552683fa06977d69e9adb823a71c
+    - path: ../data/processed/SZFSSzegedNER/dev.spacy
+      md5: 5629ee01870a2499ec64fd296b8eaa7b
+    - path: ../data/processed/SZFSSzegedNER/test.spacy
+      md5: b11924450973d2851ea81d6dd55881ed
   spacy_version: 3.1.2
   spacy_git_version: e1f88de72
