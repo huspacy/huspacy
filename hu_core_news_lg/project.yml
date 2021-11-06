@@ -35,6 +35,7 @@ vars:
   wandb_project: hu_core_news_lg
 
   assemble_config: assemble
+  tagger_config: tagger
   parser_config: parser
   ner_config: ner
   gpu: 0
@@ -81,9 +82,11 @@ assets:
   - dest: ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
-  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip
-    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.zip
-#    checksum: 3e812164922c8ad8644a4408ba62574d
+  # Szeged corpus
+
+
+  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.train.conllu
 
 workflows:
   all:
@@ -95,6 +98,7 @@ workflows:
     - preprocess_szegedner
     - preprocess_merge
     - train_lemmatizer
+    - pretrain_tagger
     - train_parser
     - train_ner
     - assemble
@@ -181,8 +185,9 @@ commands:
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}/zip/"
-      - "unzip -o ${vars.raw_data_path}/${vars.szegedcorpus}/${vars.szegedcorpus}.zip -d ${vars.raw_data_path}/${vars.szegedcorpus}/zip/"
-      - "split-conllu '${vars.raw_data_path}/${vars.szegedcorpus}/zip/*.conllu' '${vars.raw_data_path}/${vars.treebank}/*.conllu' ${vars.processed_data_path}/${vars.szegedcorpus}/"
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
 
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
@@ -231,10 +236,10 @@ commands:
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
       - unzip -o ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
 
       - unzip -o ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
 
       - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_business_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_test.iob1
       - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_test.iob1
@@ -302,15 +307,34 @@ commands:
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
 
 
+  - name: pretrain_tagger
+    help: "Pretrain the tagger on the full Szeged Corpus"
+    script:
+      - "spacy train configs/${vars.tagger_config}.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.parser_config}.cfg
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+
+
   - name: train_parser
-    help: "Train the parser/tagger"
+    help: "Train the parser on the Universal Dependencies
+           dataset with the pretrained tagger model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
-            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+            --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
