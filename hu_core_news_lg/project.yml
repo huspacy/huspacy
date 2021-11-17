@@ -385,7 +385,8 @@ commands:
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
           --paths.train ${vars.processed_data_path}/${vars.szegedner}/train.spacy
-          --paths.dev ${vars.processed_data_path}/${vars.szegedner}/dev.spacy"
+          --paths.dev ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.szegedner}/train.spacy
       - ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
@@ -402,10 +403,10 @@ commands:
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
-          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}/model-best"
     deps:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}/model-best
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
       - ${vars.package_init}
     outputs:
