@@ -6,13 +6,13 @@
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/spacy-hu/spacy-hungarian-models",
   "license": "cc-by-sa-4.0",
-  "spacy_version": ">=3.1.0,<3.2.0",
+  "spacy_version": ">=3.1.0,<3.3.0",
   "sources": [
     {
       "name": "UD Hungarian Szeged",
       "url": "https://universaldependencies.org/treebanks/hu_szeged/index.html",
       "license": "CC-BY-NC-SA-3.0",
-      "author": ""
+      "author": "Richárd Farkas, Katalin Simkó, Zsolt Szántó, Viktor Varga, Veronika Vincze ((MTA-SZTE Research Group on Artificial Intelligence))"
     },
     {
       "name": "NYTK-NerKor corpus",
@@ -24,7 +24,7 @@
       "name": "hunNERwiki",
       "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
       "license": "CC-BY-SA-4.0",
-      "author": ""
+      "author": "Eszter Simon"
     },
     {
       "name": "Szeged NER Corpus",
@@ -40,6 +40,6 @@
     }
   ],
   "requirements": [
-    "lemmy3==3.0.0a"
+    "lemmy3==3.2.0a"
   ]
 }
