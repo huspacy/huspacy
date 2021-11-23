@@ -11,7 +11,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-spacy = "^3.1.2"
+spacy = "^3.2.0"
 lemmy3 = "^3.2.0a"
 #lemmy3 = {path = "../lemmy", develop = true}
 spacy-ray = "^0.1.0"
