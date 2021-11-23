@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 ### Added
 ### Changed
-- NER model built on ...
+- NER model built on NerKor and SzegedNER
 - Improved lemmatization for numbers and sentence starting tokens
 - Improved lemmatization by using the whole Szeged Corpus
-- Improved PoS tagging
+- Improved PoS tagging by pretraining on a silver standard corpus
+- Improved Dependency parser by using the pretrained tagger
+- Improved sentence splitter: changing the architecture to the multitask neural model
+
 ### Fixed
 - Compatibility w/ Spacy 3.x
 
@@ -21,11 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Hungarian spacy model based on the [UD Hungarian corpus](https://github.com/UniversalDependencies/UD_Hungarian-Szeged)
 
-## [0.3.1]() - 2019-10-03
+## [0.3.1](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.3.1) - 2019-10-03
 ## Fixed
 - Compatibility w/ Spacy 2.2.x
 
-## [0.3.0]() - 2019-09-26
+## [0.3.0](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.3.0) - 2019-09-26
 ### Added
 - Named Entity Recognition
 
