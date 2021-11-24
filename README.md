@@ -78,21 +78,25 @@ Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spac
 └── README.md          -- This file
 ```
 
-<!-- TODO
 ## Citing
 
-If you use the models or this library in your research please cite the [paper]().</br>
+If you use the models or this library in your research please cite this [paper]().</br>
 Additionally, please indicate the version of the model you used so that your research can be reproduced.
 
+<!--
 ```bibtex
+@misc{HuSpaCy:2021,
+  title = {{HuSpaCy: industrial strength Hungarian natural language processing}},
+  booktitle = {{XVIII. Magyar Sz\'{a}m\'{\i}t\'{o}g\'{e}pes Nyelv\'{e}szeti Konferencia}},
+  author = {Orosz, Gy\"{o}rgy and Sz\'{a}nt\'{o}, Zsolt and Berkecz, Péter and Szabó, Gergő and Tóth, Bálint and Farkas, Rich\'{a}rd}, 
+  year = {forthcoming 2021},
+}
 ```
-
 -->
-
 
 ## License
 
-This library is released under the MIT License. See the [`LICENSE`](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE) file for more details.
+This library is released under the Apache 2.0 License. See the [`LICENSE`](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE) file for more details.
 
 The trained models have their own license as described on the [models hub](https://huggingface.co/spacy-hu/hu_core_news_lg).
 
