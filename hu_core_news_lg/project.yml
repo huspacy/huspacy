@@ -100,7 +100,7 @@ workflows:
     - train_lemmatizer
     - pretrain_tagger
     - train_parser
-    - train_szegedner
+    - train_ner
     - assemble
     - evaluate
     - package
@@ -109,6 +109,7 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger
+    - train_parser
 
   parser:
     - preprocess_szegedcorpus
@@ -122,11 +123,10 @@ workflows:
     - train_lemmatizer
 
   ner:
-#    - preprocess_nerkor
-#    - preprocess_hunnerwiki
+    - preprocess_nerkor
     - preprocess_szegedner
-#    - preprocess_merge
-    - train_szegedner
+    - preprocess_merge
+    - train_ner
 
   publish:
     - push
@@ -375,7 +375,8 @@ commands:
           --training.logger.project_name ${vars.wandb_project}
           --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
-          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy"
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
@@ -429,10 +430,10 @@ commands:
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
-          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}/model-best"
+          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
     deps:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.models_path}/${vars.package_name}-${vars.szegedner}-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
       - ${vars.package_init}
     outputs:
@@ -487,17 +488,18 @@ commands:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
 
 
-  - name: push #TODO: hun_lemmy is no tracked automatically
+  - name: push #TODO: github release
     help: "Upload the trained model to the Hugging Face Hub"
     script:
       - "huggingface-cli login"
       - "spacy huggingface-hub push
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
-          --org spacy-hu
-          --local-repo ../hub
+          --org huspacy
+          --local-repo ../../hub
           --msg \"Update spacy pipeline to ${vars.package_version}\"
           --verbose"
       - "huggingface-cli logout"
+      - bash -c "cd ../../hub/${vars.package_name} && git tag -a v${vars.package_version} -m \"Releasing version v${vars.package_version}\" && git push origin v${vars.package_version}"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
 

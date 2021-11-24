@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved PoS tagging by pretraining on a silver standard corpus
 - Improved Dependency parser by using the pretrained tagger
 - Improved sentence splitter: changing the architecture to the multitask neural model
-
+    
 ### Fixed
 - Compatibility w/ Spacy 3.x
 
