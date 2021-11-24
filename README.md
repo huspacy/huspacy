@@ -38,9 +38,9 @@ For a detailed guide on usgae, check [spaCy's documentation](https://spacy.io/us
 
 ## Available Models 
 
-Currently, we only support a single large model which has a good balance between accuracy and speed. 
+Currently, we only support a single large model which has a good balance between accuracy and speed. You can play around with the tool capabilities in this [interactive demo](https://huggingface.co/spaces/huspacy/demo).
 
-[`hu_core_news_lg`](https://huggingface.co/spacy-hu/hu_core_news_lg) provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word vectors.
+[`hu_core_news_lg`](https://huggingface.co/huspacy/hu_core_news_lg) provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word vectors.
 
 Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/CHANGELOG.md).
 
