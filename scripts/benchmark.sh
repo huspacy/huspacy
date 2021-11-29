@@ -7,7 +7,7 @@ token_count=$(grep -P "^[0-9].*$" $1 | wc -l)
 huspacyv3_time=()
 huspacyv3_memory=()
 
-for i in {1..1} ; do
+for i in {1..3} ; do
   echo 'HuSpaCy v3 #'${i}
   huspacyv3_time+=($(python "${scripts_dir}/huspacyv3_benchmark.py" main $1 --no-memory | grep -oP ': [0-9.]*' | grep -oP '[0-9.]*'))
   huspacyv3_memory+=($(python "${scripts_dir}/huspacyv3_benchmark.py" main $1 --no-time | grep -oP ': [0-9.]*' | grep -oP '[0-9.]*'))
