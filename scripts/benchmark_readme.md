@@ -19,7 +19,8 @@ If you want to try out the sub-benchmarking scripts separately, you can. These s
 You need to install spaCy 3, the spacy_conll package, and [this package](https://huggingface.co/huspacy/hu_core_news_lg) from Hugging Face Hub.
 To run, use the `python huspacyv3_benchmark.py` command with the following arguments:
 
-- `main <input file> [--output-file <output file>] [{--gpu} / --no-gpu] [{--time} / --no-time] [{--memory} / --no-memory]`
+- `main <input file> [--output-file <output file>] [{--gpu} / --no-gpu] [{--time} / --no-time] [{--memory} / --no-memory] [{--ner} / --no-ner]`
+- `batch <input file> [--output-file <output file>] [{--gpu} / --no-gpu] [{--time} / --no-time] [{--memory} / --no-memory] [{--ner} / --no-ner]`
 - `test [--input <sentence>]`
 
 ### Stanza
