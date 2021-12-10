@@ -13,7 +13,7 @@ app = typer.Typer()
 
 @app.command()
 def main(input_file: str, output_file: str = 'huspacyv3.conllu', gpu: bool = False, time: bool = True, memory: bool = True, ner: bool = True):
-    nlp = get_nlp(gpu, ner)
+    nlp = load_pipeline(gpu, ner)
     nlp.add_pipe("conll_formatter")
 
     data_file = open(input_file, 'r', encoding='utf-8')
@@ -35,7 +35,7 @@ def main(input_file: str, output_file: str = 'huspacyv3.conllu', gpu: bool = Fal
 
 @app.command()
 def batch(input_file: str, gpu: bool = False, time: bool = True, memory: bool = True, ner: bool = True):
-    nlp = get_nlp(gpu, ner)
+    nlp = load_pipeline(gpu, ner)
 
     data_file = open(input_file, "r", encoding="utf-8")
     sentences = list(parse_incr(data_file))
@@ -54,7 +54,7 @@ def batch(input_file: str, gpu: bool = False, time: bool = True, memory: bool = 
 
 @app.command()
 def test(input: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.'):
-    nlp = get_nlp(gpu = False, ner = False)
+    nlp = load_pipeline(use_gpu = False, with_ner = False)
     nlp.add_pipe("conll_formatter")
 
     with Timer() as t:
@@ -64,15 +64,15 @@ def test(input: str = 'Kulka János is szerepel az új szivárványcsaládos kam
     print(f'Maximum memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.2f} MiB')
 
 
-def get_nlp(gpu: bool, ner: bool):
+def load_pipeline(use_gpu: bool, with_ner: bool):
     nlp = None
-    if gpu:
+    if use_gpu:
         spacy.require_gpu()
         nlp = spacy.load("hu_core_news_lg")
     else:
         nlp = hu_core_news_lg.load()
     
-    if not ner: nlp.remove_pipe("ner")
+    if not with_ner: nlp.remove_pipe("ner")
     return nlp
 
 
