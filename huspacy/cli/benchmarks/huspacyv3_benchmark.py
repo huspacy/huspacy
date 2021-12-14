@@ -51,6 +51,32 @@ def batch(input_file: str, gpu: bool = False, time: bool = True, memory: bool = 
 
     if memory: print(f'Maximum memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.2f} MiB')
 
+    
+@app.command()
+def raw_text(input_file: str, output_file: str = None, gpu: bool = False, time: bool = True, memory: bool = True, ner: bool = True):
+    nlp = load_pipeline(gpu, ner)
+    if output_file:
+        nlp.add_pipe("conll_formatter")
+        output_file = open(output_file, 'w', encoding='utf-8')
+
+    data_file = open(input_file, "r", encoding="utf-8")
+    sentences = list(parse_incr(data_file))
+    
+    texts = " ".join([s.metadata["text"] for s in sentences])
+
+    if time:
+        with Timer() as t:
+            res = nlp(texts)
+        print(f'Time spent: {t.elapsed:.2f} seconds')
+    else:
+        res = nlp(texts)
+        
+    if output_file:
+        print(res._.conll_str, sep="\n", file=output_file)
+        output_file.close()
+
+    if memory: print(f'Maximum memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.2f} MiB')
+
 
 @app.command()
 def test(input: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.'):
