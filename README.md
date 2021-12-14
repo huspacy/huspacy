@@ -13,7 +13,9 @@
 
 # HuSpaCy: Industrial-strength Hungarian NLP
 
-HuSpaCy is a [spaCy](https://spacy.io) model and library providing industrial-strength Hungarian language processing facilities. A live demo is available [here](https://huggingface.co/spaces/huspacy/demo). This repository contain material to build the models for HuSpaCy.
+HuSpaCy is a [spaCy](https://spacy.io) model and library providing industrial-strength Hungarian language processing facilities. A live demo is available [here](https://huggingface.co/spaces/huspacy/demo). 
+
+This repository contain material to build the models for HuSpaCy.
 
 ## Installation
 
@@ -45,7 +47,7 @@ To speed up inference, you might want to run the models on GPU for which you nee
 ```python
 # Load the model through huspacy
 import huspacy
-huspacy.load()
+nlp = huspacy.load()
 
 # Load the mode using spacy.load().
 import spacy
@@ -124,7 +126,7 @@ Additionally, please indicate the version of the model you used so that your res
 
 This library is released under the Apache 2.0 License. See the [`LICENSE`](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE) file for more details.
 
-The trained models have their own license as described on the [models hub](https://huggingface.co/spacy-hu/hu_core_news_lg).
+The trained models have their own permissive license ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-nc/4.0/)) as described on the [models page](https://huggingface.co/spacy-hu/hu_core_news_lg).
 
 ## Contact
 For feature request issues and bugs please use the [GitHub Issue Tracker](https://github.com/spacy-hu/spacy-hungarian-models/issues). Otherwise, please use the [Discussion Forums](https://github.com/spacy-hu/spacy-hungarian-models/discussions).
