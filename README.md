@@ -1,40 +1,65 @@
+
 [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/spacy-hu/spacy-hungarian-models)
-[![license](https://img.shields.io/github/license/spacy-hu/spacy-hungarian-models)](https://github.com/centre-for-humanities-computing/DaCy/blob/main/LICENSE)
 [![spacy](https://img.shields.io/badge/built%20with-spaCy-09a3d5.svg)](https://spacy.io)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/huspacy)
+[![PyPI version](https://badge.fury.io/py/huspacy.svg)](https://pypi.org/project/huspacy/)
+[![license](https://img.shields.io/github/license/spacy-hu/spacy-hungarian-models)](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE)
+
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fspacy-hu%2Fspacy-hungarian-models&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
+[![pip downloads](https://img.shields.io/pypi/dm/huspacy.svg)](https://pypi.org/project/huspacy/)
+[![Demo](https://img.shields.io/badge/Try%20the-Demo-important)](https://huggingface.co/spaces/huspacy/demo)
 [![stars](https://img.shields.io/github/stars/spacy-hu/spacy-hungarian-models?style=social)](https://github.com/spacy-hu/spacy-hungarian-models)
 
 
-# HuSpacy - Hungarian models for spaCy
+# HuSpaCy: Industrial-strength Hungarian NLP
 
-This repository contains the building blocks and releases of the Hungarian models for [spaCy](https://spacy.io).
+HuSpaCy is a [spaCy](https://spacy.io) model and library providing industrial-strength Hungarian language processing facilities. A live demo is available [here](https://huggingface.co/spaces/huspacy/demo). This repository contain material to build the models for HuSpaCy.
 
 ## Installation
 
-To get started using the latest Hungarian model, simply install is using pip:
+To get started using the latest Hungarian model, you can fetch the model by installing `huspacy` from PyPI:
+
+```bash
+pip install huspacy
+```
+
+This should be followed by the model download:
+
+```python
+import huspacy
+
+huspacy.download()
+```
+
+Alternatively, one can install the latest models directly from Hugging Face Hub:
 
 ```bash
 pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl
 ```
+
 
 To speed up inference, you might want to run the models on GPU for which you need to add CUDA support for spacy as described in [here](https://spacy.io/usage).
 
 ## Usage
 
 ```python
+# Load the model through huspacy
+import huspacy
+huspacy.load()
+
 # Load the mode using spacy.load().
 import spacy
 nlp = spacy.load("hu_core_news_lg")
 
-# Or load the model importing as module.
+# Or load the model directly as a module.
 import hu_core_news_lg
 nlp = hu_core_news_lg.load()
 
-## Start processing your texts.
+# Either way you get the same model and can start processing your texts.
 doc = nlp('Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.')
 ```
 
-For a detailed guide on usgae, check [spaCy's documentation](https://spacy.io/usage/linguistic-features).
+For a detailed guide on usage, check [spaCy's documentation](https://spacy.io/usage/linguistic-features).
 
 ## Available Models 
 
@@ -64,7 +89,8 @@ Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spac
 │   ├── project.lock               -- Auto-generated project script
 │   ├── project.yml                -- Spacy3 Project file describing steps needed to build the model
 │   └── README.md                  -- Instructions on building a model from scratch
-├── huspacy            -- Source package
+├── huspacy            -- subproject for the PyPI distributable package
+├── tools              -- Source package for tools
 │   └── cli            -- Command line scripts (Python)
 ├── models             -- Trained models and their metadata
 ├── resources          -- Resource files
