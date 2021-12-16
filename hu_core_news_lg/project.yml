@@ -93,7 +93,7 @@ workflows:
     - init_vectors
     - preprocess_ud
     - preprocess_nerkor
-    - preprocess_szegedcorpus
+    - preprocess_szegedcorpus_merged
     - preprocess_hunnerwiki
     - preprocess_szegedner
     - preprocess_merge
@@ -106,19 +106,19 @@ workflows:
     - package
 
   tagger:
-    - preprocess_szegedcorpus
+    - preprocess_szegedcorpus_merged
     - preprocess_ud
     - pretrain_tagger
     - train_parser
 
   parser:
-    - preprocess_szegedcorpus
+    - preprocess_szegedcorpus_merged
     - preprocess_ud
     - pretrain_tagger
     - train_parser
 
   lemmatizer:
-    - preprocess_szegedcorpus
+    - preprocess_szegedcorpus_merged
     - preprocess_ud
     - train_lemmatizer
 
@@ -201,13 +201,14 @@ commands:
       - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
       - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
 
-  - name: preprocess_szegedcorpus
-    help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
+  - name: preprocess_szegedcorpus_merged
+    help: "Convert the Szeged corpus, UD and NerKor to dev/test/train and spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}/zip/"
-      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
+      - 'python ../scripts/convertConnlup.py'
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu ${vars.processed_data_path}/${vars.nerkor}/train.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu  ${vars.processed_data_path}/${vars.nerkor}/dev.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu'
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.nerkor}/test.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu'
 
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
@@ -217,6 +218,9 @@ commands:
       - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+      - ${vars.processed_data_path}/${vars.nerkor}/train.conllu
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.conllu
+      - ${vars.processed_data_path}/${vars.nerkor}/test.conllu
     outputs:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllup
       - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllup
@@ -224,7 +228,6 @@ commands:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
       - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
       - ${vars.processed_data_path}/${vars.szegedcorpus}/test.spacy
-
 
   - name: preprocess_hunnerwiki
     help: "Convert the hunNERwiki data to spaCy's format"
@@ -336,10 +339,10 @@ commands:
             --training.logger.project_name ${vars.wandb_project}
             --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
             --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
-            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+            --paths.dev ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy"
     deps:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
-      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
       - configs/${vars.tagger_config}.cfg
     outputs:
       - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
@@ -364,7 +367,6 @@ commands:
       - configs/${vars.parser_config}.cfg
     outputs:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-
 
   - name: train_ner
     help: "Train the NER model"
