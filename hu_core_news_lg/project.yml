@@ -82,8 +82,6 @@ assets:
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
   # Szeged corpus
-
-
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu
     url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.train.conllu
 
@@ -131,7 +129,7 @@ workflows:
     - push
 
 commands:
-  - name: init_vectors_fasttext
+  - name: init_vectors
     help: "Initialize vectors"
     script:
       - "bash -c 'bzcat ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
