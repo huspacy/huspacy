@@ -1,0 +1,39 @@
+idx	text	whitespace_	lemma_	pos_	morph	dep_	head.idx	ent_id	ent_type_
+0	Te	 	te	PROPN	Case=Nom|Number=Sing	ROOT	0	0	
+3	Jancsi		Jancsi	PROPN	Case=Nom|Number=Sing	flat:name	0	0	PER
+9	,	 	,	PUNCT		punct	21	0	
+11	de	 	de	CCONJ		cc	21	0	
+14	szépen	 	szép	ADJ	Case=Ess|Degree=Pos|Number=Sing	advmod:mode	21	0	
+21	süt	 	süt	VERB	Definite=Ind|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	conj	0	0	
+25	Budapesten	 	Budapest	PROPN	Case=Sup|Number=Sing	obl	21	0	LOC
+36	a	 	a	DET	Definite=Def|PronType=Art	det	38	0	
+38	nap		nap	ADV		nsubj	21	0	
+41	!	 	!	PUNCT		punct	61	0	
+43	Az	 	az	DET	Definite=Def|PronType=Art	det	54	0	
+46	aranyos	 	aranyos	ADJ	Case=Nom|Degree=Pos|Number=Sing	amod:att	54	0	
+54	gyerek	 	gyerek	NOUN	Case=Nom|Number=Sing	nsubj	61	0	
+61	elolvas	 	elolvas	VERB	Definite=Def|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	acl	0	0	
+69	egy	 	egy	DET	Definite=Ind|PronType=Art	det	78	0	
+73	szép	 	szép	ADJ	Case=Nom|Degree=Pos|Number=Sing	amod:att	78	0	
+78	könyvet		könyv	NOUN	Case=Acc|Number=Sing	obj	61	0	
+85	.		.	PUNCT		punct	0	0	
+
+idx	text	whitespace_	lemma_	pos_	dep_	head.idx	_.np
+0	Te	 	te	PROPN	ROOT	0	O
+3	Jancsi		Jancsi	PROPN	flat:name	0	O
+9	,	 	,	PUNCT	punct	21	O
+11	de	 	de	CCONJ	cc	21	O
+14	szépen	 	szép	ADJ	advmod:mode	21	O
+21	süt	 	süt	VERB	conj	0	O
+25	Budapesten	 	Budapest	PROPN	obl	21	O
+36	a	 	a	DET	det	38	O
+38	nap		nap	ADV	nsubj	21	O
+41	!	 	!	PUNCT	punct	61	O
+43	Az	 	az	DET	det	54	B
+46	aranyos	 	aranyos	ADJ	amod:att	54	I
+54	gyerek	 	gyerek	NOUN	nsubj	61	I
+61	elolvas	 	elolvas	VERB	acl	0	O
+69	egy	 	egy	DET	det	78	B
+73	szép	 	szép	ADJ	amod:att	78	I
+78	könyvet		könyv	NOUN	obj	61	I
+85	.		.	PUNCT	punct	0	O
