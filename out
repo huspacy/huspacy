@@ -37,3 +37,5 @@ idx	text	whitespace_	lemma_	pos_	dep_	head.idx	_.np
 73	szép	 	szép	ADJ	amod:att	78	I
 78	könyvet		könyv	NOUN	obj	61	I
 85	.		.	PUNCT	punct	0	O
+Te
+Az aranyos gyerek
