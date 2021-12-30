@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 ### Added
 ### Changed
-- NER model built on NerKor and SzegedNER
+- NER model is built on NerKor and SzegedNER
 - Improved lemmatization for numbers and sentence starting tokens
 - Improved lemmatization by using the whole Szeged Corpus
-- Improved PoS tagging by pretraining on a silver standard corpus
+- Improved PoS tagging by pretraining on a silver standard corpora
 - Improved Dependency parser by using the pretrained tagger
 - Improved sentence splitter: changing the architecture to the multitask neural model
     

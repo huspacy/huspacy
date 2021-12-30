@@ -3,9 +3,9 @@ name = "spacy-hungarian-models"
 version = "0.4.0"
 description = "Hungarian models for spaCy"
 authors = ["Gyorgy Orosz <gyorgy@orosz.link>"]
-license = "MIT"
+license = "Apache 2.0"
 packages = [
-    {include = "huspacy"},
+    {include = "tools"},
 ]
 
 
@@ -13,7 +13,6 @@ packages = [
 python = "^3.7.1"
 spacy = "^3.2.0"
 lemmy3 = "^3.2.0a"
-#lemmy3 = {path = "../lemmy", develop = true}
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
 spacy-huggingface-hub = "^0.0.4"
@@ -30,13 +29,13 @@ poethepoet = "^0.10.0"
 flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
-convert2conllu = 'huspacy.cli.convert_to_conllu:app'
-split_szeged_ner = 'huspacy.cli.split_szeged_ner:app'
-find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
-merge-eval-results = 'huspacy.cli.merge_eval_jsons:app'
-split-conllu = 'huspacy.cli.split_conllu:app'
-huspacyv3_benchmark = 'huspacy.cli.benchmarks.huspacyv3_benchmark:app'
-conll18_ud_eval = 'huspacy.cli.conll18_ud_eval:main'
+convert2conllu = 'tools.cli.convert_to_conllu:app'
+split_szeged_ner = 'tools.cli.split_szeged_ner:app'
+find-corpus-errors = 'tools.cli.find_corpus_errors:app'
+merge-eval-results = 'tools.cli.merge_eval_jsons:app'
+split-conllu = 'tools.cli.split_conllu:app'
+huspacyv3_benchmark = 'tools.cli.benchmarks.huspacyv3_benchmark:app'
+conll18_ud_eval = 'tools.cli.conll18_ud_eval:main'
 
 [tool.poe.tasks]
 cuda112 = "python -m pip install 'spacy[cuda112]'"

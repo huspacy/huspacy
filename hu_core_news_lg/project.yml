@@ -12,7 +12,6 @@ vars:
 
   models_path: ../models
   packages_path: ../packages
-  resources_path: ../resources
 
   raw_data_path: ../data/raw
   processed_data_path: ../data/processed
@@ -30,7 +29,7 @@ vars:
   szegedner: SzegedNER
   ner_merged: ner_merged
 
-  package_init: ../huspacy/components.py
+  package_init: ../tools/components.py
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg
@@ -84,8 +83,6 @@ assets:
     url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
 
   # Szeged corpus
-
-
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu
     url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.train.conllu
 
@@ -498,7 +495,7 @@ commands:
           ${vars.models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
           --code ${vars.package_init}
-          --meta ${vars.resources_path}/${vars.package_name}.json
+          --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"

@@ -1,7 +1,7 @@
 {
   "lang": "hu",
   "name": "hu_core_news_lg",
-  "description": "Hungarian Spacy pipeline. Components: tok2vec, hun_sentencizer, tagger, morphologizer, hun_lemmy, parser, ner",
+  "description": "Hungarian Spacy pipeline. Components: tok2vec, senter, tagger, morphologizer, hun_lemmy, parser, ner",
   "author": "MILAB Spacy Research Group",
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/spacy-hu/spacy-hungarian-models",
