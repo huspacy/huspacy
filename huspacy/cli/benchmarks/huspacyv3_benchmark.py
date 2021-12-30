@@ -57,7 +57,6 @@ def raw_text(input_file: str, output_file: str = None, gpu: bool = False, time: 
     nlp = load_pipeline(gpu, ner, model_name)
     if output_file:
         nlp.add_pipe("conll_formatter")
-        output_file = open(output_file, 'w', encoding='utf-8')
 
     data_file = open(input_file, "r", encoding="utf-8")
     sentences = list(parse_incr(data_file))
@@ -72,8 +71,8 @@ def raw_text(input_file: str, output_file: str = None, gpu: bool = False, time: 
         res = nlp(texts)
         
     if output_file:
-        print(res._.conll_str, sep="\n", file=output_file)
-        output_file.close()
+        with open(output_file, 'w', encoding='utf-8') as writer:
+            print(rename_root(res._.conll_str), sep="\n", file=writer)
 
     if memory: print(f'Maximum memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.2f} MiB')
 
@@ -104,8 +103,12 @@ def load_pipeline(use_gpu: bool, with_ner: bool, model_name: str = "hu_core_news
 def runner(nlp, output_file, sentences):
     for tokenList in tqdm(sentences):
         doc = nlp(tokenList.metadata['text'])
-        print(f'# sent_id = {tokenList.metadata["sent_id"]}', f'# text = {tokenList.metadata["text"]}', doc._.conll_str,
+        print(f'# sent_id = {tokenList.metadata["sent_id"]}', f'# text = {tokenList.metadata["text"]}', rename_root(doc._.conll_str),
               sep='\n', file=output_file)
+
+
+def rename_root(text):
+    return text.replace("ROOT", "root")
 
 
 if __name__ == '__main__':
