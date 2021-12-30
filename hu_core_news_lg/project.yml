@@ -39,7 +39,7 @@ vars:
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: 2
+  gpu: -1
 
 #TODO: remove GPU settings
 #TODO: provide examples for WANDB and GPU settings
@@ -469,6 +469,26 @@ commands:
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
       - ${vars.models_path}/${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+  
+
+  - name: evaluate_conll
+    help: "Evaluate the model with the official conll script"
+    script:
+      - "mkdir -p ${vars.result_data_path}"
+      - "huspacyv3_benchmark raw-text
+        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        --output-file ${vars.result_data_path}/ud_test.conllu
+        --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
+      - bash -c "conll18_ud_eval
+        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.result_data_path}/ud_test.conllu
+        -v | tee ${vars.result_data_path}/ud_test_conll18.log"
+    deps:
+      - ${vars.models_path}/${vars.package_name}-${vars.package_version}
+      - ${vars.package_init}
+    outputs_no_cache:
+      - ${vars.result_data_path}/ud_test.conllu
+      - ${vars.result_data_path}/ud_test_conll18.log
 
 
   - name: package
@@ -488,27 +508,6 @@ commands:
     outputs_no_cache:
 #      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
-
-  - name: evaluate_conll
-    help: "Evaluate the model with the official conll script"
-    script:
-      - "pip install
-          ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl"
-      - "mkdir -p ${vars.result_data_path}"
-      - "huspacyv3_benchmark raw-text
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
-        --output-file ${vars.result_data_path}/ud_test.conllu"
-      - bash -c "conll18_ud_eval
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
-        ${vars.result_data_path}/ud_test.conllu
-        -v | tee ${vars.result_data_path}/ud_test_conll18.log"
-    deps:
-      - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
-    outputs_no_cache:
-#      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz
-      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
-
 
   - name: push #TODO: github release
     help: "Upload the trained model to the Hugging Face Hub"
