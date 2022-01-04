@@ -32,13 +32,13 @@ vars:
   package_init: ../tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg
+  wandb_project: hu_core_news_lg-0.4.1
 
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: -1
+  gpu: 0
 
 #TODO: remove GPU settings
 #TODO: provide examples for WANDB and GPU settings
@@ -101,8 +101,8 @@ workflows:
     - train_ner
     - assemble
     - evaluate
-    - package
     - evaluate_conll
+    - package
 
   tagger:
     - preprocess_szegedcorpus
