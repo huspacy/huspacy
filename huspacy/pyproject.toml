@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huspacy"
-version = "0.4.0-alpha.8"
+version = "0.4.1"
 description = "HuSpaCy: industrial strength Hungarian natural language processing"
 authors = ["MILAB HuSpaCy Group <gyorgy@orosz.link>"]
 maintainers = ["György Orosz <gyorgy@orosz.link>"]
