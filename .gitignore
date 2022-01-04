@@ -77,11 +77,16 @@ target/
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# exclude data from source control by default
-/data/*
-!/data/Makefile
-/models/*
-!/models/Makefile
-
 # Mac OS-specific storage files
 .DS_Store
+
+# Virtual envs
+.venv/
+
+/data
+/models
+/packages
+/hu_*/metrics
+hu_core_news_lg/wandb
+.pytest_cache
+/hub

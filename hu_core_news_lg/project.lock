@@ -1,0 +1,237 @@
+publish:
+  cmd: python -m spacy run publish
+  script:
+    - huggingface-cli login
+    - spacy huggingface-hub push ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      --org spacy-hu --local-repo ../hub --msg "Update spacy pipeline to 0.1.0" --verbose
+    - huggingface-cli logout
+  deps:
+    - path: ../packages/hu_core_news_lg-0.1.0/dist/hu_core_news_lg-0.1.0-py3-none-any.whl
+      md5: cd7a70c3e13d61fb14ce53a22b75d76f
+  outs: []
+  spacy_version: 3.1.3
+  spacy_git_version: 8bda39f08
+preprocess_szegedcorpus:
+  cmd: python -m spacy run preprocess_szegedcorpus
+  script:
+    - mkdir -p ../data/processed/SzegedCorpus/zip/
+    - bash -c 'cat ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../data/raw/SzegedCorpus/univdep.hu.train.conllu
+      > ../data/processed/SzegedCorpus/train.conllu'
+    - cp ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ../data/processed/SzegedCorpus/dev.conllu
+    - cp ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ../data/processed/SzegedCorpus/test.conllu
+    - python -m spacy convert ../data/processed/SzegedCorpus/train.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/SzegedCorpus/dev.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/SzegedCorpus/test.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+  deps:
+    - path: ../data/raw/SzegedCorpus
+      md5: 88bdd041a3eda14fe444e3283857a5c7
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../data/processed/SzegedCorpus/train.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/dev.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/test.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/train.spacy
+      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+    - path: ../data/processed/SzegedCorpus/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../data/processed/SzegedCorpus/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.2.0
+  spacy_git_version: 0fc3dee77
+preprocess_ud:
+  cmd: python -m spacy run preprocess_ud
+  script:
+    - mkdir -p ../data/processed/UD_Hungarian-Szeged
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy ../data/processed/UD_Hungarian-Szeged/train.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy ../data/processed/UD_Hungarian-Szeged/dev.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy ../data/processed/UD_Hungarian-Szeged/test.spacy
+  deps:
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.1.3
+  spacy_git_version: 8bda39f08
+train_lemmatizer:
+  cmd: python -m spacy run train_lemmatizer
+  script:
+    - lemmy train ../data/processed/SzegedCorpus/train.conllu ../models/lemmy-0.4.0.bin
+    - lemmy evaluate ../models/lemmy-0.4.0.bin ../data/processed/SzegedCorpus/test.conllu
+    - lemmy evaluate ../models/lemmy-0.4.0.bin ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+  deps:
+    - path: ../data/processed/NerKor/train.conllup
+      md5: 12373db2a748d3906c278db028889b40
+    - path: ../data/processed/NerKor/test.conllup
+      md5: 8009ac6a7b07ddcd0025a0250dae1623
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../models/lemmy-0.4.0.bin
+      md5: a6c3bee736a31ec47069405dc6b954b6
+  spacy_version: 3.2.0
+  spacy_git_version: 0fc3dee77
+pretrain_tagger:
+  cmd: python -m spacy run pretrain_tagger
+  script:
+    - spacy train configs/tagger.cfg --output ../models/hu_core_news_lg-tagger-0.7.0
+      --gpu-id -1 --nlp.lang=hu --training.logger.project_name hu_core_news_lg --paths.vectors
+      ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/SzegedCorpus/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/SzegedCorpus/train.spacy
+      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: configs/tagger.cfg
+      md5: 86a65653ea42bfc303463cc5f9ccd8a6
+  outs:
+    - path: ../models/hu_core_news_lg-tagger-0.7.0/model-best
+      md5: 117b7a88da63375ab98952934551211c
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser:
+  cmd: python -m spacy run train_parser
+  script:
+    - spacy train configs/parser.cfg --output ../models/hu_core_news_lg-parser-0.7.0
+      --gpu-id -1 --nlp.lang=hu --training.logger.project_name hu_core_news_lg --paths.vectors
+      ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy --paths.tagger_model
+      ../models/hu_core_news_lg-tagger-0.7.0/model-best
+  deps:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../models/hu_core_news_lg-tagger-0.7.0/model-best
+      md5: 117b7a88da63375ab98952934551211c
+    - path: configs/parser.cfg
+      md5: 57f8990f95b8b209e0537c07e1ef5fcf
+  outs:
+    - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
+      md5: d3a792bdde8f214435a7ff1f04921e53
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_ner:
+  cmd: python -m spacy run train_ner
+  script:
+    - spacy train configs/ner.cfg --output ../models/hu_core_news_lg-ner_merged-0.4.0
+      --nlp.lang=hu --gpu-id 2 --training.logger.project_name hu_core_news_lg --paths.vectors
+      ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/ner_merged/train.spacy
+      --paths.dev ../data/processed/ner_merged/dev.spacy --paths.tagger_model ../models/hu_core_news_lg-tagger-0.4.0/model-best
+  deps:
+    - path: ../data/processed/ner_merged/train.spacy
+      md5: 95c5f0fd960ddef4317bd04e0605d4bc
+    - path: ../data/processed/ner_merged/dev.spacy
+      md5: f0f4e27c951971ebd10fb3c1a09983c9
+    - path: ../data/processed/ner_merged/test.spacy
+      md5: 8969cbc1c90872d7ee0b298948f056a1
+  outs:
+    - path: ../models/hu_core_news_lg-ner_merged-0.4.0/model-best
+      md5: 424beaeb3385032ce808e9536fedb76e
+  spacy_version: 3.2.0
+  spacy_git_version: 0fc3dee77
+assemble:
+  cmd: python -m spacy run assemble
+  script:
+    - spacy assemble configs/assemble.cfg --code ../huspacy/components.py ../models/hu_core_news_lg-0.4.0
+      --paths.parser_model ../models/hu_core_news_lg-parser-0.4.0/model-best --paths.lemmy_model
+      ../models/lemmy-0.4.0.bin --paths.ner_model ../models/hu_core_news_lg-ner_merged-0.4.0/model-best
+  deps:
+    - path: ../models/hu_core_news_lg-parser-0.4.0/model-best
+      md5: 51d8f98aeeb22943792b1a277fce47c4
+    - path: ../models/hu_core_news_lg-ner_merged-0.4.0/model-best
+      md5: 424beaeb3385032ce808e9536fedb76e
+    - path: ../models/lemmy-0.4.0.bin
+      md5: a6c3bee736a31ec47069405dc6b954b6
+    - path: ../huspacy/components.py
+      md5: dda213c21c12e22ceae3430395577ece
+  outs:
+    - path: ../models/hu_core_news_lg-0.4.0
+      md5: 3ea7063f0ac1dda716df9043b543c25d
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+package:
+  cmd: python -m spacy run package
+  script:
+    - spacy package ../models/hu_core_news_lg-0.4.0 ../packages --build 'wheel' --code
+      ../huspacy/components.py --meta ../resources/hu_core_news_lg.json --name core_news_lg
+      --version 0.4.0 --force
+  deps:
+    - path: ../models/hu_core_news_lg-0.4.0
+      md5: 99c76f7048c8235aa8061645a44fbbcc
+    - path: ../huspacy/components.py
+      md5: dda213c21c12e22ceae3430395577ece
+  outs:
+    - path: ../packages/hu_core_news_lg-0.4.0/dist/hu_core_news_lg-0.4.0-py3-none-any.whl
+      md5: d7343fa5d77823836f177f095a82d411
+  spacy_version: 3.2.0
+  spacy_git_version: 0fc3dee77
+evaluate_conll:
+  cmd: python -m spacy run evaluate_conll
+  script:
+    - mkdir -p ../data/result
+    - huspacyv3_benchmark raw-text ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      --output-file ../data/result/ud_test.conllu --model-name ../models/hu_core_news_lg-0.4.0
+    - bash -c "conll18_ud_eval ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      ../data/result/ud_test.conllu -v | tee ../data/result/ud_test_conll18.log"
+  deps:
+    - path: ../models/hu_core_news_lg-0.4.0
+      md5: 3ea7063f0ac1dda716df9043b543c25d
+    - path: ../tools/components.py
+      md5: dda213c21c12e22ceae3430395577ece
+  outs:
+    - path: ../data/result/ud_test.conllu
+      md5: 2ff158ce27a8121f8f1f416a328c2106
+    - path: ../data/result/ud_test_conll18.log
+      md5: d47a7f618eff4b4e1208fbc2863834c6
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+evaluate:
+  cmd: python -m spacy run evaluate
+  script:
+    - spacy evaluate --code ../huspacy/components.py ../models/hu_core_news_lg-0.4.0
+      ../data/processed/UD_Hungarian-Szeged/test.spacy --output ../models/eval-parser-hu_core_news_lg-0.4.0.json
+    - spacy evaluate --gold-preproc --code ../huspacy/components.py ../models/hu_core_news_lg-0.4.0
+      ../data/processed/ner_merged/test.spacy --output ../models/eval-ner-hu_core_news_lg-0.4.0.json
+    - merge-eval-results ../models/eval-parser-hu_core_news_lg-0.4.0.json ../models/eval-ner-hu_core_news_lg-0.4.0.json
+      ../models/../models/hu_core_news_lg-0.4.0/meta.json
+  deps:
+    - path: ../models/hu_core_news_lg-0.4.0
+      md5: 805d6c1b1cba97e7f70a8e295c8021f4
+    - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  outs:
+    - path: ../models/eval-parser-hu_core_news_lg-0.4.0.json
+      md5: 4a92722a1de58e2db1d94003f759a620
+    - path: ../models/eval-parser-hu_core_news_lg-0.4.0.json
+      md5: 4a92722a1de58e2db1d94003f759a620
+    - path: ../models/../models/hu_core_news_lg-0.4.0/meta.json"
+      md5: null
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41

@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "huspacy"
+version = "0.4.1"
+description = "HuSpaCy: industrial strength Hungarian natural language processing"
+authors = ["MILAB HuSpaCy Group <gyorgy@orosz.link>"]
+maintainers = ["György Orosz <gyorgy@orosz.link>"]
+keywords = ["nlp", "huspacy", "Hungarian", "text processing", "text processing", "language processing", "text mining",
+    "tokenization", "sentence boundary detection", "sbd", "sentence splitting",  "pos tagging", "tagging",
+    "lemmatization", "ner", "named entity recognition", "parsing", "word embeddings", "word vectors",
+    "spacy", "spacy model"]
+license = "Apache-2.0"
+homepage = "https://github.com/huspacy/huspacy"
+repository = "https://github.com/huspacy/huspacy"
+readme = "README.md"
+classifiers=[
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Topic :: Text Processing',
+    'Topic :: Text Processing :: Linguistic',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Scientific/Engineering :: Human Machine Interfaces',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+]
+packages = [
+    {include = "huspacy"},
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.7.1"
+spacy = "^3.2.1"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
