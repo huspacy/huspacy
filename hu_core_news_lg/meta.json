@@ -4,7 +4,7 @@
   "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
   "author": "MILAB Spacy Research Group",
   "email": "gyorgy@orosz.link",
-  "url": "https://github.com/spacy-hu/spacy-hungarian-models",
+  "url": "https://github.com/huspacy/huspacy",
   "license": "cc-by-sa-4.0",
   "spacy_version": ">=3.2.0,<3.3.0",
   "sources": [

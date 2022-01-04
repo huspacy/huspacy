@@ -51,7 +51,7 @@ To run, use the `python emtsv_benchmark.py` command with the following arguments
 
 ### HuSpaCy w/ spaCy 2
 
-You need to install spaCy 2, the spacy-conll==2.1.0 package, and [this whl file](https://github.com/spacy-hu/spacy-hungarian-models/releases/hu_core_ud_lg-0.1.0).
+You need to install spaCy 2, the spacy-conll==2.1.0 package, and [this whl file](https://github.com/huspacy/huspacy/releases/hu_core_ud_lg-0.1.0).
 To run, use the `python huspacyv2_benchmark.py` command with the following arguments:
 
 - `main <input file> [--output-file <output file>] [{--time} / --no-time] [{--memory} / --no-memory]`

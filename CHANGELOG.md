@@ -26,22 +26,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Hungarian spacy model based on the [UD Hungarian corpus](https://github.com/UniversalDependencies/UD_Hungarian-Szeged)
 
-## [0.3.1](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.3.1) - 2019-10-03
+## [0.3.1](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.3.1) - 2019-10-03
 ## Fixed
 - Compatibility w/ Spacy 2.2.x
 
-## [0.3.0](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.3.0) - 2019-09-26
+## [0.3.0](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.3.0) - 2019-09-26
 ### Added
 - Named Entity Recognition
 
-## [0.2.0](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.2.0) - 2019-06-02
+## [0.2.0](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.2.0) - 2019-06-02
 ### Fixed
 - Compatibility w/ Spacy 2.1.x
 ### Added
 - Minor sentence segmentation improvements
 - Minor improvements in PoS tagging
 
-## [0.1.0](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_core_ud_lg-0.1.0) - 2019-01-04
+## [0.1.0](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.1.0) - 2019-01-04
 ### Added
 - Lemmatization support using lemmy
 - Rule based lemmatizer
@@ -50,7 +50,7 @@ Hungarian spacy model based on the [UD Hungarian corpus](https://github.com/Univ
 - Support for spaCy 2.x
 - Using the [UD Hungarian corpus](https://github.com/UniversalDependencies/UD_Hungarian-Szeged) for the whole training process
 
-## [0.0.1](https://github.com/spacy-hu/spacy-hungarian-models/releases/tag/hu_tagger_web_md-0.1.0) - 2017-06-11
+## [0.0.1](https://github.com/huspacy/huspacy/releases/tag/hu_tagger_web_md-0.1.0) - 2017-06-11
 ### Added
 - Experimental support for spaCy 1.x
 - PoS Tagger model with word vectors trained on an unreleased automatically transcribed Szeged Korpusz version

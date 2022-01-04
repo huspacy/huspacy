@@ -9,8 +9,8 @@ keywords = ["nlp", "huspacy", "Hungarian", "text processing", "text processing",
     "lemmatization", "ner", "named entity recognition", "parsing", "word embeddings", "word vectors",
     "spacy", "spacy model"]
 license = "Apache-2.0"
-homepage = "https://github.com/spacy-hu/spacy-hungarian-models"
-repository = "https://github.com/spacy-hu/spacy-hungarian-models"
+homepage = "https://github.com/huspacy/huspacy"
+repository = "https://github.com/huspacy/huspacy"
 readme = "README.md"
 classifiers=[
     'Development Status :: 3 - Alpha',

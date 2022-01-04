@@ -1,15 +1,15 @@
 
-[![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/spacy-hu/spacy-hungarian-models)
+[![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/huspacy/huspacy)
 [![spacy](https://img.shields.io/badge/built%20with-spaCy-09a3d5.svg)](https://spacy.io)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/huspacy)
 [![PyPI version](https://badge.fury.io/py/huspacy.svg)](https://pypi.org/project/huspacy/)
-[![license: Apache-2.0](https://img.shields.io/github/license/spacy-hu/spacy-hungarian-models)](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE)
+[![license: Apache-2.0](https://img.shields.io/github/license/huspacy/huspacy)](https://github.com/huspacy/huspacy/blob/master/LICENSE)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fspacy-hu%2Fspacy-hungarian-models&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
 [![pip downloads](https://img.shields.io/pypi/dm/huspacy.svg)](https://pypi.org/project/huspacy/)
 [![Demo](https://img.shields.io/badge/Try%20the-Demo-important)](https://huggingface.co/spaces/huspacy/demo)
-[![stars](https://img.shields.io/github/stars/spacy-hu/spacy-hungarian-models?style=social)](https://github.com/spacy-hu/spacy-hungarian-models)
+[![stars](https://img.shields.io/github/stars/huspacy/huspacy?style=social)](https://github.com/huspacy/huspacy)
 
 
 # HuSpaCy: Industrial-strength Hungarian NLP
@@ -80,7 +80,7 @@ doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 Currently, we provide a single large model which achieves a good balance between accuracy and processing speed. A demo of this model is available at [Hugging Face Spaces](https://huggingface.co/spaces/huspacy/demo).
 This default model ([`hu_core_news_lg`](https://huggingface.co/huspacy/hu_core_news_lg)) provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word vectors.
 
-Models' changes are recorded in the [changelog](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/CHANGELOG.md).
+Models' changes are recorded in the [changelog](https://github.com/huspacy/huspacy/blob/master/CHANGELOG.md).
 
 ## Development
  
@@ -134,12 +134,12 @@ Additionally, please indicate the version of the model you used so that your res
 
 ## License
 
-This library is released under the [Apache 2.0 License](https://github.com/spacy-hu/spacy-hungarian-models/blob/master/LICENSE)
+This library is released under the [Apache 2.0 License](https://github.com/huspacy/huspacy/blob/master/LICENSE)
 
 The trained models have their own license ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-nc/4.0/)) as described on the [models page](https://huggingface.co/spacy-hu/hu_core_news_lg).
 
 ## Contact
-For feature request issues and bugs please use the [GitHub Issue Tracker](https://github.com/spacy-hu/spacy-hungarian-models/issues). Otherwise, please use the [Discussion Forums](https://github.com/spacy-hu/spacy-hungarian-models/discussions).
+For feature request issues and bugs please use the [GitHub Issue Tracker](https://github.com/huspacy/huspacy/issues). Otherwise, please use the [Discussion Forums](https://github.com/huspacy/huspacy/discussions).
 
 ## Acknowledgments
 
