@@ -22,6 +22,7 @@ wheel = "^0.37.0"
 scikit-learn = "^0.24.2"
 spacy_conll = "^3.0"
 contexttimer = "^0.3.3"
+bump2version = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -36,6 +37,7 @@ merge-eval-results = 'tools.cli.merge_eval_jsons:app'
 split-conllu = 'tools.cli.split_conllu:app'
 huspacyv3_benchmark = 'tools.cli.benchmarks.huspacyv3_benchmark:app'
 conll18_ud_eval = 'tools.cli.conll18_ud_eval:main'
+
 
 [tool.poe.tasks]
 cuda112 = "python -m pip install 'spacy[cuda112]'"
