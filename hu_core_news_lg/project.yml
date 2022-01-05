@@ -8,7 +8,7 @@ vars:
   core_package_name: core_news_lg
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
-  package_version: 0.4.1
+  package_version: 0.4.2
 
   models_path: ../models
   packages_path: ../packages

@@ -39,7 +39,7 @@ import huspacy
 huspacy.download()
 
 # Download the specified model 
-huspacy.download(version="v0.4.1")
+huspacy.download(version="v0.4.2")
 
 # Load the previously downloaded model (hu_core_news_lg)
 nlp = huspacy.load()
