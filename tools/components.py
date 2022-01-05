@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import Optional, Callable
+from typing import Optional, Callable, Iterable
 
 from spacy.lang.hu import Hungarian
 from spacy.language import Language
@@ -10,38 +10,33 @@ from spacy.tokens.doc import Doc
 # noinspection PyUnresolvedReferences
 from spacy.training.example import Example
 from spacy.util import ensure_path
+from spacy.pipeline import Pipe
 
 from lemmy import Lemmatizer
 
 
-# noinspection PyUnusedLocal
-@Hungarian.factory(
-    "lemmatizer",
-    assigns=["token.lemma"],
-    requires=["token.pos"],
-    default_config={
-        "model_path": None,
-        "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
-    },
-    # default_score_weights={"lemma_acc": 1.0},
-)
-def make_lemmatizer(nlp: Language, name: str, model_path: Path, scorer: Optional[Callable] ) -> "HunLemmatizer":
-    # FIXME: this is a warkaround, `assemble` always passes the configured model_path,
-    #  which becomes invalid when the model is assembled / packaged
-    model = None
-    if model_path.exists():
-        model = Lemmatizer.from_disk(model_path)
+class HunLemmatizer(Pipe):
+    # noinspection PyUnusedLocal
+    @staticmethod
+    @Hungarian.factory(
+        "lemmatizer",
+        assigns=["token.lemma"],
+        requires=["token.pos"],
+        default_config={
+            "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
+        },
+        # default_score_weights={"lemma_acc": 1.0},
+    )
+    def create(nlp: Language, name: str, scorer: Optional[Callable]) -> "HunLemmatizer":
+        return HunLemmatizer(None, scorer)
 
-    return HunLemmatizer(model, scorer)
-
-
-class HunLemmatizer:
-
-    def __init__(self, model: Lemmatizer, scorer: Optional[Callable] = lemmatizer_score):
-        self._lemmy: Lemmatizer = model
+    def __init__(self, model: Optional[Lemmatizer], scorer: Optional[Callable] = lemmatizer_score):
+        self._lemmy: Optional[Lemmatizer] = model
         self.scorer = scorer
 
     def __call__(self, doc: Doc) -> Doc:
+        assert self._lemmy is not None, "The lemmatizer should be initialized first"
+
         token: Token
         for token in doc:
             token.lemma_ = self._lemmy.lemmatize(token.tag_, token.text, token.is_sent_start)
@@ -49,6 +44,8 @@ class HunLemmatizer:
 
     # noinspection PyUnusedLocal
     def to_disk(self, path, exclude=tuple()):
+        assert self._lemmy is not None, "The lemmatizer should be initialized first"
+
         path: Path = ensure_path(path)
         path.mkdir(exist_ok=True)
         self._lemmy.to_disk(path / "model")
@@ -59,8 +56,17 @@ class HunLemmatizer:
         self._lemmy = Lemmatizer.from_disk(path / "model")
         return self
 
+    def initialize(
+            self,
+            get_examples: Callable[[], Iterable[Example]],
+            *,
+            nlp: Language = None,
+            model_path: str = None
+    ) -> None:
+        self._lemmy = Lemmatizer.from_disk(model_path)
 
-class HunSentencizer:
+
+class HunSentencizer(Pipe):
     # noinspection PyUnusedLocal
     @staticmethod
     @Language.factory("hun_sentencizer")
