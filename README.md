@@ -125,7 +125,7 @@ Additionally, please indicate the version of the model you used so that your res
 
 ```bibtex
 @misc{HuSpaCy:2021,
-  title = {{HuSpaCy: industrial strength Hungarian natural language processing}},
+  title = {{HuSpaCy: an industrial-strength Hungarian natural language processing toolkit}},
   booktitle = {{XVIII. Magyar Sz{\'a}m{\'\i}t{\'o}g{\'e}pes Nyelv{\'e}szeti Konferencia}},
   author = {Orosz, Gy{\"o}rgy and Sz{\' a}nt{\' o}, Zsolt and Berkecz, P{\' e}ter and Szab{\' o}, Gerg{\H o} and Farkas, Rich{\' a}rd}, 
   year = {in press 2021},
