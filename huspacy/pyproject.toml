@@ -2,7 +2,7 @@
 name = "huspacy"
 version = "0.4.1"
 description = "HuSpaCy: industrial strength Hungarian natural language processing"
-authors = ["MILAB HuSpaCy Group <gyorgy@orosz.link>"]
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 maintainers = ["György Orosz <gyorgy@orosz.link>"]
 keywords = ["nlp", "huspacy", "Hungarian", "text processing", "text processing", "language processing", "text mining",
     "tokenization", "sentence boundary detection", "sbd", "sentence splitting",  "pos tagging", "tagging",

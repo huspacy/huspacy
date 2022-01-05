@@ -2,7 +2,7 @@
   "lang": "hu",
   "name": "hu_core_news_lg",
   "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
-  "author": "MILAB Spacy Research Group",
+  "author": "SzegedAI, MILAB",
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/huspacy/huspacy",
   "license": "cc-by-sa-4.0",

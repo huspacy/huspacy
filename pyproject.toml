@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "huspacy"
 version = "0.4.1"
-description = "Hungarian models for spaCy"
-authors = ["Gyorgy Orosz <gyorgy@orosz.link>"]
+description = "HuSpaCy: industrial strength Hungarian natural language processing"
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "Apache 2.0"
 packages = [
     {include = "tools"},
