@@ -119,7 +119,7 @@ Models' changes are recorded in the [changelog](https://github.com/huspacy/huspa
 
 ## Citing
 
-If you use the models or this library in your research please cite this [paper]().</br>
+If you use the models or this library in your research please cite this [paper](https://github.com/huspacy/articles/releases/download/MSZNY_2022/HuSpaCy_MSZNY_2022.pdf).</br>
 Additionally, please indicate the version of the model you used so that your research can be reproduced.
 
 
@@ -128,6 +128,7 @@ Additionally, please indicate the version of the model you used so that your res
   title = {{HuSpaCy: an industrial-strength Hungarian natural language processing toolkit}},
   booktitle = {{XVIII. Magyar Sz{\'a}m{\'\i}t{\'o}g{\'e}pes Nyelv{\'e}szeti Konferencia}},
   author = {Orosz, Gy{\"o}rgy and Sz{\' a}nt{\' o}, Zsolt and Berkecz, P{\' e}ter and Szab{\' o}, Gerg{\H o} and Farkas, Rich{\' a}rd}, 
+  location = {{Szeged}},
   year = {in press 2021},
 }
 ```
