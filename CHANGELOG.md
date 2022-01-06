@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## `hu_core_news_lg`
 
 ## Unreleased
+## 0.4.2
+### Fixed
+- Better integration of the lemmatizer
+- Updated the project's documentation
 
 ## 0.4.1
 ### Added
