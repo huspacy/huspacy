@@ -1,0 +1,45 @@
+{
+  "lang": "hu",
+  "name": "hu_core_news_lg",
+  "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
+  "author": "SzegedAI, MILAB",
+  "email": "gyorgy@orosz.link",
+  "url": "https://github.com/huspacy/huspacy",
+  "license": "cc-by-sa-4.0",
+  "spacy_version": ">=3.2.0,<3.3.0",
+  "sources": [
+    {
+      "name": "UD Hungarian Szeged",
+      "url": "https://universaldependencies.org/treebanks/hu_szeged/index.html",
+      "license": "CC-BY-NC-SA-3.0",
+      "author": "Richárd Farkas, Katalin Simkó, Zsolt Szántó, Viktor Varga, Veronika Vincze (MTA-SZTE Research Group on Artificial Intelligence)"
+    },
+    {
+      "name": "NYTK-NerKor corpus",
+      "url": "https://github.com/nytud/NYTK-NerKor",
+      "license": "CC BY-SA 4.0",
+      "author": "Eszter Simon, Noémi Vadász (Department of Language Technology and Applied Linguistics)"
+    },
+    {
+      "name": "hunNERwiki",
+      "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
+      "license": "CC-BY-SA-3.0",
+      "author": "Eszter Simon, Dávid Márk Nemeskey (HLT Group, Budapest University of Technology and Economics)"
+    },
+    {
+      "name": "Szeged NER Corpus",
+      "url": "https://rgai.inf.u-szeged.hu/node/130",
+      "license": "CC-BY-NC-SA-3.0",
+      "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
+    },
+    {
+      "name": "Webcorpuswiki word2vec model",
+      "url": "https://github.com/oroszgy/hunlp-resources/releases/tag/webcorpuswiki_word2vec_v0.1",
+      "license": "CC-BY-SA-4.0",
+      "author": "György Orosz"
+    }
+  ],
+  "requirements": [
+    "lemmy3==3.2.0a"
+  ]
+}

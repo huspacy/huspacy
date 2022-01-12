@@ -1,24 +1,24 @@
-import glob
-from pathlib import Path
-
-import typer
-from typing import Tuple, List, Iterable
-
 import itertools
 import logging
-from tqdm import tqdm
-from sklearn.model_selection import train_test_split
+from typing import Tuple, List, Iterable, Union
 
 import spacy
-from spacy.training import iob_to_biluo, biluo_tags_to_offsets
+import typer
+from sklearn.model_selection import train_test_split
+from spacy.tokens import Doc
+from spacy.training import iob_to_biluo
+from spacy.training.iob_utils import offsets_from_biluo_tags
+from tqdm import tqdm
 
 app = typer.Typer()
 
 SentenceWithTags = Tuple[List[str], List[str]]
 TaggedSentence = Tuple[str, List[Tuple[int, int, str]]]
 
+
 def sentence_to_str(sent: SentenceWithTags) -> str:
     return "\n".join(["{}\t{}".format(tok, tag) for tok, tag in zip(*sent)])
+
 
 class WhitespaceTokenizer(object):
     def __init__(self, vocab):
@@ -36,12 +36,12 @@ class DataIterator:
         self.nlp = spacy.blank("hu")
         self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
-    def _sentence_to_spacy_annotations(self, tokens, tags) -> Tuple[str, Tuple]:
+    def _sentence_to_spacy_annotations(self, tokens, tags) -> TaggedSentence:
         sentence = " ".join(tokens)
         tags = iob_to_biluo(tags)
 
         doc = self.nlp(sentence)
-        annotations = offsets_from_biluo_tags(doc, tags)
+        annotations: List[Tuple[int, int, Union[str, int]]] = offsets_from_biluo_tags(doc, tags)
         annotations = [
             (begin, end, tag) for begin, end, tag in annotations if len(tag) > 0
         ]
@@ -97,7 +97,7 @@ def split_ner_data(szegedner_data, train_data, dev_data, test_data):
             f.write(sentence_to_str(s))
             f.write("\n")
             f.write("\n")
-            
+
 
 if __name__ == "__main__":
     app()

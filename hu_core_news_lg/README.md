@@ -9,16 +9,20 @@ The model builds on the [Hungarian UD treebank](https://github.com/UniversalDepe
 
 ## Build the model
 
-Activate the virtual environment: `poetry shell`
+Activate the virtual environment: `poetry shell` and `cd hu_core_news_lg`
 
 1. Fetch datafiles: `python -m spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)
-2. Download and transform word vectors:`python -m spacy project run convert_vectors`
-3. Preprocess the UD corpus: `python -m spacy project run preprocess_ud`
-4. Preprocess the NerKor corpus: `python -m spacy project run preprocess_nerkor`
-5. Train the tagger / parser model `python -m spacy project run train_praser`
-6. Train the lemmatizer `python -m spacy project run train_lemmatizer`
-7. Train the NER `python -m spacy project run train_ner`
+2. Build all models: `python -m spacy project run all`
+
+## Publish models and packages
+
+1. Make sure dependencies are up-to-date: `poetry update`
+2. Bump version: `bumpversion patch` / `minor` / `major`
+3. Build the model as described in the previous section
+4. Publish the new model to Hugging Face Hub: `python -m spacy project run all` (must be executed in the model's directory)
+5. Create a new `huspacy` release by issuing: `poetry build -f wheel` (in the `huspacy` directory)
+6. Upload the new release to PyPI: `poetry publish` (execute in the `huspacy` directory)
 
 
 

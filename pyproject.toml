@@ -1,37 +1,47 @@
 [tool.poetry]
-name = "spacy-hungarian-models"
-version = "0.4.0"
-description = "Hungarian models for spaCy"
-authors = ["Gyorgy Orosz <gyorgy@orosz.link>"]
-license = "MIT"
+name = "huspacy"
+version = "0.4.2"
+description = "HuSpaCy: industrial strength Hungarian natural language processing"
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
+license = "Apache 2.0"
 packages = [
-    {include = "huspacy"},
+    {include = "tools"},
 ]
 
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-spacy = "^3.1.2"
-lemmy3 = "^3.0.0a"
+spacy = "^3.2.0"
+lemmy3 = "^3.2.0a"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
-spacy-huggingface-hub = "^0.0.2"
+spacy-huggingface-hub = "^0.0.6"
 conllu = "^4.4"
 pandas = "^1.3.1"
+wheel = "^0.37.0"
 scikit-learn = "^0.24.2"
+spacy_conll = "^3.0"
+contexttimer = "^0.3.3"
+bump2version = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 poethepoet = "^0.10.0"
+flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
-convert2conllu = 'huspacy.cli.convert_to_conllu:app'
-split_szeged_ner = 'huspacy.cli.split_szeged_ner:app'
-find-corpus-errors = 'huspacy.cli.find_corpus_errors:app'
+convert2conllu = 'tools.cli.convert_to_conllu:app'
+split_szeged_ner = 'tools.cli.split_szeged_ner:app'
+find-corpus-errors = 'tools.cli.find_corpus_errors:app'
+merge-eval-results = 'tools.cli.merge_eval_jsons:app'
+split-conllu = 'tools.cli.split_conllu:app'
+huspacyv3_benchmark = 'tools.cli.benchmarks.huspacyv3_benchmark:app'
+conll18_ud_eval = 'tools.cli.conll18_ud_eval:main'
+
 
 [tool.poe.tasks]
-cuda92 = "python -m pip install 'spacy[cuda92]'"
+cuda112 = "python -m pip install 'spacy[cuda112]'"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.1.10", "pip>=21.2.4"]
 build-backend = "poetry.masonry.api"
