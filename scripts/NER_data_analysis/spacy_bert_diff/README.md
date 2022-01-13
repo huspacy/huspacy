@@ -1,5 +1,7 @@
 ###Scripts order
-0. preprocess (only if pre-processing is required)
+
+eval with spacy, preprocess (only if pre-processing is required)
+
 1. convert_html_to_iob
 2. add_entities_multi_label
 3. comparison_of_our_own_system_with_emBERT
