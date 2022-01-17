@@ -32,13 +32,13 @@ vars:
   package_init: ../tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-0.4.1
+  wandb_project: hu_core_news_lg-0.4.2-v2
 
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: 0
+  gpu: -1
 
 #TODO: remove GPU settings
 #TODO: provide examples for WANDB and GPU settings
@@ -364,6 +364,23 @@ commands:
     outputs:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
 
+  - name: train_parser_ud
+    help: "Train the parser on the Universal Dependencies
+           dataset with the pretrained tagger model"
+    script:
+      - "spacy train configs/${vars.parser_config}_ud.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.parser_config}.cfg
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
 
   - name: train_ner
     help: "Train the NER model"
