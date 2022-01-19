@@ -1,0 +1,14 @@
+preprocess_corpus:
+  cmd: python -m spacy run preprocess_corpus
+  script:
+    - mkdir -p ../data/processed/webcorpus2
+    - bash -c 'zcat ../data/raw/webcorpus2/corpus.tsv.gz | grep "# text =" | cut -c
+      10- > ../data/processed/webcorpus2/corpus.txt'
+  deps:
+    - path: ../data/raw/webcorpus2/corpus.tsv.gz
+      md5: 80327916b045815730a2f587a2c9f76c
+  outs:
+    - path: ../data/processed/webcorpus2/corpus.txt
+      md5: 08f5fd52be6ecfb69ed390460fa4f8db
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41

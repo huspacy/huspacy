@@ -272,6 +272,17 @@ pycodestyle = ">=2.8.0,<2.9.0"
 pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
+name = "floret"
+version = "0.10.1"
+description = "floret Python bindings"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
 name = "frozenlist"
 version = "1.2.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -1395,7 +1406,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "d8857104b10c1298d0e816a34d54e160c16e197e2e67b53983f3a8bb8915c26d"
+content-hash = "a725510341d8f0cf25abcab1f35a8d1d80e94dcc96baaacbc02c8f15b63bba33"
 
 [metadata.files]
 aiohttp = [
@@ -1595,6 +1606,24 @@ filelock = [
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
+]
+floret = [
+    {file = "floret-0.10.1-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:d20a5883c2ea2ecf7971f7fda480e2105178e66bc7381dea84a480982054006f"},
+    {file = "floret-0.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b8c1cdfd0c18c131370634d9f433ef04bfd7e1bda475ac60b8bd3e424148cd5"},
+    {file = "floret-0.10.1-cp310-cp310-win_amd64.whl", hash = "sha256:ed2aeb76b93cee621da1014191c64c3a88c90e5ae3104099e0343be6dc2510a2"},
+    {file = "floret-0.10.1-cp36-cp36m-macosx_10_15_x86_64.whl", hash = "sha256:acdb67bebf7c36de49f5def9d2f5d0103e394ca960ad6f7d7c376fdd92fe82f5"},
+    {file = "floret-0.10.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3b5fc992464f6ea43ec8c464c90aaf26850bc11b3364ad1f656cd2d8385b0b8c"},
+    {file = "floret-0.10.1-cp36-cp36m-win_amd64.whl", hash = "sha256:f2e6f696891a88610e1787dc380595ab0f03074def44a5ad67974ad132fb2f63"},
+    {file = "floret-0.10.1-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:d474f85cc6c3eba917cb3595c590a970660b65629d21521026a52691421a5969"},
+    {file = "floret-0.10.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a797acc23e9cad248bc947c926bf6a8253b2d27df308baa221155655a1ede4e"},
+    {file = "floret-0.10.1-cp37-cp37m-win_amd64.whl", hash = "sha256:fe0381d1129e3a9f1d04d5c61b4ec706497ae8be2ec8a9eecbbd4adf04787dad"},
+    {file = "floret-0.10.1-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:6d84e5e793497faefcf69eac3cdbf36f21c780ce8d5287b0e95fceb5d6ff3a1e"},
+    {file = "floret-0.10.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4e857b4d87a6d0c93cec0a8584572fdb8c72bff4634fcc8157cc2cc1e3d3d099"},
+    {file = "floret-0.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:672fbed57f557a390ced8998b97f699360a9b23746a9ef0e910cdcd53b9ccc5b"},
+    {file = "floret-0.10.1-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:5ea8c97ce5bc2593435ff67f7eb1347fcc486ce20f109df0a8ff03c56a8eef5c"},
+    {file = "floret-0.10.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c8b21e1b16a13afb0e06402eb711fb414b33f6f25b9fe50f9318e162cf22ace8"},
+    {file = "floret-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:b1156b296dd3430f5e382bb42f83aead45d6e5ea8205246a7660372c4d16ead2"},
+    {file = "floret-0.10.1.tar.gz", hash = "sha256:26b79dd7590d33053d6ad8f50b2f7f6587f24d9625f2c2101df6e8235b45ca2a"},
 ]
 frozenlist = [
     {file = "frozenlist-1.2.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:977a1438d0e0d96573fd679d291a1542097ea9f4918a8b6494b06610dfeefbf9"},

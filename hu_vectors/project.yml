@@ -1,0 +1,62 @@
+title: "Hungarian word vectors"
+description: "Floret vectors"
+spacy_version: ">=3.2.0,<3.3.0"
+
+vars:
+  lang: hu
+  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  core_package_name: vectors
+  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  package_name: hu_vectors
+  package_version: 0.1.0
+
+  models_path: ../models
+  packages_path: ../packages
+
+  raw_data_path: ../data/raw
+  processed_data_path: ../data/processed
+  external_data_path: ../data/external
+  result_data_path: ../data/result
+
+  webcorpus_path: webcorpus2
+
+  package_init: ../tools/components.py
+
+  wandb_entity: spacy-hu
+  wandb_project: hu_vectors-0.4.2-v2
+
+  assemble_config: assemble
+  tagger_config: tagger
+  parser_config: parser
+  ner_config: ner
+  gpu: -1
+
+#TODO: remove GPU settings
+#TODO: provide examples for WANDB and GPU settings
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+directories: [configs, ../models, ../packages, ../data/raw, ../data/processed, ../data/external]
+
+assets:
+  # Universal dependencies
+  - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz
+    url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/2017_2018_0001.tsv.gz
+
+workflows:
+  all:
+    - preprocess_webcorpus
+#    - train_floret
+
+commands:
+  - name: preprocess_webcorpus
+    help: "Preprocess corpus"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}
+      - bash -c 'zcat ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz | grep "# text =" | cut -c 10- > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt'
+
+    deps:
+      - ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz
+    outputs:
+      - ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt
+
