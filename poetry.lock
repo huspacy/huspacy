@@ -1311,6 +1311,17 @@ parsers = ["spacy-udpipe (>=1.0.0)", "spacy-stanza (>=1.0.0)"]
 pd = ["pandas"]
 
 [[package]]
+name = "spacy-experimental"
+version = "0.2.0"
+description = "Cutting-edge experimental spaCy components and features"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+spacy = ">=3.2.0,<3.3.0"
+
+[[package]]
 name = "spacy-huggingface-hub"
 version = "0.0.6"
 description = "Quickly push your spaCy pipelines to the Hugging Face Hub"
@@ -1676,7 +1687,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "bec6a6c1ea10d29f386db08274422ac7b340c5767172b3574563d64182ebcc98"
+content-hash = "b72a1e6c23f8067bc780d2cf2da3fdc53fbf54920be5c2e3ba925691bc50a886"
 
 [metadata.files]
 aiohttp = [
@@ -2961,6 +2972,24 @@ spacy-alignments = [
 spacy-conll = [
     {file = "spacy_conll-3.1.0-py3-none-any.whl", hash = "sha256:eeb9249914b829b0f675e033c631af296c8a64f74240daf200ba9cd408805bac"},
     {file = "spacy_conll-3.1.0.tar.gz", hash = "sha256:e98a4e0e156b819234fa31bfaf06dade82a3460664d842aad02c62206461da23"},
+]
+spacy-experimental = [
+    {file = "spacy-experimental-0.2.0.tar.gz", hash = "sha256:6c0bdc5f6c1998f9b7f2702d52b5d63d3d62095f5bbdfc7eac09bba81352d2de"},
+    {file = "spacy_experimental-0.2.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3864a6ce9b68092809b7665d8f7b6477f74dd3222b99e31e1a1c436be6bf978a"},
+    {file = "spacy_experimental-0.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:40e1392f5bef96af9fc90685e9c6204ea61f8719503a4f6076020e0a2901de28"},
+    {file = "spacy_experimental-0.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:7d3b6f41791c292c8f3176ef782453b81e42382452375afec27b370ad2658d73"},
+    {file = "spacy_experimental-0.2.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:9e9dfa32a01970a1ad71869bb8e370df004e5b37db54c31f14253b9806bce41a"},
+    {file = "spacy_experimental-0.2.0-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:752c47a97684d208ca6cc6d1a304abbc4a912d0f64d4446a587d7fdb70639f2f"},
+    {file = "spacy_experimental-0.2.0-cp36-cp36m-win_amd64.whl", hash = "sha256:50eb12c7cc3e40e288ecb944f92123bac199f72d2cbcb83434166cc9e24dd35c"},
+    {file = "spacy_experimental-0.2.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:53d73249900d0f382286beb495c23a48d2c7c803f4730d8c201a1e7a4fccc59c"},
+    {file = "spacy_experimental-0.2.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:64734df857ba17e84936c2682bd586c686a4e72d87d7c9a378426a8e647059e6"},
+    {file = "spacy_experimental-0.2.0-cp37-cp37m-win_amd64.whl", hash = "sha256:2c9d4ba1f80e10355920d7edbad5dcfec2d8f037bc382ed8727aed63f1fb78fd"},
+    {file = "spacy_experimental-0.2.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:3cce9d79c88a059be121f879cfbd2af343220c81259b91040de0cb4c5213bf55"},
+    {file = "spacy_experimental-0.2.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b4d221a3844891e0840ec3334d5f72f54a73dccab2445be79d36f96f774cc38"},
+    {file = "spacy_experimental-0.2.0-cp38-cp38-win_amd64.whl", hash = "sha256:f2def1500eda17543e69804eea0498c7816f421d33d58388b053adf5266caab7"},
+    {file = "spacy_experimental-0.2.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:fbb9b90a6bcbd7648871c84ec8cf1db5aabae4b570c491467eee1e4f28243cdc"},
+    {file = "spacy_experimental-0.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ab94a73d0a09763f620d93f9ae1ecbdccb9aa741dee2d94d0cb4129709303c51"},
+    {file = "spacy_experimental-0.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:5ecd83b71180b0acee299345287e485d291f8f63f5cfd5f407de63969e014f4d"},
 ]
 spacy-huggingface-hub = [
     {file = "spacy-huggingface-hub-0.0.6.tar.gz", hash = "sha256:a38411a75fc306dc43b2353bf9526105dedd249df667fa260cf3f9b08dbca450"},

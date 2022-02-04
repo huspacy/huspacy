@@ -39,6 +39,7 @@ vars:
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
+  lemmatizer_config: lemmatizer
   ner_config: ner
   gpu: 1
 
@@ -259,15 +260,25 @@ commands:
   - name: train_lemmatizer
     help: "Train the lemmatizer"
     script:
-      - "lemmy train ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin"
-      - "lemmy evaluate ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu"
-      - "lemmy evaluate ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
+#      - "lemmy train ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin"
+#      - "lemmy evaluate ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu"
+#      - "lemmy evaluate ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
+      - "spacy train configs/${vars.lemmatizer_config}.cfg
+            --output ${vars.transformer_models_path}/${vars.package_name}-lemmatizer-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project_own}
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
     deps:
-      - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
-      - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
-      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+#      - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
+#      - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
+#      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.lemmatizer_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin
+#      - ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin
+      - ${vars.transformer_models_path}/${vars.package_name}-lemmatizer-${vars.package_version}/model-best
 
 
   - name: pretrain_tagger
