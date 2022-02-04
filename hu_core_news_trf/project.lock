@@ -1,0 +1,37 @@
+preprocess_nerkor:
+  cmd: python -m spacy run preprocess_nerkor
+  script:
+    - mkdir -p ../data/processed/NerKor
+    - convert2conllu '../data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
+      ../data/processed/NerKor/dev.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
+      ../data/processed/NerKor/train.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
+      ../data/processed/NerKor/test.conllup
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  ../data/processed/NerKor/dev.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/train/*/*/*.conllup  ../data/processed/NerKor/train.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/test/*/*/*.conllup  ../data/processed/NerKor/test.iob
+    - spacy convert ../data/processed/NerKor/train.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/dev.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/test.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+  deps:
+    - path: ../data/raw/NerKor
+      md5: b950c6328675585a8377a7ef04ef6dd3
+  outs:
+    - path: ../data/processed/NerKor/train.iob
+      md5: 019cb9ccca28837032aff5c7f66c83b4
+    - path: ../data/processed/NerKor/dev.iob
+      md5: 3fa4ff252ebe8c487501b59dead60154
+    - path: ../data/processed/NerKor/test.iob
+      md5: b9f40b8e80cb51f411fb4d49f2d17053
+    - path: ../data/processed/NerKor/train.spacy
+      md5: 73eff46826c3b567ae375589fe6f0818
+    - path: ../data/processed/NerKor/dev.spacy
+      md5: 1c3a3c54f37108a1002d585c0169cce7
+    - path: ../data/processed/NerKor/test.spacy
+      md5: cbae80a7ac51f59094fdeb63597995eb
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
