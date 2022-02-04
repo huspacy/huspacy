@@ -40,7 +40,7 @@ vars:
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: 0
+  gpu: 1
 
 
 # These are the directories that the project needs. The project CLI will make
@@ -92,12 +92,12 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger
-    - train_parser
+#    - train_parser
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
-    - pretrain_tagger
+#    - pretrain_tagger
     - train_parser
 
   lemmatizer:
