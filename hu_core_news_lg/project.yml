@@ -28,6 +28,7 @@ vars:
   hunnerwiki: hunNERwiki
   szegedner: SzegedNER
   ner_merged: ner_merged
+  szfsszegedner: SZFSSzegedNER
 
   package_init: ../tools/components.py
 
@@ -190,6 +191,7 @@ commands:
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+
     deps:
       - ${vars.raw_data_path}/${vars.nerkor}
     outputs:
@@ -296,6 +298,7 @@ commands:
       - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+
     deps:
       - ${vars.processed_data_path}/${vars.szegedner}/train.iob
       - ${vars.processed_data_path}/${vars.hunnerwiki}/train.iob
