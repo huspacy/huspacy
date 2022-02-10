@@ -40,6 +40,7 @@ vars:
   tagger_config: tagger
   parser_config: parser
   lemmatizer_config: lemmatizer
+  tagger_lemma_config: tagger_lemma
   ner_config: ner
   gpu: 1
 
@@ -105,6 +106,11 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - train_lemmatizer
+
+  tagger_lemma:
+    - preprocess_szegedcorpus
+    - preprocess_ud
+    - pretrain_tagger_lemma
 
   ner:
     - preprocess_nerkor
@@ -296,6 +302,23 @@ commands:
       - configs/${vars.tagger_config}.cfg
     outputs:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+
+
+  - name: pretrain_tagger_lemma
+    help: "Pretrain the tagger and lemmatizer on the full Szeged Corpus"
+    script:
+      - "spacy train configs/${vars.tagger_lemma_config}.cfg
+            --output ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project_own}
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.tagger_lemma_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma-${vars.package_version}/model-best
 
 
   - name: train_parser
