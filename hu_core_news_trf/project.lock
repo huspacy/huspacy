@@ -35,3 +35,50 @@ preprocess_nerkor:
       md5: cbae80a7ac51f59094fdeb63597995eb
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
+preprocess_ud:
+  cmd: python -m spacy run preprocess_ud
+  script:
+    - mkdir -p ../data/processed/UD_Hungarian-Szeged
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy ../data/processed/UD_Hungarian-Szeged/train.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy ../data/processed/UD_Hungarian-Szeged/dev.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy ../data/processed/UD_Hungarian-Szeged/test.spacy
+  deps:
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+pretrain_tagger_lemma:
+  cmd: python -m spacy run pretrain_tagger_lemma
+  script:
+    - spacy train configs/tagger_lemma.cfg --output ../transformer_models/hu_core_news_trf-tagger_lemma-0.4.2
+      --gpu-id 1 --nlp.lang=hu --training.logger.project_name spacy_ner_test_train
+      --paths.train ../data/processed/SzegedCorpus/train.spacy --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/SzegedCorpus/train.spacy
+      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: configs/tagger_lemma.cfg
+      md5: 3d313be8e5b6ee4dfa4b917709650aec
+  outs:
+    - path: ../transformer_models/hu_core_news_trf-tagger_lemma-0.4.2/model-best
+      md5: bc0c8cdf087d7f10769d02b89c581273
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41

@@ -49,7 +49,6 @@ preprocess_szegedcorpus:
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
   spacy_version: 3.2.0
   spacy_git_version: 0fc3dee77
-
 preprocess_ud:
   cmd: python -m spacy run preprocess_ud
   script:
@@ -133,7 +132,6 @@ train_parser:
       md5: 117b7a88da63375ab98952934551211c
     - path: configs/parser.cfg
       md5: 57f8990f95b8b209e0537c07e1ef5fcf
-
   outs:
     - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
       md5: d3a792bdde8f214435a7ff1f04921e53
@@ -235,5 +233,122 @@ evaluate:
       md5: 4a92722a1de58e2db1d94003f759a620
     - path: ../models/../models/hu_core_news_lg-0.4.0/meta.json"
       md5: null
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_nerkor:
+  cmd: python -m spacy run preprocess_nerkor
+  script:
+    - mkdir -p ../data/processed/NerKor
+    - convert2conllu '../data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
+      ../data/processed/NerKor/dev.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
+      ../data/processed/NerKor/train.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
+      ../data/processed/NerKor/test.conllup
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  ../data/processed/NerKor/dev.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/train/*/*/*.conllup  ../data/processed/NerKor/train.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/test/*/*/*.conllup  ../data/processed/NerKor/test.iob
+    - spacy convert ../data/processed/NerKor/train.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/dev.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/test.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+  deps:
+    - path: ../data/raw/NerKor
+      md5: b950c6328675585a8377a7ef04ef6dd3
+  outs:
+    - path: ../data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: ../data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: ../data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+    - path: ../data/processed/NerKor/train.spacy
+      md5: 3ab77f5b9b5e9b717cd87a12c3e15519
+    - path: ../data/processed/NerKor/dev.spacy
+      md5: cfe2a598a6de7b7a5f8bf3b40f873fa0
+    - path: ../data/processed/NerKor/test.spacy
+      md5: 3bb3f3cd7a8fd94eb8e69fe7d3ee2b68
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_szegedner:
+  cmd: python -m spacy run preprocess_szegedner
+  script:
+    - mkdir -p ../data/processed/SzegedNER
+    - unzip -o ../data/raw/SzegedNER/business_NER.zip -d ../data/processed/SzegedNER/
+    - bash -c 'iconv -f iso-8859-2 --t utf-8 ../data/processed/SzegedNER/hun_ner_corpus.txt
+      | tail -n +2 | sed -e "s/\t0/\tO/g" > ../data/processed/SzegedNER/hun_business_ner_corpus_utf8.txt'
+    - unzip -o ../data/raw/SzegedNER/criminal_NER.zip -d ../data/processed/SzegedNER/
+    - bash -c 'iconv -f iso-8859-2 --t utf-8 ../data/processed/SzegedNER/hvg | tail
+      -n +3 | sed -e "s/\t0/\tO/g" > ../data/processed/SzegedNER/hun_criminal_ner_corpus_utf8.txt'
+    - split_szeged_ner ../data/processed/SzegedNER/hun_business_ner_corpus_utf8.txt
+      ../data/processed/SzegedNER/hun_business_train.iob1 ../data/processed/SzegedNER/hun_business_dev.iob1
+      ../data/processed/SzegedNER/hun_business_test.iob1
+    - split_szeged_ner ../data/processed/SzegedNER/hun_criminal_ner_corpus_utf8.txt
+      ../data/processed/SzegedNER/hun_criminal_train.iob1 ../data/processed/SzegedNER/hun_criminal_dev.iob1
+      ../data/processed/SzegedNER/hun_criminal_test.iob1
+    - bash -c 'cat ../data/processed/SzegedNER/hun_*_train.iob1 > ../data/processed/SzegedNER/train.iob1'
+    - bash -c 'cat ../data/processed/SzegedNER/hun_*_dev.iob1 > ../data/processed/SzegedNER/dev.iob1'
+    - bash -c 'cat ../data/processed/SzegedNER/hun_*_test.iob1 > ../data/processed/SzegedNER/test.iob1'
+    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/train.iob1 ../data/processed/SzegedNER/train.iob
+    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/dev.iob1 ../data/processed/SzegedNER/dev.iob
+    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/test.iob1 ../data/processed/SzegedNER/test.iob
+    - spacy convert ../data/processed/SzegedNER/dev.iob ../data/processed/SzegedNER/
+      --converter iob --n-sents 10
+    - spacy convert ../data/processed/SzegedNER/train.iob ../data/processed/SzegedNER/
+      --converter iob --n-sents 10
+    - spacy convert ../data/processed/SzegedNER/test.iob ../data/processed/SzegedNER/
+      --converter iob --n-sents 10
+  deps:
+    - path: ../data/raw/SzegedNER/business_NER.zip
+      md5: 8261674cf03d90cf74067ef72be11497
+    - path: ../data/raw/SzegedNER/criminal_NER.zip
+      md5: 1ac01318232c4e833dab4a4175680786
+  outs:
+    - path: ../data/processed/SzegedNER/train.spacy
+      md5: a34f8bbb5c75779569c3c9d7a242328b
+    - path: ../data/processed/SzegedNER/dev.spacy
+      md5: 77960946522fea210f3d3f58d054ee2d
+    - path: ../data/processed/SzegedNER/test.spacy
+      md5: 4b28ed2b9ac2755d8798462247fe6c99
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_merge:
+  cmd: python -m spacy run preprocess_merge
+  script:
+    - mkdir -p ../data/processed/ner_merged
+    - bash -c 'cat ../data/processed/SzegedNER/train.iob ../data/processed/NerKor/train.iob
+      > ../data/processed/ner_merged/train.iob'
+    - bash -c 'cat ../data/processed/SzegedNER/dev.iob ../data/processed/NerKor/dev.iob
+      > ../data/processed/ner_merged/dev.iob'
+    - bash -c 'cat ../data/processed/SzegedNER/test.iob ../data/processed/NerKor/test.iob
+      > ../data/processed/ner_merged/test.iob'
+    - spacy convert ../data/processed/ner_merged/dev.iob ../data/processed/ner_merged/
+      --converter iob --n-sents 10
+    - spacy convert ../data/processed/ner_merged/train.iob ../data/processed/ner_merged/
+      --converter iob --n-sents 10
+    - spacy convert ../data/processed/ner_merged/test.iob ../data/processed/ner_merged/
+      --converter iob --n-sents 10
+  deps:
+    - path: ../data/processed/SzegedNER/train.iob
+      md5: d183c103f5d33ff379d30f0c5b610bd7
+    - path: ../data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: ../data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+    - path: ../data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: ../data/processed/SzegedNER/dev.iob
+      md5: 317b45c89f2e8f1b6d25446966ab47fa
+    - path: ../data/processed/SzegedNER/test.iob
+      md5: 59d88e473365cd2fb515bd4b869d33f6
+  outs:
+    - path: ../data/processed/ner_merged/train.spacy
+      md5: 7a795e0ddf0ee9f4c101f39cef7399ea
+    - path: ../data/processed/ner_merged/dev.spacy
+      md5: 5b51f64107e3c1687a0f606465711b3c
+    - path: ../data/processed/ner_merged/test.spacy
+      md5: 57384b82295c7c085420ba0a97dcded3
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
