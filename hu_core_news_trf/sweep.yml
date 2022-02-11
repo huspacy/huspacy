@@ -9,6 +9,7 @@ command:
 - ../transformer_models/sweep_ner_merged
 - --gpu-id
 - 0
+- --nlp.lang=hu
 - --path.train
 - ../data/processed/ner_merged/train.spacy
 - --path.dev

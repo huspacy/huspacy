@@ -1,17 +1,33 @@
-batch_size: x minta után indul a backpropagation, tehát ha 100 a size, akkor 100 minta után (100 példa a fájlban vagyis sor)
-fogja állítani a súlyokat
-epoch: hányszor menjen végig az adatokon (az összesen), tehát 2 epoch akkor kétszer fog végig menni az adatokon
+params desc:
+    - batch_size: x minta után indul a backpropagation, tehát ha 100 a size, akkor 100 minta után (100 példa a fájlban vagyis sor)
+    fogja állítani a súlyokat
+    - epoch: hányszor menjen végig az adatokon (az összesen), tehát 2 epoch akkor kétszer fog végig menni az adatokon
 
-ha 1000 betanítási példa van, és a batch_size 500, akkor 2 iterációt vesz igénybe 1 epoch teljesítéshez
+    - ha 1000 betanítási példa van, és a batch_size 500, akkor 2 iterációt vesz igénybe 1 epoch teljesítéshez
+
+    - hidden_width: rejtett rétegek hossza (?)
+    - maxout_pieces: hány egyenes alkossa az aktivációs függvényt, minnél több egyenes, annál bonyolultabb függvény (kvázi tanítható)
+
+    - dropout: elfelejtettünk adott %-nyi neuron-t így elérve, hogy jobb legyen az általánosító képessége
+    - L2: túltanulás és alul tanulás elkerüléséhez jól működik
+            https://miro.medium.com/max/1400/0*tATGj-F5jlQU80GE.png
+
+    - patience: ennyi lépés után nincs változás, akkor áll le
+    - max_steps: annyi a max lépés, ha eléri leáll
 
 
-hidden_width: rejtett rétegek hossza (?)
-maxout_pieces: hány egyenes alkossa az aktivációs függvényt, minnél több egyenes, annál bonyolultabb függvény (kvázi tanítható)
+model_path: best_hyperparams
+    components.ner.model.extra_state_tokens: true
+    components.ner.model.hidden_width: 64
+    components.ner.model.maxout_pieces: 3
+    training.dropout: 0.3
+    training.optimizer.L2: 0.1
+    training.optimizer.learn_rate.initial_rate: 0.00005
 
-dropout: elfelejtettünk adott %-nyi neuron-t így elérve, hogy jobb legyen az általánosító képessége
+    train and dev test -> bias or variance error
 
-L2: túltanulás és alul tanulás elkerüléséhez jól működik
-https://miro.medium.com/max/1400/0*tATGj-F5jlQU80GE.png
+TODO:
+    best hyperparams with default batcher param test
 
-patience: ennyi lépés után nincs változás, akkor áll le
-max_steps: annyi a max lépés, ha eléri leáll
+train on the UD.train and SZC.train:
+    "senter","tagger","parser","morphologizer","experimental_edit_tree_lemmatizer"
