@@ -5,14 +5,14 @@ description = "HuSpaCy: industrial strength Hungarian natural language processin
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 maintainers = ["György Orosz <gyorgy@orosz.link>"]
 keywords = ["nlp", "huspacy", "Hungarian", "text processing", "text processing", "language processing", "text mining",
-    "tokenization", "sentence boundary detection", "sbd", "sentence splitting",  "pos tagging", "tagging",
+    "tokenization", "sentence boundary detection", "sbd", "sentence splitting", "pos tagging", "tagging",
     "lemmatization", "ner", "named entity recognition", "parsing", "word embeddings", "word vectors",
     "spacy", "spacy model"]
 license = "Apache-2.0"
 homepage = "https://github.com/huspacy/huspacy"
 repository = "https://github.com/huspacy/huspacy"
 readme = "README.md"
-classifiers=[
+classifiers = [
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
@@ -30,7 +30,7 @@ classifiers=[
     'Topic :: Scientific/Engineering :: Information Analysis',
 ]
 packages = [
-    {include = "huspacy"},
+    { include = "huspacy" },
 ]
 
 [tool.poetry.dependencies]
@@ -49,7 +49,7 @@ pytest_codeblocks = "^0.14.0"
 mkdocs = "^1.4.1"
 mkdocs-material = "^8.5.6"
 mkdocs-git-revision-date-localized-plugin = "^1.1.0"
-mkdocstrings = {extras = ["python"], version = "^0.19.0"}
+mkdocstrings = { extras = ["python"], version = "^0.19.0" }
 mkdocs-gen-files = "^0.4.0"
 mkdocs-autorefs = "^0.4.1"
 
