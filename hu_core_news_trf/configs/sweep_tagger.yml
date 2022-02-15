@@ -4,7 +4,7 @@ command:
 - -m
 - spacy
 - train
-- ./configs/ner.cfg
+- ./configs/tagger_lemma.cfg
 - --output
 - ../transformer_models/sweep_ner_merged
 - --gpu-id
@@ -15,14 +15,22 @@ command:
 - --path.dev
 - ../data/processed/ner_merged/dev.spacy
 - ${args}
-method: bayes
-metric:
-  name: ents_f #parser, tagger
-  goal: maximize
+method: grid
 parameters:
+  components.experimental_edit_tree_lemmatizer.top_k:
+    values:
+      - 1
+      - 2
+      - 3
   nlp.lang:
     values:
-    - hu
+      - hu
+  paths.dev:
+    values:
+      - ../data/processed/ner_merged/dev.spacy
+  paths.train:
+    values:
+      - ../data/processed/ner_merged/train.spacy
   training.dropout:
     values:
     - 0.1
@@ -30,6 +38,6 @@ parameters:
     - 0.3
   training.optimizer.L2:
     values:
-    - 0.01
     - 0.1
+    - 0.01
     - 0.001
