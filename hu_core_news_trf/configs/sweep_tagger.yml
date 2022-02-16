@@ -4,7 +4,7 @@ command:
 - -m
 - spacy
 - train
-- ./configs/ner.cfg
+- ./configs/tagger_lemma.cfg
 - --output
 - ../transformer_models/sweep_ner_merged
 - --gpu-id
@@ -15,28 +15,22 @@ command:
 - --path.dev
 - ../data/processed/ner_merged/dev.spacy
 - ${args}
-method: bayes
-metric:
-  name: ents_f
-  goal: maximize
+method: grid
 parameters:
-  components.ner.model.extra_state_tokens:
+  components.experimental_edit_tree_lemmatizer.top_k:
     values:
-    - true
-    - false
-  components.ner.model.hidden_width:
-    values:
-    - 32
-    - 64
-    - 128
-  components.ner.model.maxout_pieces:
-    values:
-    - 1
-    - 2
-    - 3
+      - 1
+      - 2
+      - 3
   nlp.lang:
     values:
-    - hu
+      - hu
+  paths.dev:
+    values:
+      - ../data/processed/ner_merged/dev.spacy
+  paths.train:
+    values:
+      - ../data/processed/ner_merged/train.spacy
   training.dropout:
     values:
     - 0.1
@@ -47,9 +41,3 @@ parameters:
     - 0.1
     - 0.01
     - 0.001
-  training.optimizer.learn_rate.initial_rate:
-    values:
-    - 0.001
-    - 0.0001
-    - 0.00001
-    - 0.00005

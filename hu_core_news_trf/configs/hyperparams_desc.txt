@@ -26,8 +26,33 @@ model_path: best_hyperparams
 
     train and dev test -> bias or variance error
 
-TODO:
-    best hyperparams with default batcher param test
 
-train on the UD.train and SZC.train:
-    "senter","tagger","parser","morphologizer","experimental_edit_tree_lemmatizer"
+NOTE
+parser nem tud tanulni az szegedcorpuson
+
+ötlet:
+parseren kívül mindent UD+SZC
+   - parsert meg akkor tesztelve csak a transformert tovább adva
+   (kvázi mindent freeze-elni)
+   - mindent az UD-n - > kuka: mindenhol ront
+
+ner:
+dropout: 0.5
+L2: 0.1
+tokens: true
+hidden width: 64
+maxout pieces: 3
+
+TODO:
+batch_size: 128 -> test then done the ner
+tagger fine-tune
+parser: Biaffine parsers test, aztán mehet a parser
+(mindent sweepelni -> Gyuri seaborn-os scriptje)
+
+
+
+Biaffine parser
+parser:
+https://github.com/explosion/spacy-experimental/blob/master/projects/biaffine_parser/configs/base-config.cfg
+
+parser -> arc_predicter and arc_labeler-re csere
