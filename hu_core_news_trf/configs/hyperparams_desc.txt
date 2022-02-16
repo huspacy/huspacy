@@ -20,11 +20,19 @@ model_path: best_hyperparams
     components.ner.model.extra_state_tokens: true
     components.ner.model.hidden_width: 64
     components.ner.model.maxout_pieces: 3
-    training.dropout: 0.3
+    training.dropout: 0.5
     training.optimizer.L2: 0.1
     training.optimizer.learn_rate.initial_rate: 0.00005
 
     train and dev test -> bias or variance error
+
+
+ner:
+dropout: 0.5
+L2: 0.1
+tokens: true
+hidden width: 64
+maxout pieces: 3
 
 
 NOTE
@@ -36,17 +44,11 @@ parseren kívül mindent UD+SZC
    (kvázi mindent freeze-elni)
    - mindent az UD-n - > kuka: mindenhol ront
 
-ner:
-dropout: 0.5
-L2: 0.1
-tokens: true
-hidden width: 64
-maxout pieces: 3
 
 TODO:
 batch_size: 128 -> test then done the ner
 tagger fine-tune
-parser: Biaffine parsers test, aztán mehet a parser
+parser: Biaffine parsers test, aztán mehet a parser sweep
 (mindent sweepelni -> Gyuri seaborn-os scriptje)
 
 
@@ -56,3 +58,10 @@ parser:
 https://github.com/explosion/spacy-experimental/blob/master/projects/biaffine_parser/configs/base-config.cfg
 
 parser -> arc_predicter and arc_labeler-re csere
+
+models for assemble:
+tagger_lemma_3 (nincs még fine-tune)
+parser_3 (pretrain with freeze)
+pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel)
+
+TODO: assemble-t megaskolni

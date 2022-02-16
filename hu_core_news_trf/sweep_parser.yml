@@ -1,4 +1,4 @@
-project: spacy_trf_ner
+project: spacy_trf_parser
 command:
 - python
 - -m
@@ -6,7 +6,7 @@ command:
 - train
 - ./configs/parser.cfg
 - --output
-- ../transformer_models/sweep_ner_merged
+- ../transformer_models/sweep_parser
 - --gpu-id
 - 0
 - ${args}
@@ -17,10 +17,10 @@ parameters:
     - hu
   paths.dev:
     values:
-      - ../data/processed/ner_merged/dev.spacy
+      - ../data/processed/UD_Hungarian_Szeged/dev.spacy
   paths.train:
     values:
-      - ../data/processed/ner_merged/train.spacy
+      - ../data/processed/UD_Hungarian_Szeged/train.spacy
   training.dropout:
     values:
     - 0.1

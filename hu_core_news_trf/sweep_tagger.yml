@@ -1,4 +1,4 @@
-project: spacy_trf_ner
+project: spacy_trf_tagger
 command:
 - python
 - -m
@@ -6,14 +6,9 @@ command:
 - train
 - ./configs/tagger_lemma.cfg
 - --output
-- ../transformer_models/sweep_ner_merged
+- ../transformer_models/sweep_tagger
 - --gpu-id
 - 0
-- --nlp.lang=hu
-- --path.train
-- ../data/processed/ner_merged/train.spacy
-- --path.dev
-- ../data/processed/ner_merged/dev.spacy
 - ${args}
 method: grid
 parameters:
@@ -27,10 +22,10 @@ parameters:
       - hu
   paths.dev:
     values:
-      - ../data/processed/ner_merged/dev.spacy
+      - ../data/processed/SzegedCorpus/dev.spacy
   paths.train:
     values:
-      - ../data/processed/ner_merged/train.spacy
+      - ../data/processed/SzegedCorpus/train.spacy
   training.dropout:
     values:
     - 0.1
