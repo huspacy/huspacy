@@ -437,13 +437,13 @@ commands:
       - "huspacyv3_benchmark raw-text
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
-        --model-name ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best"
+        --model-name ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}/model-best"
       - bash -c "conll18_ud_eval
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
-      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}
       - ${vars.package_init}
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu

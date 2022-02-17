@@ -60,8 +60,45 @@ https://github.com/explosion/spacy-experimental/blob/master/projects/biaffine_pa
 parser -> arc_predicter and arc_labeler-re csere
 
 models for assemble:
-tagger_lemma_3 (nincs még fine-tune)
+tagger_lemma_4 (nincs még fine-tune)
 parser_3 (pretrain with freeze)
-pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel)
+pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) dev: 93.11 test:
 
 TODO: assemble-t megaskolni
+
+
+mindegyikre igaz: Mindegyiket hagytam tovább tanulni és nagyobb iterációkat hagytam, így első ránézésre jobbak lettek a számok.
+batch_size-t ksiebbre (128, 256, ezek voltak a defaultok)
+eval_frequency-t nagyobbra (1000)
+patience-t nagyobbra (20000)
+
+ner: fine-tune-olt, pretrainelt tagger-rel (kisebb volt a szórása a iterációknak, tehát ilyen 91-92 között mozgott, nélküle meg 89-92)
+    dev: 93.11
+    test: 92.40
+
+
+tagger: Még nincs fine-tune (jelenleg fut), de elnézve a sweepeket nagyon max tizedes javulások lehetnek itt-ott.
+    sents:
+        dev: 100
+        test: 100
+    tag:
+        dev: 98.31
+        test: 98.20
+    pos:
+        dev: 98.22
+        test: 98.01
+    morph:
+        dev: 96.32
+        test: 96.84
+    lemma:
+        dev: 97.74
+        test: 97.73
+
+parser: Még nincs fine-tune, és még nincs tesztelve azzal, amit Zsolti talált Biaffine parser-rel, de Zsolti futtatása alapján jobbnak fog igérkezni.
+        Illetve tesztelni fogom még hogy milyen, ha megkapja a tagger modelt alapnak (többit komponenst nem, mert azok csak romlanak.
+    uas:
+        dev: 91.27
+        test: 91.39
+    las:
+        dev: 85.24
+        test: 85.76
