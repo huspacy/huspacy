@@ -12,6 +12,20 @@ command:
 - ${args}
 method: grid
 parameters:
+  components.parser.model.extra_state_tokens:
+    values:
+      - true
+      - false
+  components.parser.model.hidden_width:
+    values:
+      - 64
+      - 128
+      - 256
+  components.parser.model.maxout_pieces:
+    values:
+      - 1
+      - 2
+      - 3
   nlp.lang:
     values:
     - hu
@@ -26,6 +40,7 @@ parameters:
     - 0.1
     - 0.2
     - 0.3
+    - 0.5
   training.optimizer.L2:
     values:
     - 0.1

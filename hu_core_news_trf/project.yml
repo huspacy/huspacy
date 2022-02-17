@@ -350,19 +350,19 @@ commands:
            dataset with the pretrained tagger and lemma model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
-            --output ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}
+            --output ${vars.transformer_models_path}/${vars.package_name}-parser_4-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project_own}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-            --paths.tagger_lemma_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_3-${vars.package_version}/model-best"
+            --paths.tagger_lemma_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_3-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best
       - configs/${vars.parser_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-parser_4-${vars.package_version}/model-best
 
 
   - name: train_ner

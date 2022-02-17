@@ -61,10 +61,22 @@ parser -> arc_predicter and arc_labeler-re csere
 
 models for assemble:
 tagger_lemma_4 (nincs még fine-tune)
-parser_3 (pretrain with freeze)
+parser_3 (pretrain with freeze kell majd)
+parser_4 -> tagger_lemma_4 pretrain-el (minden más eddig "freeze")
 pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) dev: 93.11 test:
 
 TODO: assemble-t megaskolni
+TODO: Zsolti TDK-ját elkérni
+TODO: a parsernél miért tanul a sents is, amikor nincs benne a pipeline-ban, automatikus?
+TODO: Peti sablon latex-jét elkérni
+TODO: az assemble-ben a sents, tagger, pos, morph, lemma-t melyik modelből kell kiszedni, ha úgy csinálom, ahogy
+tehát hogy a tagger előtanítva, amit a parser megkap, de úgy, hogy csak az alap transformert kapja meg a parser
+a többi komponenst nem (replace_listeners)
+
+
+
+
+---------------------------------------------------------------------------------------------
 
 
 mindegyikre igaz: Mindegyiket hagytam tovább tanulni és nagyobb iterációkat hagytam, így első ránézésre jobbak lettek a számok.
