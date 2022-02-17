@@ -19,6 +19,16 @@ vars:
   result_data_path: ../data/result
 
   webcorpus_path: webcorpus2
+  floret_path: ../floret
+  scripts_path: ../scripts
+
+  treebank: UD_Hungarian-Szeged
+  train_name: hu_szeged-ud-train
+  dev_name: hu_szeged-ud-dev
+  test_name: hu_szeged-ud-test
+
+  szegedcorpus: SzegedCorpus
+  ner_merged: ner_merged
 
   package_init: ../tools/components.py
 
@@ -29,7 +39,7 @@ vars:
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: -1
+  gpu: 5
 
 #TODO: remove GPU settings
 #TODO: provide examples for WANDB and GPU settings
@@ -39,24 +49,358 @@ vars:
 directories: [configs, ../models, ../packages, ../data/raw, ../data/processed, ../data/external]
 
 assets:
-  # Universal dependencies
+  # Hungarian Webcorpus 2
   - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz
     url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/2017_2018_0001.tsv.gz
+
+  # sha256sums of webcorpus2
+  - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
+    url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/sha256sums
+  
+  # Floret
+  - dest: ${vars.floret_path}
+    git:
+      repo: https://github.com/explosion/floret
+      branch: main
+      path: ""
+
+  # Questions for testing vectors
+  - dest: ${vars.external_data_path}/questions-words-hu.txt
+    url: http://corpus.nytud.hu/efnilex-vect/data/questions-words-hu.txt
 
 workflows:
   all:
     - preprocess_webcorpus
-#    - train_floret
+    - build_floret
+    - train_floret
+    - evaluate_floret
 
 commands:
   - name: preprocess_webcorpus
     help: "Preprocess corpus"
     script:
-      - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}
-      - bash -c 'zcat ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz | grep "# text =" | cut -c 10- > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt'
-
+      - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned
+      - "parallel --colsep '  ' --bar --jobs 16 --ungroup ${vars.scripts_path}/process_webcorpus2.sh {2} :::: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums"
+      - bash -c "echo ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned/*.txt | xargs cat > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt"
     deps:
-      - ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz
+      - ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
     outputs:
       - ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt
 
+  - name: build_floret
+    help: "Build floret"
+    script:
+      - "make -C ${vars.floret_path}"
+
+  - name: train_floret
+    help: "Train floret"
+    script:
+      - ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 150000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki-2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019wikivectors150k
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 100000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki-2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019wikivectors100k
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 100000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019vectors100k
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019vectors
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -lr 0.025 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors3
+      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -minn 4 -maxn 6 -minCount 50 -neg 10 -hashCount 2 -lr 0.05 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors
+
+  - name: train_fasttext
+    help: "Train fasttext"
+    script:
+      - ${vars.floret_path}/floret cbow -dim 300 -minn 4 -maxn 6 -mode fasttext -minCount 15 -neg 10 -thread 48 -lr 0.025 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo
+
+  - name: train_fasttext_norm
+    help: "Train fasttext"
+    script:
+      - ../fastText-0.9.2/fasttext cbow -dim 300 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/fasttext-wiki
+      #- ../fastText-0.9.2/fasttext cbow -dim 300 -minn 4 -maxn 6 -minCount 15 -neg 10 -thread 48 -lr 0.0125 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/fasttext
+
+  - name: evaluate_floret
+    help: "Measure accuracy on the floret vector with questions"
+    script:
+      - python ../tools/cli/floret_accuracy.py ${vars.processed_data_path}/${vars.webcorpus_path}/vectors2.bin ${vars.external_data_path}/questions-words-hu.txt 30000
+  - name: evaluate_floret_wiki
+    help: "Measure accuracy on the floret vector with questions"
+    script:
+      - python ../tools/cli/floret_accuracy.py ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors.bin ${vars.external_data_path}/questions-words-hu.txt 30000
+
+  - name: evaluate_fasttext
+    help: "Measure accuracy on the fasttext vector with questions"
+    script:
+      - python ../tools/cli/floret_accuracy.py ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo.bin ${vars.external_data_path}/questions-words-hu.txt 30000
+
+  - name: init_vectors
+    help: "initalize fasttext, floret vectors"
+    script:
+      - mkdir ${vars.processed_data_path}/fasttext-vectors
+      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo.bin ${vars.processed_data_path}/fasttext-vectors"
+      - mkdir ${vars.processed_data_path}/floret-vectors
+      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/vectors2.floret ${vars.processed_data_path}/floret-vectors --mode floret"
+      - mkdir ${vars.processed_data_path}/floret-wiki-vectors
+      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors.floret ${vars.processed_data_path}/floret-wiki-vectors --mode floret"
+
+  - name: train_parser_ud_wiki
+    help: "Train tagger-parser-lemmatizer all in one step with wiki vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-wiki-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-wiki-vectors
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_parser_ud_2019
+    help: "Train tagger-parser-lemmatizer all in one step with 2019 vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-2019-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-vectors
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_parser_ud_2019_100k
+    help: "Train tagger-parser-lemmatizer all in one step with 2019 vectors w/ 100k bucket on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-2019-100k-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-vectors-100k
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_parser_ud_2019_wiki_100k
+    help: "Train tagger-parser-lemmatizer all in one step with 2019+wiki vectors w/ 100k bucket on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-2019-wiki-100k-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-100k
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_parser_ud_2019_wiki_150k
+    help: "Train tagger-parser-lemmatizer all in one step with 2019+wiki vectors w/ 150k bucket on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-2019-wiki-150k-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_tagger_szc_2019_wiki_150k
+    help: "Train tagger-lemmatizer without parser with 2019+wiki vectors w/ 150k bucket on szeged corpus"
+    script:
+      - "spacy train configs/tagger_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-vec-2019-wiki-szc-150k-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_tagger_bilstm_szc_2019_wiki_150k_bilstm
+    help: "Train tagger-lemmatizer without parser with 2019+wiki vectors w/ 150k bucket on szeged corpus, bilstm encoder"
+    script:
+      - "spacy train configs/tagger_lemmatizer_bilstm.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-vec-2019-wiki-szc-150k-bilstm-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_tagger_szc_wiki
+    help: "Train tagger-lemmatizer with wiki vectors on szeged corpus"
+    script:
+      - "spacy train configs/tagger_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-vec-szc-wiki-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-wiki-vectors
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_tagger_szc_baseline
+    help: "Train tagger-lemmatizer with word2vec vectors on szeged corpus, baseline"
+    script:
+      - "spacy train configs/tagger_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-vec-szc-baseline-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+
+  - name: train_parser_ud_floret
+    help: "Train tagger-parser-lemmatizer all in one step with full floret vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-floret-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-vectors
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+
+  - name: train_parser_ud_ft
+    help: "Train tagger-parser-lemmatizer all in one step with fasttext vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-fasttext-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/fasttext-vectors
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+
+  - name: train_parser_ud_wo
+    help: "Train tagger-parser-lemmatizer all in one step without vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-fasttext-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --components.tok2vec.model.embed.include_static_vectors=false
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+
+  - name: train_parser_ud_baseline
+    help: "Train tagger-parser-lemmatizer all in one step with word2vec vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-baseline-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+
+  - name: train_parser_ud_ft_wiki
+    help: "Train tagger-parser-lemmatizer all in one step with fasttext wiki vectors on ud-szeged"
+    script:
+      - "spacy train configs/tagger_parser_lemmatizer.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-vec-baseline-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/fasttext-wiki-vectors
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+
+  - name: train_ner_bl
+    help: "Train the baseline NER model"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-bl-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-parser-vec-szc-baseline-${vars.package_version}/model-best"
+    deps:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-bl-${vars.package_version}/model-best
+
+  - name: train_ner_150k
+    help: "Train the NER model with 2019+wiki 150k bucket vectors, bilstm encoder, multihash embed"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-floret-2019-wiki-150k-bilstm-multihash-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-parser-vec-2019-wiki-szc-150k-${vars.package_version}/model-best"
+    deps:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+
+  - name: train_ner_150k_wo_tagger
+    help: "Train the NER model with 2019+wiki 150k bucket vectors, bilstm encoder, multihash embed w/o pretrained tagger"
+    script:
+      - "spacy train configs/${vars.ner_config}_wo.cfg
+          --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-floret-2019-wiki-150k-bilstm-multihash-wo-tagger-d03-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+
+  - name: train_ner_100k
+    help: "Train the NER model with 2019+wiki 100k bucket vectors"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-floret-2019-wiki-100k-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-100k
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-parser-vec-2019-wiki-100k-${vars.package_version}/model-best"
+    deps:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+
+  - name: train_parser
+    help: "Resume training on parser with pretrained tagger, 2019+wiki bucket 150k vectors"
+    script:
+      - "spacy train configs/${vars.parser_config}.cfg
+            --output ${vars.models_path}/${vars.package_name}-parser-out-2019-wiki-150k-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.vectors ${vars.processed_data_path}/floret-2019-wiki-150k
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+            --paths.tagger_model ${vars.models_path}/${vars.package_name}-parser-vec-2019-wiki-szc-150k-${vars.package_version}/model-best"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.parser_config}.cfg
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
+
+  - name: assemble
+    help: "Assemble the parser and the NER components"
+    script:
+      - "spacy assemble configs/${vars.assemble_config}.cfg
+          --code ${vars.package_init}
+          ${vars.models_path}/${vars.package_name}-${vars.package_version}
+          --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-out-2019-wiki-150k-${vars.package_version}/model-best
+          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-floret-2019-wiki-150k-bilstm-multihash-wo-tagger-${vars.package_version}/model-best"
+    deps:
+      - ${vars.models_path}/${vars.package_name}-parser-out-2019-wiki-150k-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-floret-2019-wiki-150k-bilstm-multihash-wo-tagger-${vars.package_version}/model-best
+      - ${vars.package_init}
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-${vars.package_version}

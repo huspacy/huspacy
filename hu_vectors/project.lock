@@ -12,3 +12,155 @@ preprocess_corpus:
       md5: 08f5fd52be6ecfb69ed390460fa4f8db
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
+preprocess_webcorpus:
+  cmd: python -m spacy run preprocess_webcorpus
+  script:
+    - mkdir -p ../data/processed/webcorpus2/cleaned
+    - "parallel --colsep '  ' --bar --jobs 16 --ungroup ../scripts/process_webcorpus2.sh\
+      \ {2} :::: ../data/raw/webcorpus2/sha256sums"
+    - bash -c "echo ../data/processed/webcorpus2/cleaned/*.txt | xargs cat > ../data/processed/webcorpus2/corpus.txt"
+  deps:
+    - path: ../data/raw/webcorpus2/sha256sums
+      md5: 3f8d9ecd8040ecd604fb3e513d45b00b
+  outs:
+    - path: ../data/processed/webcorpus2/corpus.txt
+      md5: e938bbc3a373c4a78c3783423233cae9
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+build_floret:
+  cmd: python -m spacy run build_floret
+  script:
+    - make -C ../floret
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_floret:
+  cmd: python -m spacy run train_floret
+  script:
+    - ../floret/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount
+      15 -neg 10 -thread 48 -hashCount 2 -input ../data/processed/webcorpus2/wiki.txt
+      -output ../data/processed/webcorpus2/wikivectors
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+evaluate_floret:
+  cmd: python -m spacy run evaluate_floret
+  script:
+    - python ../tools/cli/floret_accuracy.py ../data/processed/webcorpus2/vectors2.bin
+      ../data/external/questions-words-hu.txt 30000
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+evaluate_fasttext:
+  cmd: python -m spacy run evaluate_fasttext
+  script:
+    - python ../tools/cli/floret_accuracy.py ../data/processed/webcorpus2/fasttextflo.bin
+      ../data/external/questions-words-hu.txt 30000
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_fasttext:
+  cmd: python -m spacy run train_fasttext
+  script:
+    - ../floret/floret cbow -dim 300 -minn 4 -maxn 6 -mode fasttext -minCount 15 -neg
+      10 -thread 48 -lr 0.025 -input ../data/processed/webcorpus2/corpus.txt -output
+      ../data/processed/webcorpus2/fasttextflo
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+init_vectors:
+  cmd: python -m spacy run init_vectors
+  script:
+    - mkdir ../data/processed/fasttext-vectors
+    - spacy init vectors hu ../data/processed/webcorpus2/fasttextflo.vec ../data/processed/fasttext-vectors
+    - mkdir ../data/processed/floret-vectors
+    - spacy init vectors hu ../data/processed/webcorpus2/vectors2.floret ../data/processed/floret-vectors
+      --mode floret
+    - mkdir ../data/processed/floret-wiki-vectors
+    - spacy init vectors hu ../data/processed/webcorpus2/wikivectors.floret ../data/processed/floret-wiki-vectors
+      --mode floret
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud_wiki:
+  cmd: python -m spacy run train_parser_ud_wiki
+  script:
+    - spacy train configs/parser_lemmatizer_ud.cfg --output ../models/hu_vectors-parser-vec-wiki-0.1.0
+      --gpu-id 5 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2-v2
+      --paths.vectors ../data/processed/floret-wiki-vectors --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud_floret:
+  cmd: python -m spacy run train_parser_ud_floret
+  script:
+    - spacy train configs/parser_lemmatizer_ud.cfg --output ../models/hu_vectors-parser-vec-floret-0.1.0
+      --gpu-id 6 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2-v2
+      --paths.vectors ../data/processed/floret-vectors --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud_wo:
+  cmd: python -m spacy run train_parser_ud_wo
+  script:
+    - spacy train configs/parser_lemmatizer_ud.cfg --output ../models/hu_vectors-parser-vec-fasttext-0.1.0
+      --gpu-id 7 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2-v2
+      --components.tok2vec.model.embed.include_static_vectors=false --paths.train
+      ../data/processed/UD_Hungarian-Szeged/train.spacy --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud_baseline:
+  cmd: python -m spacy run train_parser_ud_baseline
+  script:
+    - spacy train configs/parser_lemmatizer_ud.cfg --output ../models/hu_vectors-parser-vec-baseline-0.1.0
+      --gpu-id 7 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2-v2
+      --paths.vectors ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_fasttext_norm:
+  cmd: python -m spacy run train_fasttext_norm
+  script:
+    - ../fastText-0.9.2/fasttext cbow -dim 300 -minn 3 -maxn 6 -minCount 15 -neg 10
+      -thread 48 -input ../data/processed/webcorpus2/wiki.txt -output ../data/processed/webcorpus2/fasttext-wiki
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud_ft_wiki:
+  cmd: python -m spacy run train_parser_ud_ft_wiki
+  script:
+    - spacy train configs/parser_lemmatizer_ud.cfg --output ../models/hu_vectors-parser-vec-baseline-0.1.0
+      --gpu-id 7 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2-v2
+      --paths.vectors ../data/processed/fasttext-wiki-vectors --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
