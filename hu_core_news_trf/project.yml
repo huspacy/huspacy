@@ -41,11 +41,12 @@ vars:
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
+  parser_biaffine_config: parser_biaffine
   lemmatizer_config: lemmatizer
   tagger_lemma_config: tagger_lemma
   all_components_exceptner_config: all_components_exceptner
   ner_config: ner
-  gpu: 1
+  gpu: 4
 
 
 # These are the directories that the project needs. The project CLI will make
@@ -350,7 +351,7 @@ commands:
            dataset with the pretrained tagger and lemma model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
-            --output ${vars.transformer_models_path}/${vars.package_name}-parser_4-${vars.package_version}
+            --output ${vars.transformer_models_path}/${vars.package_name}-parser_tagger_lemma_4-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project_own}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
@@ -362,25 +363,45 @@ commands:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best
       - configs/${vars.parser_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-parser_4-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-parser_tagger_lemma_4-${vars.package_version}/model-best
+
+
+  - name: train_biaffine_parser
+    help: "Train the parser on the Universal Dependencies
+           dataset with the pretrained tagger and lemma model"
+    script:
+      - "spacy train configs/${vars.parser_biaffine_config}.cfg
+            --output ${vars.transformer_models_path}/${vars.package_name}-parser_biaffine_tagger_lemma_4-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project_own}
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+            --paths.tagger_lemma_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best"
+    deps:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best
+      - configs/${vars.parser_biaffine_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-parser_biaffine_tagger_lemma_4-${vars.package_version}/model-best
 
 
   - name: train_ner
     help: "Train the NER model"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
-          --output ${vars.transformer_models_path}/${vars.package_name_temp}-${vars.ner_merged}-${vars.package_version}
+          --output ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-tagger_lemma_4-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project_own}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
           --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
-          --paths.tagger_lemma_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma-${vars.package_version}/model-best"
+          --paths.tagger_lemma_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name_temp}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-tagger_lemma_4-${vars.package_version}/model-best
 
 
   - name: assemble
@@ -388,17 +409,17 @@ commands:
     script:
       - "spacy assemble configs/${vars.assemble_config}.cfg
           --code ${vars.package_init}
-          ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
-          --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-#          --paths.lemmy_model ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin
-          --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+          ${vars.transformer_models_path}/${vars.package_name}-assemble_2-${vars.package_version}
+          --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best
+          --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser_tagger_lemma_4-${vars.package_version}/model-best
+          --paths.ner_model ${vars.transformer_models_path}/hu_core_news_trf_pretrain_train_ner_patience_evalfreq-${vars.ner_merged}-${vars.package_version}/model-best"
     deps:
-      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
-      - ${vars.transformer_models_path}/lemmy-${vars.package_version}.bin
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_4-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-parser_tagger_lemma_4-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/hu_core_news_trf_pretrain_train_ner_patience_evalfreq-${vars.ner_merged}-${vars.package_version}/model-best
       - ${vars.package_init}
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-assemble_2-${vars.package_version}
 
 
   - name: evaluate
@@ -437,13 +458,13 @@ commands:
       - "huspacyv3_benchmark raw-text
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
-        --model-name ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}/model-best"
+        --model-name ${vars.transformer_models_path}/${vars.package_name}-assemble-${vars.package_version}"
       - bash -c "conll18_ud_eval
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
-      - ${vars.transformer_models_path}/${vars.package_name}-parser_3-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-assemble-${vars.package_version}
       - ${vars.package_init}
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu
