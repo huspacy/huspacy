@@ -34,6 +34,14 @@ tokens: true
 hidden width: 64
 maxout pieces: 3
 
+tagger:
+dropout: 0.3
+L2: 0.001
+top_k = 2
+
+parser:
+?
+
 
 NOTE
 parser nem tud tanulni az szegedcorpuson
@@ -46,8 +54,8 @@ parseren kívül mindent UD+SZC
 
 
 TODO:
-batch_size: 128 -> test then done the ner
-tagger fine-tune
+batch_size: done
+tagger fine-tune done (senter nélkül)
 parser: Biaffine parsers test, aztán mehet a parser sweep
 (mindent sweepelni -> Gyuri seaborn-os scriptje)
 
@@ -57,21 +65,20 @@ Biaffine parser
 parser:
 https://github.com/explosion/spacy-experimental/blob/master/projects/biaffine_parser/configs/base-config.cfg
 
-parser -> arc_predicter and arc_labeler-re csere
 
 models for assemble:
 tagger_lemma_4 (nincs még fine-tune)
-parser_4 -> tagger_lemma_4 pretrain-el (minden más eddig "freeze")
+parser_4 -> with (pretrainelt taggerre) tagger_lemma_4
+pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) tagger_lemma_4 dev: 93.11 test: 92.40
+
+
+
+**************
+biaffine, senter ok modelhez
+tagger_lemma_5 (inprog) fine-tuneolt
+biaffine_sent (inprog) nincs még fine-tune
 pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) dev: 93.11 test: 92.40
-
-tagger_lemma_4
-parser-tagger_lemma_4
-
-
-
-TODO: Biaffine pareser, ask, hogy miért nem jó nekem
-
-
+**************
 
 
 
@@ -113,3 +120,63 @@ parser: Még nincs fine-tune, és még nincs tesztelve azzal, amit Zsolti talál
     las:
         dev: 85.24
         test: 85.76
+
+nlp framework
+ - general intro
+ - spacy
+komponensek
+adatbázisok
+gépi tanulás
+ - introduction
+ - ...
+ - deep learning
+ - tok2vec
+ - transformer
+related work
+komponensek algoritmikai kifejtése
+
+eredmények
+ - kiértékelési metrikák
+ - tok2vec vs transformer
+ - hyperparameter optimization
+ - parser (biaffine)
+ - ner (beamner)
+    - diff (ipymarkup)
+??? külön error analysis, ahol csinálunk pl tagging error analysis-t is, pl összehasonlítjuk, az pos tag-enkénti f értékeket
+conclusion
+
+nerkor 1.41 ??
+
+
+
+
+
+nlp
+miért transzformer
+hogyan jutottunk el a transzformerig (larg)
+
+korpuszok
+SZC, UD, NerKor, SzegedNER, wiki trf-en futtatni
+
+komponensek bemutatása:
+morph
+sents
+pos
+parser, transfer learning + ner, (multitasking)
+lemma
+ner, encode: CNN, BiLSTM, embed: character, word alakú
+
+hyperparams (?)
+
+larg-model
+diff
+transformer: (belseje)
+parser: deafault és biaffine
+ner: default, beam_ner
+
+accuaries
+ipymark
+
+
+
+
