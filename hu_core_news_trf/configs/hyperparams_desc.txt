@@ -53,7 +53,6 @@ parseren kívül mindent UD+SZC
    - mindent az UD-n - > kuka: mindenhol ront
 
 
-TODO:
 batch_size: done
 tagger fine-tune done (senter nélkül)
 parser: Biaffine parsers test, aztán mehet a parser sweep
@@ -75,12 +74,21 @@ pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) tagger_lemma_4 dev:
 
 **************
 biaffine, senter ok modelhez
-tagger_lemma_5 (inprog) fine-tuneolt
-biaffine_sent (inprog) nincs még fine-tune
+tagger_lemma_5 (inprog) fine-tuneolt (de valamiért rosszabbbak)
+biaffine_sent (inprog) nincs még fine-tune és pretrain sem
 pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) dev: 93.11 test: 92.40
 **************
+tagger_lemma_5
+biaffine_sent_tagger_lemma_5
+ner_merged-tagger_lemma_5
 
 
+TODO:
+  evaluate_conll script nem megy a biaffine parserre és így a biaffine-s assemble-re sem
+  tagger_lemma_4: there is a cycle in a sentence
+  assemble: mutliple roots, próbáltam a make_it_valid scriptet is
+  mi legyen a transfer learning-el
+  assemble_4 -nél elfogy a memória, nem tudom kiértékelni...
 
 ---------------------------------------------------------------------------------------------
 
