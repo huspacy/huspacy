@@ -43,9 +43,6 @@ parser:
 ?
 
 
-NOTE
-parser nem tud tanulni az szegedcorpuson
-
 ötlet:
 parseren kívül mindent UD+SZC
    - parsert meg akkor tesztelve csak a transformert tovább adva
@@ -69,9 +66,6 @@ models for assemble:
 tagger_lemma_4 (nincs még fine-tune)
 parser_4 -> with (pretrainelt taggerre) tagger_lemma_4
 pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) tagger_lemma_4 dev: 93.11 test: 92.40
-
-
-
 **************
 biaffine, senter ok modelhez
 tagger_lemma_5 (inprog) fine-tuneolt (de valamiért rosszabbbak)
@@ -84,11 +78,30 @@ ner_merged-tagger_lemma_5
 
 
 TODO:
-  evaluate_conll script nem megy a biaffine parserre és így a biaffine-s assemble-re sem
+  evaluate_conll script nem megy a biaffine parserre és így a biaffine-s assemble-re sem:
   tagger_lemma_4: there is a cycle in a sentence
-  assemble: mutliple roots, próbáltam a make_it_valid scriptet is
-  mi legyen a transfer learning-el
-  assemble_4 -nél elfogy a memória, nem tudom kiértékelni...
+  assemble, biaffine_parser: mutliple roots, próbáltam a make_it_valid scriptet is
+  assemble_4 -nél (biaffine_sentes parser) a spacy eval-al elfogy a memória, nem tudom kiértékelni...
+
+
+- a biaffine_sent-es parsert (-> belőle az assemble-t sem) nem tudom sehogy sem kiértékelni (spacy eval memoria elfogy, conllu-val multiple error)
+    parser nélkül nem megy
+- amikor kiértékelek bármelyikkel, akkor warningol, azt amit akkor is kiír, amikor tanítok valamit
+    nincs pulloló a háló fölé rakva, whatever
+- biaffine parser vagy assemble, amiben biaffine van, spacy eval-nál a kirtékelési osztályok random számok, és romlik a biaffine parser, mint az eredeti tanításnál
+    más senter miatt kevesebb, parser labeljei mindegy
+- mindent egybe tanítva (a Peti, Zsolti javított SZC modikkal) rosszabb minden eredmény
+    eddig is szar volt, mert generálva vannak benne a cimkék (UD-n)
+
+
+
+sima parser false corpussal
+biafffina false corpussal
+
+tagger false corpussal (morph check)
+
+assemble, parserben tovább tanított senter check score -> Zsoltinak küldeni
+
 
 ---------------------------------------------------------------------------------------------
 
