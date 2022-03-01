@@ -46,7 +46,7 @@ vars:
   tagger_lemma_config: tagger_lemma
   all_components_exceptner_config: all_components_exceptner
   ner_config: ner
-  gpu: 0
+  gpu: 3
 
 
 # These are the directories that the project needs. The project CLI will make
@@ -189,26 +189,26 @@ commands:
   - name: preprocess_szegedcorpus
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
-      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}/zip/"
-      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
+      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/zip/"
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu'
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu
 
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
     deps:
       - ${vars.raw_data_path}/${vars.szegedcorpus}
       - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
     outputs:
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.spacy
 
 
   - name: preprocess_szegedner
@@ -333,17 +333,17 @@ commands:
     help: "train the tagger,morph and lemmatizer on the full Szeged Corpus and UD"
     script:
       - "spacy train configs/${vars.tagger_lemma_config}.cfg
-            --output ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_new_szc-${vars.package_version}
+            --output ${vars.transformer_models_path}/${vars.package_name}-old_szc_true_gold_tagger_lemma_morph_test-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project_own}
-            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
     deps:
-      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
       - configs/${vars.tagger_lemma_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_new_szc-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-old_szc_true_gold_tagger_lemma_morph_test-${vars.package_version}/model-best
 
 
   - name: train_parser
@@ -371,7 +371,7 @@ commands:
            dataset with the pretrained tagger and lemma model"
     script:
       - "spacy train configs/${vars.parser_biaffine_config}.cfg
-            --output ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_with_tagger_lemma_new_szc-${vars.package_version}
+            --output ${vars.transformer_models_path}/${vars.package_name}-biaffine_all_other_with_tagger_lemma_new_szc-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project_own}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
@@ -383,7 +383,7 @@ commands:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_new_szc-${vars.package_version}/model-best
       - configs/${vars.parser_biaffine_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_with_tagger_lemma_new_szc-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-biaffine_all_other_with_tagger_lemma_new_szc-${vars.package_version}/model-best
 
 
   - name: train_ner
@@ -408,17 +408,17 @@ commands:
     help: "Assemble the parser, the lemmatizer and the NER components"
     script:
       - "spacy assemble configs/${vars.assemble_config}.cfg
-          ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc-${vars.package_version}
+          ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc_parserSenterEgybe-${vars.package_version}
           --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_new_szc-${vars.package_version}/model-best
-          --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-biaffine_tagger_lemma_new_szc-${vars.package_version}/model-best
+          --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_with_tagger_lemma_new_szc-${vars.package_version}/model-best
           --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-tagger_lemma_new_szc-${vars.package_version}/model-best"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger_lemma_new_szc-${vars.package_version}/model-best
-      - ${vars.transformer_models_path}/${vars.package_name}-biaffine_tagger_lemma_new_szc-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_with_tagger_lemma_new_szc-${vars.package_version}/model-best
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-tagger_lemma_new_szc-${vars.package_version}/model-best
       - ${vars.package_init}
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc_parserSenterEgybe-${vars.package_version}
 
 
   - name: evaluate
@@ -457,13 +457,13 @@ commands:
       - "huspacyv3_benchmark raw-text
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
-        --model-name ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_tagger_lemma_new_szc-${vars.package_version}/model-best"
+        --model-name ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc_parserSenterEgybe-${vars.package_version}"
       - bash -c "conll18_ud_eval
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
-      - ${vars.transformer_models_path}/${vars.package_name}-biaffine_sent_tagger_lemma_new_szc-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-assemble_new_szc_parserSenterEgybe-${vars.package_version}
       - ${vars.package_init}
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu

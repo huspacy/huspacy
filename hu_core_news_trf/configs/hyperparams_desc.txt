@@ -75,11 +75,16 @@ pretrain_train_ner_patience_evalfreq (pretrainelt taggerrel) dev: 93.11 test: 92
 tagger_lemma_5
 biaffine_sent_tagger_lemma_5
 ner_merged-tagger_lemma_5
+**************
+Eddig maybe ez jónak tűnik (csak sok helyet foglal a parser két komponense miatt)
+assemble_new_szc_parserSenterEgybe
+tagger_lemma_new_szc
+biaffine_sent_with_tagger_lemma_new_szc
+ner_merged-tagger_lemma_new_szc
 
 
 TODO:
   evaluate_conll script nem megy a biaffine parserre és így a biaffine-s assemble-re sem:
-  tagger_lemma_4: there is a cycle in a sentence
   assemble, biaffine_parser: mutliple roots, próbáltam a make_it_valid scriptet is
   assemble_4 -nél (biaffine_sentes parser) a spacy eval-al elfogy a memória, nem tudom kiértékelni...
 
