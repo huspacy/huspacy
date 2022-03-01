@@ -85,6 +85,7 @@ target/
 
 /data
 /models
+/transformer_models
 /packages
 /hu_*/metrics
 hu_core_news_lg/wandb

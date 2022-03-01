@@ -4,7 +4,7 @@ command:
 - -m
 - spacy
 - train
-- ./configs/tagger_lemma.cfg
+- ./configs/tagger.cfg
 - --output
 - ../transformer_models/sweep_tagger
 - --gpu-id
