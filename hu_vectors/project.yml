@@ -95,18 +95,22 @@ commands:
   - name: train_floret
     help: "Train floret"
     script:
-      - ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 150000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki-2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019wikivectors150k
+#      - ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 150000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki-2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019wikivectors150k
       #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 100000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki-2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019wikivectors100k
       #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 100000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019vectors100k
       #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/2019.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/2019vectors
       #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -input ${vars.processed_data_path}/${vars.webcorpus_path}/wiki.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors
-      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -lr 0.025 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors3
-      #- ${vars.floret_path}/floret cbow -dim 300 -mode floret -minn 4 -maxn 6 -minCount 50 -neg 10 -hashCount 2 -lr 0.05 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors
+#      - ${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount 15 -neg 10 -thread 48 -hashCount 2 -lr 0.025 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors3
+      # -autotune-validation ${vars.external_data_path}/questions-words-hu.txt -autotune-duration 10
+#      - "${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 200000 -minn 4 -maxn 6 -minCount 20 -neg 10 -hashCount 2 -lr 0.005 -thread 70 -epoch 10 \
+#          -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors3"
+      - "${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 2000000 -minn 3 -maxn 6 -minCount 5 -neg 10 -hashCount 2 -lr 0.005 -thread 70 -epoch 20 \
+          -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/vectors_bucke2M_e20_minn3_mincount5"
 
   - name: train_fasttext
     help: "Train fasttext"
     script:
-      - ${vars.floret_path}/floret cbow -dim 300 -minn 4 -maxn 6 -mode fasttext -minCount 15 -neg 10 -thread 48 -lr 0.025 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo
+      - ${vars.floret_path}/floret cbow -dim 300 -minn 4 -maxn 6 -mode fasttext -minCount 15 -neg 10 -thread 48 -lr 0.025 -epoch 10 -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo
 
   - name: train_fasttext_norm
     help: "Train fasttext"
@@ -117,7 +121,7 @@ commands:
   - name: evaluate_floret
     help: "Measure accuracy on the floret vector with questions"
     script:
-      - python ../tools/cli/floret_accuracy.py ${vars.processed_data_path}/${vars.webcorpus_path}/vectors2.bin ${vars.external_data_path}/questions-words-hu.txt 30000
+      - python ../tools/cli/floret_accuracy.py ${vars.processed_data_path}/${vars.webcorpus_path}/vectors4.bin ${vars.external_data_path}/questions-words-hu.txt 30000
   - name: evaluate_floret_wiki
     help: "Measure accuracy on the floret vector with questions"
     script:
@@ -131,21 +135,22 @@ commands:
   - name: init_vectors
     help: "initalize fasttext, floret vectors"
     script:
-      - mkdir ${vars.processed_data_path}/fasttext-vectors
-      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo.bin ${vars.processed_data_path}/fasttext-vectors"
+#      - mkdir ${vars.processed_data_path}/fasttext-vectors
+#      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/fasttextflo.bin ${vars.processed_data_path}/fasttext-vectors"
       - mkdir ${vars.processed_data_path}/floret-vectors
-      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/vectors2.floret ${vars.processed_data_path}/floret-vectors --mode floret"
-      - mkdir ${vars.processed_data_path}/floret-wiki-vectors
-      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors.floret ${vars.processed_data_path}/floret-wiki-vectors --mode floret"
+      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/vectors3.floret ${vars.processed_data_path}/floret-vectors --mode floret"
+#      - mkdir ${vars.processed_data_path}/floret-wiki-vectors
+#      - "spacy init vectors ${vars.lang} ${vars.processed_data_path}/${vars.webcorpus_path}/wikivectors.floret ${vars.processed_data_path}/floret-wiki-vectors --mode floret"
 
-  - name: train_parser_ud_wiki
+  - name: train_parser_ud
     help: "Train tagger-parser-lemmatizer all in one step with wiki vectors on ud-szeged"
     script:
       - "spacy train configs/tagger_parser_lemmatizer.cfg
             --output ${vars.models_path}/${vars.package_name}-parser-vec-wiki-${vars.package_version}
-            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --gpu-id ${vars.gpu} 
+            --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
-            --paths.vectors ${vars.processed_data_path}/floret-wiki-vectors
+            --paths.vectors ${vars.processed_data_path}/floret-vectors
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
 
