@@ -119,7 +119,7 @@ Models' changes are recorded in the [changelog](https://github.com/huspacy/huspa
 
 ## Citing
 
-If you use the models or this library in your research please cite this [paper](https://github.com/huspacy/articles/releases/download/MSZNY_2022/HuSpaCy_MSZNY_2022.pdf).</br>
+If you use the models or this library in your research please cite this [paper](https://arxiv.org/abs/2201.01956).</br>
 Additionally, please indicate the version of the model you used so that your research can be reproduced.
 
 

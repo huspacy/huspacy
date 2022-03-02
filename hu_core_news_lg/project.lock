@@ -27,7 +27,7 @@ preprocess_szegedcorpus:
       --converter conllu --n-sents 10
   deps:
     - path: ../data/raw/SzegedCorpus
-      md5: 88bdd041a3eda14fe444e3283857a5c7
+      md5: 5f5c6b74c19ff87d8d7b984d6d648c75
     - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
       md5: e8581e733642908c106841fc1469ae89
     - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
@@ -42,13 +42,15 @@ preprocess_szegedcorpus:
     - path: ../data/processed/SzegedCorpus/test.conllup
       md5: null
     - path: ../data/processed/SzegedCorpus/train.spacy
-      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
     - path: ../data/processed/SzegedCorpus/dev.spacy
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/SzegedCorpus/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-  spacy_version: 3.2.0
-  spacy_git_version: 0fc3dee77
+
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+
 preprocess_ud:
   cmd: python -m spacy run preprocess_ud
   script:
@@ -76,8 +78,8 @@ preprocess_ud:
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-  spacy_version: 3.1.3
-  spacy_git_version: 8bda39f08
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
 train_lemmatizer:
   cmd: python -m spacy run train_lemmatizer
   script:
@@ -132,6 +134,7 @@ train_parser:
       md5: 117b7a88da63375ab98952934551211c
     - path: configs/parser.cfg
       md5: 57f8990f95b8b209e0537c07e1ef5fcf
+
   outs:
     - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
       md5: d3a792bdde8f214435a7ff1f04921e53
@@ -235,120 +238,36 @@ evaluate:
       md5: null
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
-preprocess_nerkor:
-  cmd: python -m spacy run preprocess_nerkor
+init_vectors:
+  cmd: python -m spacy run init_vectors
   script:
-    - mkdir -p ../data/processed/NerKor
-    - convert2conllu '../data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
-      ../data/processed/NerKor/dev.conllup
-    - convert2conllu '../data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
-      ../data/processed/NerKor/train.conllup
-    - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
-      ../data/processed/NerKor/test.conllup
-    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  ../data/processed/NerKor/dev.iob
-    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/train/*/*/*.conllup  ../data/processed/NerKor/train.iob
-    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/test/*/*/*.conllup  ../data/processed/NerKor/test.iob
-    - spacy convert ../data/processed/NerKor/train.iob ../data/processed/NerKor --converter
-      iob --n-sents 10
-    - spacy convert ../data/processed/NerKor/dev.iob ../data/processed/NerKor --converter
-      iob --n-sents 10
-    - spacy convert ../data/processed/NerKor/test.iob ../data/processed/NerKor --converter
-      iob --n-sents 10
+    - bash -c 'bzcat ../data/external/webcorpuswiki.word2vec.bz2 > ../data/external/webcorpuswiki.word2vec.txt'
+    - spacy init vectors hu ../data/external/webcorpuswiki.word2vec.txt ../data/external/webcorpuswiki.word2vec.vec
+      -n hu_core_news_lg.vectors
   deps:
-    - path: ../data/raw/NerKor
-      md5: b950c6328675585a8377a7ef04ef6dd3
+    - path: ../data/external/webcorpuswiki.word2vec.bz2
+      md5: 4a3055c54a6f9a5f806ba09b21cb4583
   outs:
-    - path: ../data/processed/NerKor/train.iob
-      md5: 019cb9ccca28837032aff5c7f66c83b4
-    - path: ../data/processed/NerKor/dev.iob
-      md5: 3fa4ff252ebe8c487501b59dead60154
-    - path: ../data/processed/NerKor/test.iob
-      md5: b9f40b8e80cb51f411fb4d49f2d17053
-    - path: ../data/processed/NerKor/train.spacy
-      md5: 73eff46826c3b567ae375589fe6f0818
-    - path: ../data/processed/NerKor/dev.spacy
-      md5: 1c3a3c54f37108a1002d585c0169cce7
-    - path: ../data/processed/NerKor/test.spacy
-      md5: cbae80a7ac51f59094fdeb63597995eb
+    - path: ../data/external/webcorpuswiki.word2vec.vec
+      md5: afba005527b24f19a3c47e6cccdd6eb4
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
-preprocess_szegedner:
-  cmd: python -m spacy run preprocess_szegedner
+train_parser_ud:
+  cmd: python -m spacy run train_parser_ud
   script:
-    - mkdir -p ../data/processed/SzegedNER
-    - unzip -o ../data/raw/SzegedNER/business_NER.zip -d ../data/processed/SzegedNER/
-    - bash -c 'iconv -f iso-8859-2 --t utf-8 ../data/processed/SzegedNER/hun_ner_corpus.txt
-      | tail -n +2 | sed -e "s/\t0/\tO/g" > ../data/processed/SzegedNER/hun_business_ner_corpus_utf8.txt'
-    - unzip -o ../data/raw/SzegedNER/criminal_NER.zip -d ../data/processed/SzegedNER/
-    - bash -c 'iconv -f iso-8859-2 --t utf-8 ../data/processed/SzegedNER/hvg | tail
-      -n +3 | sed -e "s/\t0/\tO/g" > ../data/processed/SzegedNER/hun_criminal_ner_corpus_utf8.txt'
-    - split_szeged_ner ../data/processed/SzegedNER/hun_business_ner_corpus_utf8.txt
-      ../data/processed/SzegedNER/hun_business_train.iob1 ../data/processed/SzegedNER/hun_business_dev.iob1
-      ../data/processed/SzegedNER/hun_business_test.iob1
-    - split_szeged_ner ../data/processed/SzegedNER/hun_criminal_ner_corpus_utf8.txt
-      ../data/processed/SzegedNER/hun_criminal_train.iob1 ../data/processed/SzegedNER/hun_criminal_dev.iob1
-      ../data/processed/SzegedNER/hun_criminal_test.iob1
-    - bash -c 'cat ../data/processed/SzegedNER/hun_*_train.iob1 > ../data/processed/SzegedNER/train.iob1'
-    - bash -c 'cat ../data/processed/SzegedNER/hun_*_dev.iob1 > ../data/processed/SzegedNER/dev.iob1'
-    - bash -c 'cat ../data/processed/SzegedNER/hun_*_test.iob1 > ../data/processed/SzegedNER/test.iob1'
-    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/train.iob1 ../data/processed/SzegedNER/train.iob
-    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/dev.iob1 ../data/processed/SzegedNER/dev.iob
-    - ../scripts/convert_iob1_2_iob2.sh ../data/processed/SzegedNER/test.iob1 ../data/processed/SzegedNER/test.iob
-    - spacy convert ../data/processed/SzegedNER/dev.iob ../data/processed/SzegedNER/
-      --converter iob --n-sents 10
-    - spacy convert ../data/processed/SzegedNER/train.iob ../data/processed/SzegedNER/
-      --converter iob --n-sents 10
-    - spacy convert ../data/processed/SzegedNER/test.iob ../data/processed/SzegedNER/
-      --converter iob --n-sents 10
+    - spacy train configs/parser_ud.cfg --output ../models/hu_core_news_lg-parser-0.4.2
+      --gpu-id -1 --nlp.lang=hu --training.logger.project_name hu_core_news_lg-0.4.2-v2
+      --paths.vectors ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
   deps:
-    - path: ../data/raw/SzegedNER/business_NER.zip
-      md5: 8261674cf03d90cf74067ef72be11497
-    - path: ../data/raw/SzegedNER/criminal_NER.zip
-      md5: 1ac01318232c4e833dab4a4175680786
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: configs/parser.cfg
+      md5: 57f8990f95b8b209e0537c07e1ef5fcf
   outs:
-    - path: ../data/processed/SzegedNER/train.spacy
-      md5: a34f8bbb5c75779569c3c9d7a242328b
-    - path: ../data/processed/SzegedNER/dev.spacy
-      md5: 77960946522fea210f3d3f58d054ee2d
-    - path: ../data/processed/SzegedNER/test.spacy
-      md5: 4b28ed2b9ac2755d8798462247fe6c99
-  spacy_version: 3.2.1
-  spacy_git_version: 800737b41
-preprocess_merge:
-  cmd: python -m spacy run preprocess_merge
-  script:
-    - mkdir -p ../data/processed/ner_merged
-    - bash -c 'cat ../data/processed/SzegedNER/train.iob ../data/processed/NerKor/train.iob
-      > ../data/processed/ner_merged/train.iob'
-    - bash -c 'cat ../data/processed/SzegedNER/dev.iob ../data/processed/NerKor/dev.iob
-      > ../data/processed/ner_merged/dev.iob'
-    - bash -c 'cat ../data/processed/SzegedNER/test.iob ../data/processed/NerKor/test.iob
-      > ../data/processed/ner_merged/test.iob'
-    - spacy convert ../data/processed/ner_merged/dev.iob ../data/processed/ner_merged/
-      --converter iob --n-sents 10
-    - spacy convert ../data/processed/ner_merged/train.iob ../data/processed/ner_merged/
-      --converter iob --n-sents 10
-    - spacy convert ../data/processed/ner_merged/test.iob ../data/processed/ner_merged/
-      --converter iob --n-sents 10
-  deps:
-    - path: ../data/processed/SzegedNER/train.iob
-      md5: d183c103f5d33ff379d30f0c5b610bd7
-    - path: ../data/processed/NerKor/train.iob
-      md5: 92bbf42400b8a12654551d0c7b3e366d
-    - path: ../data/processed/NerKor/test.iob
-      md5: 1e1389552b1df07e169251f6ce60cc0b
-    - path: ../data/processed/NerKor/dev.iob
-      md5: 9ad09cb86ae88a9414d44cb094bbf70c
-    - path: ../data/processed/SzegedNER/dev.iob
-      md5: 317b45c89f2e8f1b6d25446966ab47fa
-    - path: ../data/processed/SzegedNER/test.iob
-      md5: 59d88e473365cd2fb515bd4b869d33f6
-  outs:
-    - path: ../data/processed/ner_merged/train.spacy
-      md5: 7a795e0ddf0ee9f4c101f39cef7399ea
-    - path: ../data/processed/ner_merged/dev.spacy
-      md5: 5b51f64107e3c1687a0f606465711b3c
-    - path: ../data/processed/ner_merged/test.spacy
-      md5: 57384b82295c7c085420ba0a97dcded3
+    - path: ../models/hu_core_news_lg-parser-0.4.2/model-best
+      md5: cfc6feb03949e2477880ff19f204e7ca
   spacy_version: 3.2.1
   spacy_git_version: 800737b41

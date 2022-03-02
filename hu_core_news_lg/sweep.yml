@@ -3,9 +3,10 @@ command:
 - -m
 - spacy
 - train
-- configs/default.cfg
+- configs/ner.cfg
 - --output
-- training/sweep_ner_merged
+# TODO: This folder should be unique, as multiprocess run can override each other's model
+- ../models/sweep_ner_merged
 - --gpu-id
 - 0
 - ${args}
