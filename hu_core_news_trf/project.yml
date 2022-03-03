@@ -10,10 +10,10 @@ vars:
   package_name: hu_core_news_trf
   package_version: 0.4.2
 
-  #models_path: ../models
   transformer_models_path: ../transformer_models
   packages_path: ../packages
 
+  #TODO: large and trf model could interfere in using common data
   raw_data_path: ../data/raw
   processed_data_path: ../data/processed
   external_data_path: ../data/external
@@ -68,10 +68,11 @@ assets:
     url: http://www.inf.u-szeged.hu/~szantozs/download/ner/criminal_NER.zip
 
   # Szeged corpus
-  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu
-    url: http://www.inf.u-szeged.hu/~szantozs/download/ud_converted/univdep.hu.train.conllu
-    # TODO: upload the new szc
-    # TODO: dependencies
+  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
+    git:
+      repo: https://github.com/huspacy/huspacy-resources
+      branch: master
+      path: data/processed/szeged-corpus/
     # TODO: Zsolti's eval multi roots script
     # TODO: write the HuBert license into to README (if necessary)
 
@@ -171,7 +172,6 @@ commands:
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/zip/"
-#      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu'
       - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu'
       - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu
       - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu
@@ -342,7 +342,7 @@ commands:
       - "merge-eval-results
             ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json
             ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
-            ${vars.transformer_models_path}/${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+            ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}/meta.json"
 
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
