@@ -86,8 +86,8 @@ def raw_text(input_file: str, output_file: str = None, gpu: bool = False, time: 
 
 
 @app.command()
-def test(text: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.'):
-    nlp = load_pipeline(use_gpu=False, with_ner=False)
+def test(text: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.', model_name: str = "hu_core_news_lg"):
+    nlp = load_pipeline(use_gpu=False, with_ner=True, model_name=model_name)
     nlp.add_pipe("conll_formatter")
 
     with Timer() as t:

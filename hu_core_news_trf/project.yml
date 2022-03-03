@@ -1,0 +1,416 @@
+title: "Core Hungarian Spacy model (transformer) "
+description: "transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
+spacy_version: ">=3.2.0,<3.3.0"
+
+vars:
+  lang: hu
+  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  core_package_name: core_news_trf
+  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  package_name: hu_core_news_trf
+  package_version: 0.4.2
+
+  transformer_models_path: ../transformer_models
+  packages_path: ../packages
+
+  #TODO: large and trf model could interfere in using common data
+  raw_data_path: ../data/raw
+  processed_data_path: ../data/processed
+  external_data_path: ../data/external
+  result_data_path: ../data/result
+
+  treebank: UD_Hungarian-Szeged
+  train_name: hu_szeged-ud-train
+  dev_name: hu_szeged-ud-dev
+  test_name: hu_szeged-ud-test
+
+  nerkor: NerKor
+  szegedcorpus: SzegedCorpus
+  szegedner: SzegedNER
+  ner_merged: ner_merged
+  UD_SZC_merged: UD_SZC_merged
+
+  package_init: ../tools/components.py
+
+  wandb_entity: spacy-hu
+  wandb_project: spacy_ner_test_train
+
+  assemble_config: assemble
+  tagger_config: tagger
+  parser_config: parser
+  ner_config: ner
+  gpu: 0
+
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+directories: [configs, ../transformer_models, ../packages, ../data/raw, ../data/processed, ../data/external]
+
+assets:
+  # Universal dependencies
+  - dest: ${vars.raw_data_path}/${vars.treebank}
+    git:
+      repo: https://github.com/UniversalDependencies/${vars.treebank}
+      branch: master
+      path: ""
+
+  # NerKor
+  - dest: ${vars.raw_data_path}/${vars.nerkor}
+    git:
+      repo: https://github.com/nytud/NYTK-NerKor
+      branch: main
+      path: data
+
+  # SzegedNER
+  - dest: ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/business_NER.zip
+  - dest: ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip
+    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/criminal_NER.zip
+
+  # Szeged corpus
+  - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
+    git:
+      repo: https://github.com/huspacy/huspacy-resources
+      branch: master
+      path: data/processed/szeged-corpus/
+    # TODO: Zsolti's eval multi roots script
+    # TODO: write the HuBert license into to README (if necessary)
+
+workflows:
+  all:
+    - preprocess_ud
+    - preprocess_nerkor
+    - preprocess_szegedcorpus
+    - preprocess_szegedner
+    - preprocess_merge
+    - pretrain_tagger
+    - train_parser
+    - train_ner
+    - assemble
+    - evaluate
+    - evaluate_conll
+    - package
+
+  tagger:
+    - preprocess_szegedcorpus
+    - preprocess_ud
+    - pretrain_tagger
+
+  parser:
+    - preprocess_szegedcorpus
+    - preprocess_ud
+    - pretrain_tagger
+    - train_parser
+
+  ner:
+    - preprocess_nerkor
+    - preprocess_szegedner
+    - preprocess_merge
+    - train_ner
+
+  publish:
+    - push
+
+commands:
+  - name: preprocess_ud
+    help: "Convert the UD corpus to spaCy's format"
+    script:
+      - "mkdir -p ${vars.processed_data_path}/${vars.treebank}"
+      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
+          ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
+      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+          ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
+      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+          ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
+      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.spacy
+          ${vars.processed_data_path}/${vars.treebank}/train.spacy"
+      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.spacy
+          ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.spacy
+          ${vars.processed_data_path}/${vars.treebank}/test.spacy"
+    deps:
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+    outputs:
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/test.spacy
+
+
+  - name: preprocess_nerkor
+    help: "Convert the NerKor data to spaCy's format"
+    script:
+      - "mkdir -p ${vars.processed_data_path}/${vars.nerkor}"
+      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/dev.conllup"
+      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/train.conllup"
+      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
+
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
+      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
+
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+
+    deps:
+      - ${vars.raw_data_path}/${vars.nerkor}
+    outputs:
+      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/train.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
+
+
+  - name: preprocess_szegedcorpus
+    help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
+    script:
+      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/zip/"
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu'
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu
+
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+    deps:
+      - ${vars.raw_data_path}/${vars.szegedcorpus}
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+    outputs:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.spacy
+
+
+  - name: preprocess_szegedner
+    help: "Convert the SzegedNER data to spaCy's format"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
+      - unzip -o ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
+
+      - unzip -o ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
+      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
+
+      - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_business_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_test.iob1
+      - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_test.iob1
+
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_train.iob1 > ${vars.processed_data_path}/${vars.szegedner}/train.iob1'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_dev.iob1 > ${vars.processed_data_path}/${vars.szegedner}/dev.iob1'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_test.iob1 > ${vars.processed_data_path}/${vars.szegedner}/test.iob1'
+
+      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/train.iob1 ${vars.processed_data_path}/${vars.szegedner}/train.iob'
+      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/dev.iob'
+      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/test.iob1 ${vars.processed_data_path}/${vars.szegedner}/test.iob'
+
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+
+    deps:
+      - ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip
+      - ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip
+    outputs:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/test.spacy
+
+
+  - name: preprocess_merge
+    help: "Concatenate IOB datasets to a new dataset"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.ner_merged}
+
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob > ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
+
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/test.iob
+    outputs:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+
+
+  - name: pretrain_tagger
+    help: "pretrain the tagger, morphology, sentencizer and lemmatizer on the full Szeged Corpus"
+    script:
+      - "spacy train configs/${vars.tagger_config}.cfg
+            --output ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.tagger_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+
+
+  - name: train_parser
+    help: "Train the parser on the Universal Dependencies dataset with the pretrained tagger"
+    script:
+      - "spacy train configs/${vars.parser_config}.cfg
+            --output ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+            --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.parser_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
+
+
+  - name: train_ner
+    help: "Train the NER on NerKor and SzegedNER with the pretrained tagger"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+      - configs/${vars.ner_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+
+
+  - name: assemble
+    help: "Assemble the tagger, parser and the NER components"
+    script:
+      - "spacy assemble configs/${vars.assemble_config}.cfg
+          ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+          --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+          --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
+          --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - configs/${vars.assemble_config}.cfg
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+
+
+  - name: evaluate
+    help: "Evaluate on the test data and save the metrics"
+    script:
+      # Intentionally using the CPU to measure tok/sec correctly
+      - "spacy evaluate
+            ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+            ${vars.processed_data_path}/${vars.treebank}/test.spacy
+            --output ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json"
+      - "spacy evaluate
+            --gold-preproc
+            ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+            ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+            --output ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
+      - "merge-eval-results
+            ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json
+            ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
+            ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+      - ${vars.processed_data_path}/${vars.treebank}/test.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+    outputs:
+      - ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json
+      - ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
+      - ${vars.transformer_models_path}/${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+
+
+  - name: evaluate_conll
+    help: "Evaluate the model with the official conll script"
+    script:
+      - "mkdir -p ${vars.result_data_path}"
+      - "huspacyv3_benchmark raw-text
+        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        --output-file ${vars.result_data_path}/ud_test.conllu
+        --model-name ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}"
+      - bash -c "conll18_ud_eval
+        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.result_data_path}/ud_test.conllu
+        -v | tee ${vars.result_data_path}/ud_test_conll18.log"
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+    outputs_no_cache:
+      - ${vars.result_data_path}/ud_test.conllu
+      - ${vars.result_data_path}/ud_test_conll18.log
+
+
+  - name: package
+    help: "Package the trained model so it can be installed"
+    script: #TODO: add meta
+      - "spacy package
+          ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
+          --build 'wheel'
+          --code ${vars.package_init}
+          --meta meta.json
+          --name ${vars.core_package_name}
+          --version ${vars.package_version}
+          --force"
+    deps:
+      - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+      - ${vars.package_init}
+    outputs_no_cache:
+#      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz
+      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
+
+
+  - name: push #TODO: github release
+    help: "Upload the trained model to the Hugging Face Hub"
+    script:
+      - "huggingface-cli login"
+      - "spacy huggingface-hub push
+          ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
+          --org huspacy
+          --local-repo ../../hub
+          --msg \"Update spacy pipeline to ${vars.package_version}\"
+          --verbose"
+      - "huggingface-cli logout"
+      - bash -c "cd ../../hub/${vars.package_name} && git tag -a v${vars.package_version} -m \"Releasing version v${vars.package_version}\" && git push origin v${vars.package_version}"
+    deps:
+      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
+
+
+  - name: clean
+    help: "Remove intermediate files"
+    script:
+      - "rm -rf ${vars.processed_data_path}"
+      - "rm -rf ${vars.transformer_models_path}"
+

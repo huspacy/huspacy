@@ -1,0 +1,38 @@
+project: spacy_trf_tagger
+command:
+- python
+- -m
+- spacy
+- train
+- ./configs/tagger.cfg
+- --output
+- ../transformer_models/sweep_tagger
+- --gpu-id
+- 0
+- ${args}
+method: grid
+parameters:
+  components.experimental_edit_tree_lemmatizer.top_k:
+    values:
+      - 1
+      - 2
+      - 3
+  nlp.lang:
+    values:
+      - hu
+  paths.dev:
+    values:
+      - ../data/processed/SzegedCorpus/dev.spacy
+  paths.train:
+    values:
+      - ../data/processed/SzegedCorpus/train.spacy
+  training.dropout:
+    values:
+    - 0.1
+    - 0.2
+    - 0.3
+  training.optimizer.L2:
+    values:
+    - 0.1
+    - 0.01
+    - 0.001
