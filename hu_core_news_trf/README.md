@@ -14,12 +14,14 @@ Activate the virtual environment: `poetry shell` and `cd hu_core_news_trf`
 1. Fetch datafiles: `python -m spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)
 2. For the transformer model need two additional packages: `spacy-transformers` and `spacy-experimental`, which are worth checking manually and installing the appropriate versions if necessary.
-3. Optional: If you want to use the GPU for teaching, you need the torch-cuda package (note: versions may vary):
-After installing cuda properly, you only need to use this command in the poetry shell
+3. Most probably you want to use GPU for training, which depends on the `torch` package (note: versions may vary):
 `poetry run python -m pip install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html`
-4. To make sure the spacy-experimental package works, install this repo:
-`poetry run python -m pip install git+https://github.com/explosion/spacy-experimental.git`
-5. Build all models: `python -m spacy project run all`
+5. Build all the models: `python -m spacy project run all`
+
+## Fine-tune the models
+
+[//]: # (TODO)
+TBD 
 
 ## Publish models and packages
 

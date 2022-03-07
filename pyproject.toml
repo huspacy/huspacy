@@ -11,7 +11,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-spacy = "^3.2.0"
+spacy = "^3.2.3"
 lemmy3 = "^3.2.0a"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
@@ -27,13 +27,16 @@ seqeval = "^1.2.2"
 seaborn = "^0.11.2"
 ipymarkup = "^0.9.0"
 spacy-transformers = "^1.1.4"
-spacy-experimental = "^0.2.0"
+numpy = "^1.22.2" #TODO: issue in spacy/explosion
+spacy-experimental = { git = "https://github.com/explosion/spacy-experimental.git", rev = "3eca617"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 poethepoet = "^0.10.0"
 flake8 = "^4.0.1"
 
+# TODO: remove these as it only resulted in obscure names
+# TODO: standrdaize naming
 [tool.poetry.scripts]
 convert2conllu = 'tools.cli.convert_to_conllu:app'
 split_szeged_ner = 'tools.cli.split_szeged_ner:app'
