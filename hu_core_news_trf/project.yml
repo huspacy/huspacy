@@ -1,23 +1,24 @@
 title: "Core Hungarian Spacy model (transformer) "
-description: "transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
+description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
 spacy_version: ">=3.2.0,<3.3.0"
 
 vars:
   lang: hu
-  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  # Following spaCy's convention: https://spacy.io/models#conventions
   core_package_name: core_news_trf
-  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
-  package_version: 0.4.2
+  # Following spaCy's convention: https://spacy.io/models#model-versioning
+  #TODO: model specific bumpversion is needed
+  package_version: 3.2.0
 
-  transformer_models_path: ../transformer_models
-  packages_path: ../packages
+  transformer_models_path: models
+  packages_path: packages
 
-  #TODO: large and trf model could interfere in using common data
-  raw_data_path: ../data/raw
-  processed_data_path: ../data/processed
-  external_data_path: ../data/external
-  result_data_path: ../data/result
+  raw_data_path: data/raw
+  processed_data_path: data/processed
+  external_data_path: data/external
+  result_data_path: data/result
 
   treebank: UD_Hungarian-Szeged
   train_name: hu_szeged-ud-train
@@ -32,22 +33,24 @@ vars:
 
   package_init: ../tools/components.py
 
-  wandb_entity: spacy-hu
-  wandb_project: spacy_ner_test_train
-
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: 0
+
+  wandb_entity: spacy-hu
+  #TODO: model specific bumpversion is needed
+  wandb_project: hu_core_news_trf-3.2.0
+
+  gpu: 4
 
 
-# These are the directories that the project needs. The project CLI will make
-# sure that they always exist.
-directories: [configs, ../transformer_models, ../packages, ../data/raw, ../data/processed, ../data/external]
+# These are the directories that the project needs. The project CLI will make sure that they always exist.
+directories: [configs, models, packages, data/raw, data/processed, data/external, data/result]
 
 assets:
   # Universal dependencies
+  #TODO: Download a specific version to make it fully reproducable
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
@@ -62,6 +65,7 @@ assets:
       path: data
 
   # SzegedNER
+  # TODO: use the common split
   - dest: ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip
     url: http://www.inf.u-szeged.hu/~szantozs/download/ner/business_NER.zip
   - dest: ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip
@@ -171,26 +175,26 @@ commands:
   - name: preprocess_szegedcorpus
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
-      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/zip/"
-      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu'
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu
+      - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}"
+      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
+      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
 
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
-      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
+      - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
     deps:
       - ${vars.raw_data_path}/${vars.szegedcorpus}
       - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
     outputs:
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.conllup
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/train.spacy
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/dev.spacy
-      - ${vars.processed_data_path}/${vars.szegedcorpus}_morph_test/test.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.spacy
 
 
   - name: preprocess_szegedner
