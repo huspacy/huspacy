@@ -10,16 +10,16 @@ vars:
   package_name: hu_vectors
   package_version: 0.1.0
 
-  models_path: ../models
-  packages_path: ../packages
+  models_path: models
+  packages_path: packages
 
-  raw_data_path: ../data/raw
-  processed_data_path: ../data/processed
-  external_data_path: ../data/external
-  result_data_path: ../data/result
+  raw_data_path: data/raw
+  processed_data_path: data/processed
+  external_data_path: data/external
+  result_data_path: data/result
 
   webcorpus_path: webcorpus2
-  floret_path: ../floret
+  floret_path: floret
   scripts_path: ../scripts
 
   treebank: UD_Hungarian-Szeged
@@ -49,10 +49,6 @@ vars:
 directories: [configs, ../models, ../packages, ../data/raw, ../data/processed, ../data/external]
 
 assets:
-  # Hungarian Webcorpus 2
-  - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/corpus.tsv.gz
-    url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/2017_2018_0001.tsv.gz
-
   # sha256sums of webcorpus2
   - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
     url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/sha256sums
@@ -80,7 +76,9 @@ commands:
     help: "Preprocess corpus"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned
-      - "parallel --colsep '  ' --bar --jobs 16 --ungroup ${vars.scripts_path}/process_webcorpus2.sh {2} :::: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums"
+      - "parallel --colsep '  ' --bar --jobs 16 --ungroup
+            ${vars.scripts_path}/process_webcorpus2.sh {2} ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned 
+            :::: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums"
       - bash -c "echo ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned/*.txt | xargs cat > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt"
     deps:
       - ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums

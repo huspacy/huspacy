@@ -15,22 +15,22 @@ preprocess_corpus:
 preprocess_webcorpus:
   cmd: python -m spacy run preprocess_webcorpus
   script:
-    - mkdir -p ../data/processed/webcorpus2/cleaned
+    - mkdir -p data/processed/webcorpus2/cleaned
     - "parallel --colsep '  ' --bar --jobs 16 --ungroup ../scripts/process_webcorpus2.sh\
-      \ {2} :::: ../data/raw/webcorpus2/sha256sums"
-    - bash -c "echo ../data/processed/webcorpus2/cleaned/*.txt | xargs cat > ../data/processed/webcorpus2/corpus.txt"
+      \ {2} data/processed/webcorpus2/cleaned :::: data/raw/webcorpus2/sha256sums_head"
+    - bash -c "echo data/processed/webcorpus2/cleaned/*.txt | xargs cat > data/processed/webcorpus2/corpus.txt"
   deps:
-    - path: ../data/raw/webcorpus2/sha256sums
+    - path: data/raw/webcorpus2/sha256sums
       md5: 3f8d9ecd8040ecd604fb3e513d45b00b
   outs:
-    - path: ../data/processed/webcorpus2/corpus.txt
-      md5: e938bbc3a373c4a78c3783423233cae9
+    - path: data/processed/webcorpus2/corpus.txt
+      md5: 7f03668196fe11c02c7f46b4ac02aedf
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
 build_floret:
   cmd: python -m spacy run build_floret
   script:
-    - make -C ../floret
+    - make -C floret
   deps: []
   outs: []
   spacy_version: 3.2.1
