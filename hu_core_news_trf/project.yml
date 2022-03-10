@@ -42,7 +42,7 @@ vars:
   #TODO: model specific bumpversion is needed
   wandb_project: hu_core_news_trf-3.2.0
 
-  gpu: 4
+  gpu: 0
 
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
@@ -65,11 +65,11 @@ assets:
       path: data
 
   # SzegedNER
-  # TODO: use the common split
-  - dest: ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip
-    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/business_NER.zip
-  - dest: ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip
-    url: http://www.inf.u-szeged.hu/~szantozs/download/ner/criminal_NER.zip
+  - dest: ${vars.raw_data_path}/${vars.szegedner}
+    git:
+      repo: https://github.com/huspacy/huspacy-resources
+      branch: master
+      path: data/processed/szeged-ner
 
   # Szeged corpus
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
@@ -201,31 +201,22 @@ commands:
     help: "Convert the SzegedNER data to spaCy's format"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
-      - unzip -o ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hun_ner_corpus.txt | tail -n +2 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt'
 
-      - unzip -o ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip -d ${vars.processed_data_path}/${vars.szegedner}/
-      - bash -c 'iconv -f iso-8859-2 --t utf-8 ${vars.processed_data_path}/${vars.szegedner}/hvg | tail -n +3 | sed -e "s/\t0/\tO/g" > ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt'
+      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/train.txt > ${vars.processed_data_path}/${vars.szegedner}/train.iob'
+      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/valid.txt > ${vars.processed_data_path}/${vars.szegedner}/dev.iob'
+      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/test.txt > ${vars.processed_data_path}/${vars.szegedner}/test.iob'
 
-      - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_business_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_business_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_business_test.iob1
-      - split_szeged_ner ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_ner_corpus_utf8.txt ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_train.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/hun_criminal_test.iob1
-
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_train.iob1 > ${vars.processed_data_path}/${vars.szegedner}/train.iob1'
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_dev.iob1 > ${vars.processed_data_path}/${vars.szegedner}/dev.iob1'
-      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/hun_*_test.iob1 > ${vars.processed_data_path}/${vars.szegedner}/test.iob1'
-
-      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/train.iob1 ${vars.processed_data_path}/${vars.szegedner}/train.iob'
-      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/dev.iob1 ${vars.processed_data_path}/${vars.szegedner}/dev.iob'
-      - '../scripts/convert_iob1_2_iob2.sh ${vars.processed_data_path}/${vars.szegedner}/test.iob1 ${vars.processed_data_path}/${vars.szegedner}/test.iob'
-
-      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
-
     deps:
-      - ${vars.raw_data_path}/${vars.szegedner}/business_NER.zip
-      - ${vars.raw_data_path}/${vars.szegedner}/criminal_NER.zip
+      - ${vars.raw_data_path}/${vars.szegedner}/train.txt
+      - ${vars.raw_data_path}/${vars.szegedner}/valid.txt
+      - ${vars.raw_data_path}/${vars.szegedner}/test.txt
     outputs:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/test.iob
       - ${vars.processed_data_path}/${vars.szegedner}/train.spacy
       - ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
       - ${vars.processed_data_path}/${vars.szegedner}/test.spacy
