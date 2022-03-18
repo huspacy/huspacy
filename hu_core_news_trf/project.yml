@@ -1,4 +1,4 @@
-title: "Core Hungarian Spacy model (transformer) "
+title: "Core Hungarian spaCy model (Transformer) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
 spacy_version: ">=3.2.0,<3.3.0"
 
@@ -81,6 +81,33 @@ assets:
     # TODO: write the HuBert license into to README (if necessary)
 
 workflows:
+  preprocess:
+    - preprocess_ud
+    - preprocess_nerkor
+    - preprocess_szegedcorpus
+    - preprocess_szegedner
+    - preprocess_merge
+
+  # Due to non-deterministic behaviour we retrain the components 3 times
+  train_3x:
+    - pretrain_tagger
+    - train_parser
+    - train_ner
+    - assemble
+    - evaluate
+    - backup_models
+    - pretrain_tagger
+    - train_parser
+    - train_ner
+    - assemble
+    - evaluate
+    - backup_models
+    - pretrain_tagger
+    - train_parser
+    - train_ner
+    - assemble
+    - evaluate
+
   all:
     - preprocess_ud
     - preprocess_nerkor
@@ -288,7 +315,7 @@ commands:
     help: "Train the NER on NerKor and SzegedNER with the pretrained tagger"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
-          --output ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}
+          --output ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
@@ -301,8 +328,13 @@ commands:
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
       - configs/${vars.ner_config}.cfg
     outputs:
-      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
 
+  - name: backup_models
+    help: "Backup models by renaming the model folder. This step allows running training steps multiple times."
+    script:
+      - "../scripts/backup.sh ${vars.transformer_models_path}"
+      - "mkdir -p ${vars.transformer_models_path}"
 
   - name: assemble
     help: "Assemble the tagger, parser and the NER components"
@@ -311,11 +343,11 @@ commands:
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
           --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
           --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-          --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+          --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
       - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.transformer_models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
       - configs/${vars.assemble_config}.cfg
     outputs:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
@@ -324,6 +356,7 @@ commands:
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
     script:
+      # TODO: experiment w/ gold preprocessing
       # Intentionally using the CPU to measure tok/sec correctly
       - "spacy evaluate
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
