@@ -28,7 +28,7 @@ seaborn = "^0.11.2"
 ipymarkup = "^0.9.0"
 spacy-transformers = "^1.1.4"
 numpy = "^1.22.2" #TODO: issue in spacy/explosion
-spacy-experimental = { git = "https://github.com/explosion/spacy-experimental.git", rev = "3eca617"}
+spacy-experimental = "0.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
