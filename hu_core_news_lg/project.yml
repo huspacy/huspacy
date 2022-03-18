@@ -1,4 +1,4 @@
-title: "Core Hungarian Spacy model (Large) "
+title: "Core Hungarian spaCy model (Large) "
 description: "Word vector, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
 spacy_version: ">=3.2.0,<3.3.0"
 
