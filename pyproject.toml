@@ -44,6 +44,7 @@ find-corpus-errors = 'tools.cli.find_corpus_errors:app'
 merge-eval-results = 'tools.cli.merge_eval_jsons:app'
 split-conllu = 'tools.cli.split_conllu:app'
 huspacyv3_benchmark = 'tools.cli.benchmarks.huspacyv3_benchmark:app'
+multihead-removal = 'tools.cli.multihead_removal:app'
 conll18_ud_eval = 'tools.cli.conll18_ud_eval:main'
 
 

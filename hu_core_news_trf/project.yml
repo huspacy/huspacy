@@ -390,9 +390,10 @@ commands:
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}"
+      - "multihead-removal ${vars.result_data_path}/ud_test.conllu ${vars.result_data_path}/ud_test-wo_root.conllu"
       - bash -c "conll18_ud_eval
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
-        ${vars.result_data_path}/ud_test.conllu
+        ${vars.result_data_path}/ud_test-wo_root.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
