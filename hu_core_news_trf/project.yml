@@ -107,6 +107,7 @@ workflows:
     - train_ner
     - assemble
     - evaluate
+    - backup_models
 
   all:
     - preprocess_ud
