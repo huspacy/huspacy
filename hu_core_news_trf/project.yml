@@ -81,7 +81,7 @@ assets:
     # TODO: write the HuBert license into to README (if necessary)
 
 workflows:
-  preprocess:
+  prepare_data:
     - preprocess_ud
     - preprocess_nerkor
     - preprocess_szegedcorpus
@@ -148,18 +148,16 @@ commands:
     help: "Convert the UD corpus to spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.treebank}"
-      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
+      # Remove "+" symbols from lemmata
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.conllu"
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.conllu"
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu"
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
-      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
-      - "spacy convert ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
-      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.spacy
-          ${vars.processed_data_path}/${vars.treebank}/train.spacy"
-      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.spacy
-          ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
-      - "mv ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.spacy
-          ${vars.processed_data_path}/${vars.treebank}/test.spacy"
     deps:
       - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
