@@ -200,11 +200,11 @@ commands:
     help: "Convert the NerKor data to spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.nerkor}"
-      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/dev.conllup"
-      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup'
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/train.conllup"
-      - "convert2conllu '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
 
       - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
@@ -361,13 +361,13 @@ commands:
     help: "Backup models by renaming the model folder. This step allows running training steps multiple times."
     script:
       - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
-#      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
+      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
     deps:
-#      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
       - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
 
   - name: find_best_model
-    help: "Find best models"
+    help: "Find the best models"
     script:
       - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
       - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
@@ -406,7 +406,7 @@ commands:
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
             --output ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
-      - "merge-eval-results
+      - "python ../scripts/merge_eval_jsons.py
             ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json
             ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}/meta.json"
@@ -425,12 +425,12 @@ commands:
     help: "Evaluate the model with the official conll script"
     script:
       - "mkdir -p ${vars.result_data_path}"
-      - "huspacyv3_benchmark raw-text
+      - "python ../scripts/huspacyv3_benchmark.py raw-text
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}"
-      - "multihead-removal ${vars.result_data_path}/ud_test.conllu ${vars.result_data_path}/ud_test-wo_root.conllu"
-      - bash -c "conll18_ud_eval
+      - "python ../scripts/multihead_removal.py ${vars.result_data_path}/ud_test.conllu ${vars.result_data_path}/ud_test-wo_root.conllu"
+      - bash -c "python ../scripts/conll18_ud_eval.py
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test-wo_root.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
@@ -464,7 +464,7 @@ commands:
   - name: smoke_test
     help: "Smoke test the packaged model"
     script:
-      - "python ../tools/cli/smoke_test.py 
+      - "python ../scripts/smoke_test.py 
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
