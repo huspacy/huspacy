@@ -111,34 +111,15 @@ workflows:
     - preprocess_merge
 
     - pretrain_tagger
-
     - train_parser
     - train_ner
     - backup_models
-
     - train_parser
     - train_ner
     - backup_models
-
     - train_parser
     - train_ner
     - backup_models
-
-    - find_best_model
-    - pretrain_tagger
-
-    - train_parser
-    - train_ner
-    - backup_models
-
-    - train_parser
-    - train_ner
-    - backup_models
-
-    - train_parser
-    - train_ner
-    - backup_models
-
     - find_best_model
 
     - assemble
@@ -165,7 +146,6 @@ workflows:
     - train_ner
 
   publish:
-    - smoke_test
     - push
 
 commands:
@@ -369,7 +349,9 @@ commands:
   - name: find_best_model
     help: "Find the best models"
     script:
+      - "rm  ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
       - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
+      - "rm  ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
       - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
     outputs:
       - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
