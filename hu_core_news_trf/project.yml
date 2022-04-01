@@ -9,8 +9,8 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  #TODO: model specific bumpversion is needed
-  package_version: 3.2.0
+  #TODO: bumpversion
+  package_version: 3.2.0b3
 
   transformer_models_path: models
   packages_path: packages
@@ -39,8 +39,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  #TODO: model specific bumpversion is needed
-  wandb_project: hu_core_news_trf-3.2.0
+  wandb_project: hu_core_news_trf-3.2.0b3
 
   gpu: 0
 
@@ -77,8 +76,6 @@ assets:
       repo: https://github.com/huspacy/huspacy-resources
       branch: master
       path: data/processed/szeged-corpus/
-    # TODO: Zsolti's eval multi roots script
-    # TODO: write the HuBert license into to README (if necessary)
 
 workflows:
   prepare_data:
@@ -91,23 +88,20 @@ workflows:
   # Due to non-deterministic behaviour we retrain the components 3 times
   train_3x:
     - pretrain_tagger
+
     - train_parser
     - train_ner
-    - assemble
-    - evaluate
     - backup_models
-    - pretrain_tagger
+
     - train_parser
     - train_ner
-    - assemble
-    - evaluate
     - backup_models
-    - pretrain_tagger
+
     - train_parser
     - train_ner
-    - assemble
-    - evaluate
     - backup_models
+
+    - find_best_model
 
   all:
     - preprocess_ud
@@ -115,13 +109,43 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_szegedner
     - preprocess_merge
+
     - pretrain_tagger
+
     - train_parser
     - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - find_best_model
+    - pretrain_tagger
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - find_best_model
+
     - assemble
     - evaluate
     - evaluate_conll
     - package
+    - smoke_test
 
   tagger:
     - preprocess_szegedcorpus
@@ -141,6 +165,7 @@ workflows:
     - train_ner
 
   publish:
+    - smoke_test
     - push
 
 commands:
@@ -149,20 +174,23 @@ commands:
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.treebank}"
       # Remove "+" symbols from lemmata
-      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.conllu"
-      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.conllu"
-      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu"
-      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.train_name}.conllu
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/train.conllu"
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/dev.conllu"
+      - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu > ${vars.processed_data_path}/${vars.treebank}/test.conllu"
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/train.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
-      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.dev_name}.conllu
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/dev.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
-      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
+      - "spacy convert ${vars.processed_data_path}/${vars.treebank}/test.conllu
           ${vars.processed_data_path}/${vars.treebank}/ --converter conllu --n-sents 10 --merge-subtokens"
     deps:
       - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
     outputs:
+      - ${vars.processed_data_path}/${vars.treebank}/train.conllu
+      - ${vars.processed_data_path}/${vars.treebank}/dev.conllu
+      - ${vars.processed_data_path}/${vars.treebank}/test.conllu
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
       - ${vars.processed_data_path}/${vars.treebank}/test.spacy
@@ -202,18 +230,18 @@ commands:
     help: "Convert the Szeged corpus to dev/test/train and spaCy's format"
     script:
       - "mkdir -p ${vars.processed_data_path}/${vars.szegedcorpus}"
-      - bash -c 'cat ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
-      - cp ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
+      - bash -c 'cat ${vars.processed_data_path}/${vars.treebank}/train.conllu ${vars.raw_data_path}/${vars.szegedcorpus}/univdep.hu.train.proj.f.conllu > ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu'
+      - cp ${vars.processed_data_path}/${vars.treebank}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu
+      - cp ${vars.processed_data_path}/${vars.treebank}/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
 
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
       - python -m spacy convert ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu ${vars.processed_data_path}/${vars.szegedcorpus} --converter conllu --n-sents 10
     deps:
       - ${vars.raw_data_path}/${vars.szegedcorpus}
-      - ${vars.raw_data_path}/${vars.treebank}/${vars.train_name}.conllu
-      - ${vars.raw_data_path}/${vars.treebank}/${vars.dev_name}.conllu
-      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+      - ${vars.processed_data_path}/${vars.treebank}/train.conllu
+      - ${vars.processed_data_path}/${vars.treebank}/dev.conllu
+      - ${vars.processed_data_path}/${vars.treebank}/test.conllu
     outputs:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllup
       - ${vars.processed_data_path}/${vars.szegedcorpus}/dev.conllup
@@ -332,8 +360,20 @@ commands:
   - name: backup_models
     help: "Backup models by renaming the model folder. This step allows running training steps multiple times."
     script:
-      - "../scripts/backup.sh ${vars.transformer_models_path}"
-      - "mkdir -p ${vars.transformer_models_path}"
+      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
+#      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
+    deps:
+#      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
+
+  - name: find_best_model
+    help: "Find best models"
+    script:
+      - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
+      - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
+      - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
 
   - name: assemble
     help: "Assemble the tagger, parser and the NER components"
@@ -355,14 +395,14 @@ commands:
   - name: evaluate
     help: "Evaluate on the test data and save the metrics"
     script:
-      # TODO: experiment w/ gold preprocessing
-      # Intentionally using the CPU to measure tok/sec correctly
       - "spacy evaluate
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
+            --gpu-id ${vars.gpu}
             --output ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
             --gold-preproc
+            --gpu-id ${vars.gpu}
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
             --output ${vars.transformer_models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
@@ -403,7 +443,7 @@ commands:
 
   - name: package
     help: "Package the trained model so it can be installed"
-    script: #TODO: add meta
+    script:
       - "spacy package
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
@@ -414,10 +454,20 @@ commands:
           --force"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+      - meta.json
       - ${vars.package_init}
     outputs_no_cache:
-#      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/en_${vars.package_name}-${vars.package_version}.tar.gz
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
+      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
+
+
+  - name: smoke_test
+    help: "Smoke test the packaged model"
+    script:
+      - "python ../tools/cli/smoke_test.py 
+          ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
+    deps:
+      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
 
 
   - name: push #TODO: github release
