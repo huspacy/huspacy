@@ -20,8 +20,7 @@ Activate the virtual environment: `poetry shell` and `cd hu_core_news_trf`
 
 ## Fine-tune the models
 
-[//]: # (TODO)
-TBD 
+Hyperparameters of the underlying models can be fine-tuned using Weights&Biases: `wandb sweep` with one of the `sweep_*.yml` config file.
 
 ## Publish models and packages
 
