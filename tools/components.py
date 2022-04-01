@@ -69,14 +69,13 @@ except ModuleNotFoundError:
     pass
 
 
-@Language.factory("hun_sentencizer")
-def create_sentencizer(nlp: Language, name: str) -> "HunSentencizer":
-    return HunSentencizer()
-
-
 class HunSentencizer(Pipe):
-    # noinspection PyUnusedLocal
     @staticmethod
+    @Language.factory("hun_sentencizer")
+    def create_sentencizer(nlp: Language, name: str) -> "HunSentencizer":
+        return HunSentencizer()
+
+    # noinspection PyUnusedLocal
     def __init__(self):
         self._boundary_punct_pattern = re.compile(r"^([.?!]+)$")
         self._quote_or_bracket = {'"', ")"}

@@ -10,7 +10,6 @@ from spacy.tokens import Doc
 def nlp():
     # noinspection PyUnresolvedReferences
     from tools import components
-
     nlp = Hungarian()
     nlp.add_pipe("hun_sentencizer")
     return nlp
