@@ -1,13 +1,15 @@
 import resource
+
+import spacy
 import typer
 from conllu import parse_incr
-from tqdm import tqdm
-import spacy
+from contexttimer import Timer
 # noinspection PyUnresolvedReferences
 from spacy_conll import init_parser
-import hu_core_news_lg
-from contexttimer import Timer
-import tools.components
+from tqdm import tqdm
+
+# noinspection PyUnresolvedReferences
+# import tools.components
 
 app = typer.Typer()
 
@@ -86,7 +88,8 @@ def raw_text(input_file: str, output_file: str = None, gpu: bool = False, time: 
 
 
 @app.command()
-def test(text: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.', model_name: str = "hu_core_news_lg"):
+def test(text: str = 'Kulka János is szerepel az új szivárványcsaládos kampányban.',
+         model_name: str = "hu_core_news_lg"):
     nlp = load_pipeline(use_gpu=False, with_ner=True, model_name=model_name)
     nlp.add_pipe("conll_formatter")
 

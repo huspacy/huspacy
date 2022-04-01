@@ -95,6 +95,22 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "jaraco.tide
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "types-backports", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
+name = "conllu"
+version = "4.4.1"
+description = "CoNLL-U Parser parses a CoNLL-U formatted string into a nested python dictionary"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "contexttimer"
+version = "0.3.3"
+description = "A timer context manager measuring the clock wall time of the code block it contains."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "cymem"
 version = "2.0.6"
 description = "Manage calls to calloc/free through Cython"
@@ -955,7 +971,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "60f148d7eeda688ae5ccde964f5ece46c97a3d436b51defce74a6d4344428112"
+content-hash = "0f338b0e49a4b6bb98c57b3bdaf015b1e9f6e68457976bd974fab8e2663d498f"
 
 [metadata.files]
 atomicwrites = [
@@ -1011,6 +1027,13 @@ colorama = [
 configparser = [
     {file = "configparser-5.2.0-py3-none-any.whl", hash = "sha256:e8b39238fb6f0153a069aa253d349467c3c4737934f253ef6abac5fe0eca1e5d"},
     {file = "configparser-5.2.0.tar.gz", hash = "sha256:1b35798fdf1713f1c3139016cfcbc461f09edbf099d1fb658d4b7479fcaa3daa"},
+]
+conllu = [
+    {file = "conllu-4.4.1-py2.py3-none-any.whl", hash = "sha256:d17db3fb4884e4d221cd1e333d897257db7605ce58c76ff16294d3af9ffadb1c"},
+    {file = "conllu-4.4.1.tar.gz", hash = "sha256:0029fb83ca225dd7e9ac342aabdb4717c0227d3b1d4497abf97b7dbc2cc04dd1"},
+]
+contexttimer = [
+    {file = "contexttimer-0.3.3.tar.gz", hash = "sha256:35a1efd389af3f1ca509f33ff23e17d98b66c8fde5ba2a4eb8a8b7fa456598a5"},
 ]
 cymem = [
     {file = "cymem-2.0.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:2b4e27e739f09f16c7c0190f962ffe60dab39cb6a229d5c13e274d16f46a17e8"},
