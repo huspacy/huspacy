@@ -1,7 +1,7 @@
 {
   "lang": "hu",
   "name": "hu_core_news_trf",
-  "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
+  "description": "Hungarian transformer pipeline (huBert) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner",
   "author": "SzegedAI, MILAB",
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/huspacy/huspacy",

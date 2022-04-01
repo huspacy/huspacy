@@ -28,6 +28,6 @@ TBD
 1. Make sure dependencies are up-to-date: `poetry update`
 2. Bump version: `bumpversion patch` / `minor` / `major`
 3. Build the model as described in the previous section
-4. Publish the new model to Hugging Face Hub: `python -m spacy project run all` (must be executed in the model's directory)
+4. Publish the new model to Hugging Face Hub: `python -m spacy project run publish` (must be executed in the model's directory)
 5. Create a new `huspacy` release by issuing: `poetry build -f wheel` (in the `huspacy` directory)
 6. Upload the new release to PyPI: `poetry publish` (execute in the `huspacy` directory)
