@@ -69,6 +69,7 @@ except ModuleNotFoundError:
     pass
 
 
+# TODO: move to separate files
 class HunSentencizer(Pipe):
     @staticmethod
     @Language.factory("hun_sentencizer")

@@ -10,7 +10,7 @@ vars:
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
   #TODO: bumpversion
-  package_version: 3.2.0b3
+  package_version: 3.2.0b4
 
   transformer_models_path: models
   packages_path: packages
@@ -39,7 +39,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.2.0b3
+  wandb_project: hu_core_news_trf-3.2.0b4
 
   gpu: 0
 
@@ -429,7 +429,6 @@ commands:
       - "spacy package
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
-          --code ${vars.package_init}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
@@ -437,7 +436,6 @@ commands:
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
       - meta.json
-      - ${vars.package_init}
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
