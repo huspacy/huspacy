@@ -9,7 +9,6 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  #TODO: bumpversion
   package_version: 3.2.0b4
 
   transformer_models_path: models
@@ -49,11 +48,10 @@ directories: [configs, models, packages, data/raw, data/processed, data/external
 
 assets:
   # Universal dependencies
-  #TODO: Download a specific version to make it fully reproducable
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
-      branch: master
+      branch: r2.9
       path: ""
 
   # NerKor
