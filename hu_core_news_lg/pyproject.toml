@@ -5,8 +5,6 @@ description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, 
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
 
-
-
 [tool.poetry.dependencies]
 python = "^3.8"
 spacy = "~3.2.3"

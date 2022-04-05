@@ -2,9 +2,9 @@ import traceback
 from pathlib import Path
 
 import spacy
-import typer
 # noinspection PyUnresolvedReferences
 import spacy_conll
+import typer
 
 app = typer.Typer()
 
