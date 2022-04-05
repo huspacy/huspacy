@@ -19,14 +19,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade poetry
           poetry install
+
       - name: Lint with flake8
         run: |
           poetry run flake8 huspacy test
+
       - name: Test with pytest
         run: |
           poetry run pytest
+
+      - name: Build package
+        run: |
+          poetry build -f wheel
