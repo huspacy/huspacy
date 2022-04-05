@@ -84,6 +84,19 @@ assets:
 
 
 workflows:
+  prepare_data:
+    - preprocess_ud
+    - preprocess_nerkor
+    - preprocess_szegedcorpus
+    - preprocess_szegedner
+    - preprocess_merge
+
+  train_models:
+    - train_lemmatizer
+    - pretrain_tagger
+    - train_parser
+    - train_ner
+
   all:
     - init_vectors
     - preprocess_ud
