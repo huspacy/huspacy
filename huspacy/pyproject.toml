@@ -35,8 +35,8 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
-spacy = "^3.2.1"
+python = "^3.8"
+spacy = "~3.2.3"
 
 
 [build-system]
