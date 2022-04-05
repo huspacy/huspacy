@@ -233,14 +233,14 @@ commands:
     help: "Convert the SzegedNER data to spaCy's format"
     script:
       - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/train.txt > ${vars.processed_data_path}/${vars.szegedner}/train.iob"
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/valid.txt > ${vars.processed_data_path}/${vars.szegedner}/dev.iob"
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/test.txt > ${vars.processed_data_path}/${vars.szegedner}/test.iob"
 
-      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/train.txt > ${vars.processed_data_path}/${vars.szegedner}/train.iob'
-      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/valid.txt > ${vars.processed_data_path}/${vars.szegedner}/dev.iob'
-      - bash -c 'awk -f ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/test.txt > ${vars.processed_data_path}/${vars.szegedner}/test.iob'
-
-      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+
     deps:
       - ${vars.raw_data_path}/${vars.szegedner}/train.txt
       - ${vars.raw_data_path}/${vars.szegedner}/valid.txt
@@ -269,11 +269,11 @@ commands:
 
     deps:
       - ${vars.processed_data_path}/${vars.szegedner}/train.iob
-      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
-      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
-      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
       - ${vars.processed_data_path}/${vars.szegedner}/dev.iob
       - ${vars.processed_data_path}/${vars.szegedner}/test.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
     outputs:
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
@@ -469,4 +469,5 @@ commands:
     script:
       - "rm -rf ${vars.processed_data_path}"
       - "rm -rf ${vars.transformer_models_path}"
+      - "rm -rf ${vars.packages_path}"
 
