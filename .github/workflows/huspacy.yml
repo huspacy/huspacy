@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          poetry run flake8 huspacy test
+          poetry run flake8 huspacy
 
       - name: Test with pytest
         run: |
@@ -36,8 +36,8 @@ jobs:
 
       - name: Build package
         env:
-          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           if [[ "$BRANCH_NAME" == *master ]]
           then
@@ -48,3 +48,4 @@ jobs:
             poetry version --short
           fi
           poetry build -f wheel
+          poetry run twine upload --non-interactive dist/*
