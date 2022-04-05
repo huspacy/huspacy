@@ -36,4 +36,13 @@ jobs:
 
       - name: Build package
         run: |
+          if [[ "$BRANCH_NAME" == *master ]]
+          then
+            poetry version --short
+          else
+            sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
+            poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
+            poetry version --short
+          fi
           poetry build -f wheel
+          poetry publish --username=$PYPI_USERNAME --password=$PYPI_API_TOKEN
