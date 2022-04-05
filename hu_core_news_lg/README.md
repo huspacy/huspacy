@@ -9,8 +9,9 @@ The model builds on the [Hungarian UD treebank](https://github.com/UniversalDepe
 
 ## Train models
 
-1. Install dependencies: `poetry install` To enable GPU support you need to install `cupy`. For CUDA 11.1 issue:
+1. Install dependencies: `poetry install` To enable GPU support you need to install `cupy` and `torch`. For CUDA 11.1 issue:
     - `poetry run python -m pip install cupy-cuda111`
+    - `poetry run python -m pip install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html`
 2. Activate the virtual environment `poetry shell`
 3. Fetch datafiles: `spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)
