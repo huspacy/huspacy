@@ -48,4 +48,3 @@ jobs:
             poetry version --short
           fi
           poetry build -f wheel
-          poetry publish --username=$PYPI_USERNAME --password=$PYPI_API_TOKEN
