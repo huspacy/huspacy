@@ -31,7 +31,7 @@ vars:
   ner_merged: ner_merged
   szfsszegedner: SZFSSzegedNER
 
-  package_init: ../tools/components.py
+  package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg-0.4.2-v2
