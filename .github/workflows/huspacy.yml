@@ -37,7 +37,7 @@ jobs:
       - name: Build package
         env:
           PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          $PYPI_API_TOKEN: ${{ secrets.$PYPI_API_TOKEN }}
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           if [[ "$BRANCH_NAME" == *master ]]
           then
