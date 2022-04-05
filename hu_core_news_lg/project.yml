@@ -34,7 +34,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-0.4.2-v2
+  wandb_project: hu_core_news_lg
 
   assemble_config: assemble
   tagger_config: tagger
