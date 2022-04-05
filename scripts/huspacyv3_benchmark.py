@@ -8,8 +8,11 @@ from contexttimer import Timer
 from spacy_conll import init_parser
 from tqdm import tqdm
 
+# TODO: remove this workaround w/ lemmy
+import sys
+sys.path.append("../huspacy")
 # noinspection PyUnresolvedReferences
-# import tools.components
+import tools.components
 
 app = typer.Typer()
 

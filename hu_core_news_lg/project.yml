@@ -403,20 +403,22 @@ commands:
     script:
       # Intentionally using the CPU to measure tok/sec correctly
       - "spacy evaluate
+            --gpu-id -1
             --code ${vars.package_init}
             ${vars.models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
             --output ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
             --gold-preproc
+            --gpu-id -1
             --code ${vars.package_init}
             ${vars.models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
             --output ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
-      - "merge-eval-results
+      - "python ../scripts/merge_eval_jsons.py
             ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
             ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
-            ${vars.models_path}/${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+            ${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
 
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
@@ -425,7 +427,7 @@ commands:
     outputs:
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
-      - ${vars.models_path}/${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
+      - ${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
   
 
   - name: evaluate_conll
@@ -436,7 +438,7 @@ commands:
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
-      - bash -c "conll18_ud_eval
+      - bash -c "python ../scripts/conll18_ud_eval.py
         ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"

@@ -6,6 +6,12 @@ import spacy
 import spacy_conll
 import typer
 
+# TODO: remove this workaround w/ lemmy
+import sys
+sys.path.append("../huspacy")
+# noinspection PyUnresolvedReferences
+import tools.components
+
 app = typer.Typer()
 
 
