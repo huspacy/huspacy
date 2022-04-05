@@ -21,8 +21,6 @@ contexttimer = "^0.3.3"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.1"
-pytest = "^6.2.4"
-flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry>=1.1.10", "pip>=21.2.4"]

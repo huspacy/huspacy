@@ -38,6 +38,10 @@ packages = [
 python = "^3.8"
 spacy = "~3.2.3"
 
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+pytest = "^6.2.4"
+flake8 = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

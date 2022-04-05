@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "huspacy"
+name = "hu_core_news_lg"
 version = "3.2.0b1"
-description = "HuSpaCy: industrial strength Hungarian natural language processing"
+description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
-license = "Apache 2.0"
+license = "cc-by-sa-4.0"
+
 
 
 [tool.poetry.dependencies]
@@ -20,11 +21,6 @@ contexttimer = "^0.3.3"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.1"
-pytest = "^6.2.4"
-flake8 = "^4.0.1"
-
-[tool.poe.tasks]
-cuda112 = "python -m pip install 'spacy[cuda112]'"
 
 [build-system]
 requires = ["poetry>=1.1.10", "pip>=21.2.4"]
