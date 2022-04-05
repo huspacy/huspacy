@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "huspacy"
+version = "3.2.0b1"
+description = "HuSpaCy: industrial strength Hungarian natural language processing"
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
+license = "Apache 2.0"
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+spacy = "~3.2.3"
+spacy-experimental = "0.4.0"
+spacy-huggingface-hub = "^0.0.6"
+spacy_conll = "^3.0"
+conllu = "^4.4"
+lemmy3 = "^3.2.0a"
+wandb = "^0.10.23"
+wheel = "^0.37.0"
+contexttimer = "^0.3.3"
+
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+pytest = "^6.2.4"
+flake8 = "^4.0.1"
+
+[tool.poe.tasks]
+cuda112 = "python -m pip install 'spacy[cuda112]'"
+
+[build-system]
+requires = ["poetry>=1.1.10", "pip>=21.2.4"]
+build-backend = "poetry.masonry.api"
