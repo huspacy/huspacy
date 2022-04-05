@@ -143,6 +143,7 @@ commands:
       - ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
     outputs:
       - ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+      - ${vars.external_data_path}/webcorpuswiki.word2vec.txt
 
 
   - name: preprocess_ud
@@ -183,9 +184,9 @@ commands:
       - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
 
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
 
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10

@@ -185,9 +185,9 @@ commands:
       - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
           ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
 
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
-      - '../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
 
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
       - spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
@@ -338,8 +338,8 @@ commands:
   - name: backup_models
     help: "Backup models by renaming the model folder. This step allows running training steps multiple times."
     script:
-      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
-      - "../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
+      - "bash ../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
+      - "bash ../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
       - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
