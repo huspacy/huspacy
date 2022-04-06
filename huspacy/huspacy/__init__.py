@@ -7,7 +7,7 @@ from spacy.vocab import Vocab
 from spacy.language import Language
 from thinc.api import Config
 
-__URL = "https://huggingface.co/huspacy/hu_core_news_lg/resolve/{version}/{model_name}-any-py3-none-any.whl"
+__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
 __DEFAULT_VERSION = "main"
 __DEFAULT_MODEL = "hu_core_news_lg"
 
