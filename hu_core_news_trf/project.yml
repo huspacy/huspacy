@@ -347,10 +347,10 @@ commands:
   - name: find_best_model
     help: "Find the best models"
     script:
-      - "rm  ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
-      - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
-      - "rm  ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
-      - "python ../tools/cli/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
+      - "rm -rf ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
+      - "python ../scripts/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
+      - "rm -rf ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
+      - "python ../scripts/link_best_model.py ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
     outputs:
       - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
       - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
