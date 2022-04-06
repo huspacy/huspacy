@@ -48,15 +48,15 @@ import huspacy
 # Download the latest CPU optimized model
 huspacy.download()
 
-# Load the downloaded model downloaded above
+# Load the model downloaded above
 nlp = huspacy.load()
 ```
 
 Alternatively, one can install the latest models from Hugging Face Hub directly:
-   - `pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
-   - `pip install https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
+   - CPU optimized large model: `pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
+   - GPU optimized transformers model: `pip install https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
 
-To speed up inference using GPUs, CUDA support can be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
+To speed up inference on GPUs, CUDA should be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
 
 
 ## Usage
@@ -77,7 +77,7 @@ nlp = spacy.load("hu_core_news_lg")
 import hu_core_news_lg
 nlp = hu_core_news_lg.load()
 
-# Either way you get the same model and can start processing texts.
+# Process texts
 doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 ```
 
@@ -103,7 +103,7 @@ doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 │   ├── poetry.lock    -- Poetry lock file
 │   ├── poetry.toml    -- Poetry configs
 │   ├── project.lock   -- Auto-generated project script
-│   ├── project.yml    -- Spacy3 Project file describing steps needed to build the model
+│   ├── project.yml    -- SpaCy Project file describing steps needed to build the model
 │   ├── pyproject.toml -- Python project definition file
 │   ├── CHANGELOG.md   -- Model changelog
 │   └── README.md      -- Instructions on building a model from scratch
@@ -113,7 +113,7 @@ doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 │   ├── poetry.lock    -- Poetry lock file
 │   ├── poetry.toml    -- Poetry configs
 │   ├── project.lock   -- Auto-generated project script
-│   ├── project.yml    -- Spacy3 Project file describing steps needed to build the model
+│   ├── project.yml    -- SpaCy Project file describing steps needed to build the model
 │   ├── pyproject.toml -- Python project definition file
 │   ├── CHANGELOG.md   -- Model changelog
 │   └── README.md      -- Instructions on building a model from scratch
@@ -123,7 +123,7 @@ doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 │   ├── poetry.lock    -- Poetry lock file
 │   ├── poetry.toml    -- Poetry configs
 │   ├── pyproject.toml -- Python project definition file
-│   └── README.md      -- Symlink to this file
+│   └── README.md      -> ../README.md
 ├── scripts            -- CLI scripts
 ├── LICENSE            -- License file
 └── README.md          -- This file
