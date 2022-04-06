@@ -7,8 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
-## Unreleased
-## 3.2.1
+## 3.2.0
 ### Added
 - Transfomer encoder
 - Experimental edit-tree-lemmatizer

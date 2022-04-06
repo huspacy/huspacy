@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_lg`
 
-## Unreleased
 ## 3.2.1
 ### Changed
 - Using the Szarvas-Farkas split for SzegedNER
