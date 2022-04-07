@@ -80,7 +80,7 @@ nlp = hu_core_news_lg.load()
 # Process texts
 doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 ```
-
+API Documentation is available in the [project wiki](https://github.com/huspacy/huspacy/wiki).
 
 ## Development
  
