@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: huspacy
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -19,15 +23,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install pdoc3
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade poetry
+          poetry install
 
       - name: Generate docs
         run: |
-          pdoc huspacy/ -o Documentation --force
+          poetry run pdoc huspacy -o ../docs --force
 
       - name: Upload Documentation to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
         with:
-          path: "huspacy/docs"
+          path: "docs"
         env:
           GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
