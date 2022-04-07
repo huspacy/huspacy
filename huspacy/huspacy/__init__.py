@@ -13,13 +13,13 @@ __DEFAULT_MODEL = "hu_core_news_lg"
 
 
 def download(model_name: str = __DEFAULT_MODEL, version: str = __DEFAULT_VERSION) -> None:
-    """
-    Downloads a HuSpaCy model
+    """Downloads a HuSpaCy model.
+
     Args:
         model_name (str): model name
         version (str): model version
 
-    Returns:
+    Returns: None
 
     """
     download_url = __URL.format(version=version, model_name=model_name)
@@ -35,8 +35,7 @@ def load(
         exclude: Iterable[str] = util.SimpleFrozenList(),
         config: Union[Dict[str, Any], Config] = util.SimpleFrozenDict(),
 ) -> Language:
-    """
-    Load a HuSpaCy model
+    """Loads a HuSpaCy model.
 
     Args:
         name (str): model name

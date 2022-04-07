@@ -256,34 +256,18 @@ python-versions = ">=3.6"
 data = ["language-data (>=1.1,<2.0)"]
 
 [[package]]
-name = "mako"
-version = "1.2.0"
-description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-MarkupSafe = ">=0.9.2"
-
-[package.extras]
-babel = ["babel"]
-lingua = ["lingua"]
-testing = ["pytest"]
-
-[[package]]
-name = "markdown"
-version = "3.3.6"
-description = "Python implementation of Markdown."
+name = "lazydocs"
+version = "0.4.8"
+description = "Generate markdown API documentation for Google-style Python docstring."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-importlib-metadata = {version = ">=4.4", markers = "python_version < \"3.10\""}
+typer = "*"
 
 [package.extras]
-testing = ["coverage", "pyyaml"]
+dev = ["setuptools", "wheel", "twine", "flake8", "pytest", "pytest-mock", "pytest-cov", "mypy", "black", "pydocstyle", "isort"]
 
 [[package]]
 name = "markupsafe"
@@ -345,18 +329,6 @@ all = ["google-cloud-storage (>=1.26.0,<2.0.0)", "boto3", "pytest", "pytest-cove
 gcs = ["google-cloud-storage (>=1.26.0,<2.0.0)"]
 s3 = ["boto3"]
 test = ["pytest", "pytest-coverage", "mock", "typer-cli"]
-
-[[package]]
-name = "pdoc3"
-version = "0.10.0"
-description = "Auto-generate API documentation for Python projects."
-category = "dev"
-optional = false
-python-versions = ">= 3.6"
-
-[package.dependencies]
-mako = "*"
-markdown = ">=3.0"
 
 [[package]]
 name = "pkginfo"
@@ -832,7 +804,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "050438da25b90c8293b7504f3604064b4e628ccd7a8394798fdd47f38d496992"
+content-hash = "3a17c1c273ae9ea26c1f52df53d1e1a1899ad5072cc613a43d23f0ba3b25f8fb"
 
 [metadata.files]
 atomicwrites = [
@@ -1021,13 +993,9 @@ langcodes = [
     {file = "langcodes-3.3.0-py3-none-any.whl", hash = "sha256:4d89fc9acb6e9c8fdef70bcdf376113a3db09b67285d9e1d534de6d8818e7e69"},
     {file = "langcodes-3.3.0.tar.gz", hash = "sha256:794d07d5a28781231ac335a1561b8442f8648ca07cd518310aeb45d6f0807ef6"},
 ]
-mako = [
-    {file = "Mako-1.2.0-py3-none-any.whl", hash = "sha256:23aab11fdbbb0f1051b93793a58323ff937e98e34aece1c4219675122e57e4ba"},
-    {file = "Mako-1.2.0.tar.gz", hash = "sha256:9a7c7e922b87db3686210cf49d5d767033a41d4010b284e747682c92bddd8b39"},
-]
-markdown = [
-    {file = "Markdown-3.3.6-py3-none-any.whl", hash = "sha256:9923332318f843411e9932237530df53162e29dc7a4e2b91e35764583c46c9a3"},
-    {file = "Markdown-3.3.6.tar.gz", hash = "sha256:76df8ae32294ec39dcf89340382882dfa12975f87f45c3ed1ecdb1e8cefc7006"},
+lazydocs = [
+    {file = "lazydocs-0.4.8-py3-none-any.whl", hash = "sha256:cebdce88c8e01ae19c63da77fc25a16abd6f7a7055930001644703643e608fed"},
+    {file = "lazydocs-0.4.8.tar.gz", hash = "sha256:8ac1fda05f03e0c5ae1d30b81eaeb785476efa161194a5e8bfa8630e14af9562"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.1.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:86b1f75c4e7c2ac2ccdaec2b9022845dbb81880ca318bb7a0a01fbf7813e3812"},
@@ -1122,10 +1090,6 @@ packaging = [
 pathy = [
     {file = "pathy-0.6.1-py3-none-any.whl", hash = "sha256:25fd04cec6393661113086730ce69c789d121bea83ab1aa18452e8fd42faf29a"},
     {file = "pathy-0.6.1.tar.gz", hash = "sha256:838624441f799a06b446a657e4ecc9ebc3fdd05234397e044a7c87e8f6e76b1c"},
-]
-pdoc3 = [
-    {file = "pdoc3-0.10.0-py3-none-any.whl", hash = "sha256:ba45d1ada1bd987427d2bf5cdec30b2631a3ff5fb01f6d0e77648a572ce6028b"},
-    {file = "pdoc3-0.10.0.tar.gz", hash = "sha256:5f22e7bcb969006738e1aa4219c75a32f34c2d62d46dc9d2fb2d3e0b0287e4b7"},
 ]
 pkginfo = [
     {file = "pkginfo-1.8.2-py2.py3-none-any.whl", hash = "sha256:c24c487c6a7f72c66e816ab1796b96ac6c3d14d49338293d2141664330b55ffc"},
