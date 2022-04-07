@@ -47,8 +47,8 @@ jobs:
             poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
             poetry version --short
           fi
+          poetry build -f wheel
           if [[ "$BRANCH_NAME" == develop ]]
           then
-            poetry build -f wheel
             poetry run twine upload --non-interactive dist/*
           fi
