@@ -30,6 +30,7 @@ vars:
   szegedner: SzegedNER
   ner_merged: ner_merged
   szfsszegedner: SZFSSzegedNER
+  vectors: webcorpuswiki.word2vec.vec
 
   package_init: ../huspacy/tools/components.py
 
@@ -148,14 +149,13 @@ commands:
     script:
       - "bash -c 'bzcat ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
           > ${vars.external_data_path}/webcorpuswiki.word2vec.txt'"
-      #TODO: store the vectors in the models folder
       - "spacy init vectors hu ${vars.external_data_path}/webcorpuswiki.word2vec.txt
-          ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          ${vars.model_path}/${vars.vectors}
           -n ${vars.package_name}.vectors"
     deps:
       - ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
     outputs:
-      - ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+      - ${vars.model_path}/${vars.vectors}
       - ${vars.external_data_path}/webcorpuswiki.word2vec.txt
 
 
@@ -312,7 +312,7 @@ commands:
             --output ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
-            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
     deps:
@@ -331,7 +331,7 @@ commands:
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
-            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
             --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
@@ -351,7 +351,7 @@ commands:
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
-            --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+            --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
     deps:
@@ -368,7 +368,7 @@ commands:
           --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
-          --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          --paths.vectors ${vars.models_path}/${vars.vectors}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
           --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
           --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
