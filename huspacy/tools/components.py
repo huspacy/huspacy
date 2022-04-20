@@ -69,6 +69,15 @@ except ModuleNotFoundError:
     pass
 
 
+@Hungarian.component("lemma_smoother", assigns=["token.lemma"], requires=["token.lemma"])
+def smooth_lemma(doc):
+    for token in doc:
+        if token.is_sent_start and token.tag_ != 'PROPN':
+            token.lemma_ = token.lemma_.lower()
+
+    return doc
+
+
 # TODO: move to separate files
 class HunSentencizer(Pipe):
     @staticmethod
