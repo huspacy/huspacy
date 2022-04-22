@@ -196,24 +196,24 @@ commands:
     help: "Train floret"
     script:
       - "${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 200000 -minn 4 -maxn 6 -minCount 100 -neg 10 -hashCount 2 -lr 0.01 -thread 70 -epoch 40 
-          -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.models_path}/floret_vectors2"
+          -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.models_path}/floret_vectors"
 
 
   - name: evaluate_floret
     help: "Measure accuracy on the floret vector with questions"
     script:
-      - python ${vars.scripts_path}/eval_vectors.py ${vars.models_path}/floret_vectors2.bin ${vars.external_data_path}/questions-words-hu.txt
+      - python ${vars.scripts_path}/eval_vectors.py ${vars.models_path}/floret_vectors.bin ${vars.external_data_path}/questions-words-hu.txt
  
       
   - name: init_vectors
     help: "initalize fasttext, floret vectors"
     script:
-      - "spacy init vectors ${vars.lang} ${vars.models_path}/floret_vectors2.floret 
+      - "spacy init vectors ${vars.lang} ${vars.models_path}/floret_vectors.floret 
           ${vars.models_path}/floret-vectors2 
           --mode floret
           -n ${vars.package_name}.vectors"
     deps:
-      - ${vars.models_path}/floret_vectors2.floret
+      - ${vars.models_path}/floret_vectors.floret
     outputs:
       - ${vars.models_path}/floret-vectors2
       
