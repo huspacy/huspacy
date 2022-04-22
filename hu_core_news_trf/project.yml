@@ -38,7 +38,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf
+  wandb_project: hu_core_news_trf-3.2.0b5
 
   gpu: 1
 
