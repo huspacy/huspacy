@@ -16,15 +16,15 @@ preprocess_webcorpus:
   cmd: python -m spacy run preprocess_webcorpus
   script:
     - mkdir -p data/processed/webcorpus2/cleaned
-    - "parallel --colsep '  ' --bar --jobs 16 --ungroup ../scripts/process_webcorpus2.sh\
-      \ {2} data/processed/webcorpus2/cleaned :::: data/raw/webcorpus2/sha256sums_head"
+    - "parallel --colsep '  ' --bar --jobs 48 --ungroup ../scripts/process_webcorpus2.sh\
+      \ {2} data/processed/webcorpus2/cleaned :::: data/raw/webcorpus2/sha256sums"
     - bash -c "echo data/processed/webcorpus2/cleaned/*.txt | xargs cat > data/processed/webcorpus2/corpus.txt"
   deps:
     - path: data/raw/webcorpus2/sha256sums
       md5: 3f8d9ecd8040ecd604fb3e513d45b00b
   outs:
     - path: data/processed/webcorpus2/corpus.txt
-      md5: 7f03668196fe11c02c7f46b4ac02aedf
+      md5: d175f045495afdd8de00f01153c5c5db
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
 build_floret:
@@ -38,9 +38,9 @@ build_floret:
 train_floret:
   cmd: python -m spacy run train_floret
   script:
-    - ../floret/floret cbow -dim 300 -mode floret -bucket 50000 -minn 3 -maxn 6 -minCount
-      15 -neg 10 -thread 48 -hashCount 2 -input ../data/processed/webcorpus2/wiki.txt
-      -output ../data/processed/webcorpus2/wikivectors
+    - floret/floret cbow -dim 300 -mode floret -bucket 200000 -minn 4 -maxn 6 -minCount
+      100 -neg 10 -hashCount 2 -lr 0.01 -thread 70 -epoch 40 -input data/processed/webcorpus2/corpus.txt
+      -output models/floret_vectors2
   deps: []
   outs: []
   spacy_version: 3.2.1
@@ -48,8 +48,7 @@ train_floret:
 evaluate_floret:
   cmd: python -m spacy run evaluate_floret
   script:
-    - python ../tools/cli/floret_accuracy.py ../data/processed/webcorpus2/vectors2.bin
-      ../data/external/questions-words-hu.txt 30000
+    - python ../tools/cli/eval_vectors.py models/floret_vectors2.bin data/external/questions-words-hu.txt
   deps: []
   outs: []
   spacy_version: 3.2.1
@@ -76,18 +75,16 @@ train_fasttext:
 init_vectors:
   cmd: python -m spacy run init_vectors
   script:
-    - mkdir ../data/processed/fasttext-vectors
-    - spacy init vectors hu ../data/processed/webcorpus2/fasttextflo.vec ../data/processed/fasttext-vectors
-    - mkdir ../data/processed/floret-vectors
-    - spacy init vectors hu ../data/processed/webcorpus2/vectors2.floret ../data/processed/floret-vectors
-      --mode floret
-    - mkdir ../data/processed/floret-wiki-vectors
-    - spacy init vectors hu ../data/processed/webcorpus2/wikivectors.floret ../data/processed/floret-wiki-vectors
-      --mode floret
-  deps: []
-  outs: []
-  spacy_version: 3.2.1
-  spacy_git_version: 800737b41
+    - spacy init vectors hu models/floret_vectors2.floret models/floret-vectors2 --mode
+      floret -n hu_vectors.vectors
+  deps:
+    - path: models/floret_vectors2.floret
+      md5: 75a6f3e1832195ef64b894373f654e98
+  outs:
+    - path: models/floret-vectors2
+      md5: 5ef4891d4c5eee21d1c4b2131d483e64
+  spacy_version: 3.2.4
+  spacy_git_version: b50fe5ec6
 train_parser_ud_wiki:
   cmd: python -m spacy run train_parser_ud_wiki
   script:
@@ -164,3 +161,216 @@ train_parser_ud_ft_wiki:
   outs: []
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
+preprocess_ud:
+  cmd: python -m spacy run preprocess_ud
+  script:
+    - mkdir -p data/processed/UD_Hungarian-Szeged
+    - spacy convert data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - mv data/processed/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy data/processed/UD_Hungarian-Szeged/train.spacy
+    - mv data/processed/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy data/processed/UD_Hungarian-Szeged/dev.spacy
+    - mv data/processed/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy data/processed/UD_Hungarian-Szeged/test.spacy
+  deps:
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud:
+  cmd: python -m spacy run train_parser_ud
+  script:
+    - spacy train configs/tagger_parser_lemmatizer.cfg --output models/hu_vectors-parser-vec-wiki-0.1.0
+      --gpu-id 3 --nlp.lang=hu --training.logger.project_name hu_vectors-0.4.2 --paths.vectors
+      models/floret-vectors --paths.train data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps: []
+  outs: []
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_nerkor:
+  cmd: python -m spacy run preprocess_nerkor
+  script:
+    - mkdir -p data/processed/NerKor
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
+      data/processed/NerKor/dev.conllup
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
+      data/processed/NerKor/train.conllup
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
+      data/processed/NerKor/test.conllup
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  data/processed/NerKor/dev.iob
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/train/*/*/*.conllup  data/processed/NerKor/train.iob
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/test/*/*/*.conllup  data/processed/NerKor/test.iob
+    - spacy convert data/processed/NerKor/train.iob data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert data/processed/NerKor/dev.iob data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert data/processed/NerKor/test.iob data/processed/NerKor --converter
+      iob --n-sents 10
+  deps:
+    - path: data/raw/NerKor
+      md5: b950c6328675585a8377a7ef04ef6dd3
+  outs:
+    - path: data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+    - path: data/processed/NerKor/train.spacy
+      md5: 3ab77f5b9b5e9b717cd87a12c3e15519
+    - path: data/processed/NerKor/dev.spacy
+      md5: cfe2a598a6de7b7a5f8bf3b40f873fa0
+    - path: data/processed/NerKor/test.spacy
+      md5: 3bb3f3cd7a8fd94eb8e69fe7d3ee2b68
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_szegedner:
+  cmd: python -m spacy run preprocess_szegedner
+  script:
+    - mkdir -p data/processed/SzegedNER
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/train.txt
+      > data/processed/SzegedNER/train.iob"
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/valid.txt
+      > data/processed/SzegedNER/dev.iob"
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/test.txt
+      > data/processed/SzegedNER/test.iob"
+    - spacy convert data/processed/SzegedNER/dev.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/SzegedNER/train.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/SzegedNER/test.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+  deps:
+    - path: data/raw/SzegedNER/train.txt
+      md5: ea8aaad6a130ebe604c45ecf76f3be2b
+    - path: data/raw/SzegedNER/valid.txt
+      md5: 284d02c61a6ce24bb9964ff07a1def95
+    - path: data/raw/SzegedNER/test.txt
+      md5: 7c37c80dac8ebd321086f57a272c074e
+  outs:
+    - path: data/processed/SzegedNER/train.iob
+      md5: 65ba84abbbd01a91b28c98a0e8aba331
+    - path: data/processed/SzegedNER/dev.iob
+      md5: 8e35691e1da3ef6656755df8fa699b7a
+    - path: data/processed/SzegedNER/test.iob
+      md5: ea261aad4796bfcafaa0b622194af61f
+    - path: data/processed/SzegedNER/train.spacy
+      md5: fbcdafccec4869e84773794064d936e5
+    - path: data/processed/SzegedNER/dev.spacy
+      md5: 524c3ec6f6f22af2b56cc5730b1ef5fb
+    - path: data/processed/SzegedNER/test.spacy
+      md5: c89e1af255bfbf19778b44be70420ca1
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_merge:
+  cmd: python -m spacy run preprocess_merge
+  script:
+    - mkdir -p data/processed/ner_merged
+    - bash -c 'cat data/processed/SzegedNER/train.iob data/processed/NerKor/train.iob
+      > data/processed/ner_merged/train.iob'
+    - bash -c 'cat data/processed/SzegedNER/dev.iob data/processed/NerKor/dev.iob
+      > data/processed/ner_merged/dev.iob'
+    - bash -c 'cat data/processed/SzegedNER/test.iob data/processed/NerKor/test.iob
+      > data/processed/ner_merged/test.iob'
+    - spacy convert data/processed/ner_merged/dev.iob data/processed/ner_merged/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/ner_merged/train.iob data/processed/ner_merged/
+      --converter iob --n-sents 10
+    - spacy convert data/processed/ner_merged/test.iob data/processed/ner_merged/
+      --converter iob --n-sents 10
+  deps:
+    - path: data/processed/SzegedNER/train.iob
+      md5: 65ba84abbbd01a91b28c98a0e8aba331
+    - path: data/processed/SzegedNER/dev.iob
+      md5: 8e35691e1da3ef6656755df8fa699b7a
+    - path: data/processed/SzegedNER/test.iob
+      md5: ea261aad4796bfcafaa0b622194af61f
+    - path: data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+  outs:
+    - path: data/processed/ner_merged/train.spacy
+      md5: d51527b0d96e3d826b7d4e7d43ac9000
+    - path: data/processed/ner_merged/dev.spacy
+      md5: 856b25b3c2e9982e6517ec052bf637f0
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+init_bl_vectors:
+  cmd: python -m spacy run init_bl_vectors
+  script:
+    - bash -c 'bzcat data/external/webcorpuswiki.word2vec.bz2 > data/external/webcorpuswiki.word2vec.txt'
+    - spacy init vectors hu data/external/webcorpuswiki.word2vec.txt data/external/webcorpuswiki.word2vec.vec
+      -n hu_vectors.vectors
+  deps:
+    - path: data/external/webcorpuswiki.word2vec.bz2
+      md5: 4a3055c54a6f9a5f806ba09b21cb4583
+  outs:
+    - path: data/external/webcorpuswiki.word2vec.vec
+      md5: 6a34bc41722935cc95a76bbdf6036a0d
+    - path: data/external/webcorpuswiki.word2vec.txt
+      md5: 4c5029ea4c4ce8190c7403309e8ea783
+  spacy_version: 3.2.4
+  spacy_git_version: b50fe5ec6
+train_bl_ner:
+  cmd: python -m spacy run train_bl_ner
+  script:
+    - spacy train configs/ner.cfg --output models/hu_vectors-ner-1.0 --nlp.lang=hu
+      --gpu-id 0 --training.logger.project_name hu_vectors-1.0 --paths.train data/processed/ner_merged/train.spacy
+      --paths.dev data/processed/ner_merged/dev.spacy --paths.vectors data/external/webcorpuswiki.word2vec.vec
+  deps:
+    - path: models/floret-vectors2
+      md5: 5ef4891d4c5eee21d1c4b2131d483e64
+    - path: data/processed/ner_merged/train.spacy
+      md5: d51527b0d96e3d826b7d4e7d43ac9000
+    - path: data/processed/ner_merged/dev.spacy
+      md5: 856b25b3c2e9982e6517ec052bf637f0
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+    - path: configs/ner.cfg
+      md5: da17555caf56cb9714174d7970c1051e
+  outs:
+    - path: models/hu_vectors-ner-1.0/model-best
+      md5: 8c74ca530eba5ca3a22724b1771fdd6b
+  spacy_version: 3.2.4
+  spacy_git_version: b50fe5ec6
+train_ner:
+  cmd: python -m spacy run train_ner
+  script:
+    - spacy train configs/ner.cfg --output models/hu_vectors-ner-1.0 --nlp.lang=hu
+      --gpu-id 1 --training.logger.project_name hu_vectors-1.0 --paths.train data/processed/ner_merged/train.spacy
+      --paths.dev data/processed/ner_merged/dev.spacy --paths.vectors models/floret-vectors2
+  deps:
+    - path: models/floret-vectors2
+      md5: 5ef4891d4c5eee21d1c4b2131d483e64
+    - path: data/processed/ner_merged/train.spacy
+      md5: d51527b0d96e3d826b7d4e7d43ac9000
+    - path: data/processed/ner_merged/dev.spacy
+      md5: 856b25b3c2e9982e6517ec052bf637f0
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+    - path: configs/ner.cfg
+      md5: da17555caf56cb9714174d7970c1051e
+  outs:
+    - path: models/hu_vectors-ner-1.0/model-best
+      md5: 8c74ca530eba5ca3a22724b1771fdd6b
+  spacy_version: 3.2.4
+  spacy_git_version: b50fe5ec6

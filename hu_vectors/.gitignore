@@ -1,3 +1,7 @@
+.venv
 data
-floret
 models
+packages
+wandb
+metrics
+floret
