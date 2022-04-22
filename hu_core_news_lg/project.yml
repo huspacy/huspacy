@@ -30,21 +30,19 @@ vars:
   szegedner: SzegedNER
   ner_merged: ner_merged
   szfsszegedner: SZFSSzegedNER
-  vectors: webcorpuswiki.word2vec.vec
+  vectors: floret.vectors
 
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg
+  wandb_project: hu_core_news_lg-3.2.3 #TODO: bump version automatically
 
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
-  gpu: 0
 
-#TODO: remove GPU settings
-#TODO: provide examples for WANDB and GPU settings
+  gpu: 0
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
