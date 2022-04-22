@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.2g0
+  package_version: 3.2.3
 
   models_path: models
   packages_path: packages
@@ -149,13 +149,13 @@ commands:
     script:
       - "spacy init vectors ${vars.lang} ${vars.external_data_path}/vectors.floret
           --mode floret
-          ${vars.model_path}/${vars.vectors}
+          ${vars.models_path}/${vars.vectors}
           -n ${vars.package_name}.vectors"
     deps:
-      - ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
+      - ${vars.external_data_path}/vectors.floret
     outputs:
-      - ${vars.model_path}/${vars.vectors}
-      - ${vars.external_data_path}/webcorpuswiki.word2vec.txt
+      - ${vars.models_path}/${vars.vectors}
+
 
 
   - name: preprocess_ud
