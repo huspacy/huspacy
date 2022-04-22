@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "hu_core_news_lg"
+version = "3.2.1g0"
+description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
+license = "cc-by-sa-4.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+spacy = "~3.2.3"
+spacy-experimental = "0.4.0"
+spacy-huggingface-hub = "^0.0.6"
+spacy_conll = "^3.0"
+conllu = "^4.4"
+lemmy3 = "^3.2.0a"
+wandb = "^0.10.23"
+wheel = "^0.37.0"
+contexttimer = "^0.3.3"
+
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+
+[build-system]
+requires = ["poetry>=1.1.10", "pip>=21.2.4"]
+build-backend = "poetry.masonry.api"

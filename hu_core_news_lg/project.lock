@@ -47,8 +47,10 @@ preprocess_szegedcorpus:
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/SzegedCorpus/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
+
 preprocess_ud:
   cmd: python -m spacy run preprocess_ud
   script:
@@ -132,6 +134,7 @@ train_parser:
       md5: 117b7a88da63375ab98952934551211c
     - path: configs/parser.cfg
       md5: 57f8990f95b8b209e0537c07e1ef5fcf
+
   outs:
     - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
       md5: d3a792bdde8f214435a7ff1f04921e53

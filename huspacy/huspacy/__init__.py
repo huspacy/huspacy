@@ -7,19 +7,19 @@ from spacy.vocab import Vocab
 from spacy.language import Language
 from thinc.api import Config
 
-__URL = "https://huggingface.co/huspacy/hu_core_news_lg/resolve/{version}/{model_name}-any-py3-none-any.whl"
+__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
 __DEFAULT_VERSION = "main"
 __DEFAULT_MODEL = "hu_core_news_lg"
 
 
 def download(model_name: str = __DEFAULT_MODEL, version: str = __DEFAULT_VERSION) -> None:
-    """
-    Downloads a HuSpaCy model
+    """Downloads a HuSpaCy model.
+
     Args:
         model_name (str): model name
         version (str): model version
 
-    Returns:
+    Returns: None
 
     """
     download_url = __URL.format(version=version, model_name=model_name)
@@ -35,8 +35,7 @@ def load(
         exclude: Iterable[str] = util.SimpleFrozenList(),
         config: Union[Dict[str, Any], Config] = util.SimpleFrozenDict(),
 ) -> Language:
-    """
-    Load a HuSpaCy model
+    """Loads a HuSpaCy model.
 
     Args:
         name (str): model name

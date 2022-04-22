@@ -1,0 +1,54 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: huspacy
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade poetry
+          poetry install
+
+      - name: Lint with flake8
+        run: |
+          poetry run flake8 huspacy
+
+      - name: Test with pytest
+        run: |
+          poetry run pytest
+
+      - name: Build package
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          if [[ "$BRANCH_NAME" == *master ]]
+          then
+            poetry version --short
+          else
+            sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
+            poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
+            poetry version --short
+          fi
+          poetry build -f wheel
+          if [[ "$BRANCH_NAME" == develop ]]
+          then
+            poetry run twine upload --non-interactive dist/*
+          fi
