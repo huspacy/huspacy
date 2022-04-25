@@ -24,6 +24,6 @@ Hyperparameters of the underlying models can be fine-tuned using Weights&Biases:
 ## Publish models
 
 1. Make sure dependencies are up-to-date: `poetry update`
-2. Bump version: `bumpversion patch` / `minor` / `major`
+2. Bump version: `bumpversion --new-version x.x.x micro --verbose`
 3. Build the model as described in the previous section
 4. Publish the new model to Hugging Face Hub: `python -m spacy project run publish` (must be executed in the model's directory)

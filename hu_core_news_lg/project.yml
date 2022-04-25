@@ -35,7 +35,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.2.3 #TODO: bump version automatically
+  wandb_project: hu_core_news_lg-3.2.3
 
   assemble_config: assemble
   tagger_config: tagger
