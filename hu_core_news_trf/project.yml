@@ -360,7 +360,6 @@ commands:
     script:
       - "spacy assemble configs/${vars.assemble_config}.cfg
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
-          --code ../huspacy/tools/components.py
           --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
           --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
@@ -379,11 +378,9 @@ commands:
       - "spacy evaluate
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
-            --code ../huspacy/tools/components.py
             --gpu-id ${vars.gpu}
             --output ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
-            --code ../huspacy/tools/components.py
             --gold-preproc
             --gpu-id ${vars.gpu}
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
