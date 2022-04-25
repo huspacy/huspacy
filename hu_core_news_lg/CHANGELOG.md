@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_lg`
 
+## 3.2.2
+### Changed
+- Replaced static word vectors w/ char n-gram based floret ones
+- Added multistep training to mitigate non-deterministic training behaviour
+
 ## 3.2.1
 ### Changed
 - Using the Szarvas-Farkas split for SzegedNER

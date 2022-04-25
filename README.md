@@ -27,14 +27,15 @@ This repository contains material to build HuSpaCy and its models from the groun
 We provide two models, the first one is a CNN-based large model which achieves a good balance between accuracy and processing speed.
 This default model ([`hu_core_news_lg`](https://huggingface.co/huspacy/hu_core_news_lg)) provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word vectors.
 
-Alternatively, one can download a transformer based model (using [huBERT](https://huggingface.co/SZTAKI-HLT/hubert-base-cc)) which has much higher accuracy, however it requires GPU for high throughput.
+Alternatively, one can download a transformer based model ([`hu_core_news_trf`](https://huggingface.co/huspacy/hu_core_news_trf)) that is built on [huBERT](https://huggingface.co/SZTAKI-HLT/hubert-base-cc) and provides the same functionality as the large model except the word vectors. 
+It comes with much higher accuracy in the price of increased computational resource usage, therefore GPU is required for high throughput.
 
 A demo of these models is available at [Hugging Face Spaces](https://huggingface.co/spaces/huspacy/demo).
-Models' changes are recorded in respective changelog files. ([1](https://github.com/huspacy/huspacy/blob/master/hu_core_news_lg/CHANGELOG.md), [2](https://github.com/huspacy/huspacy/blob/master/hu_core_news_trf/CHANGELOG.md))
+Models' changes are recorded in respective changelog files. ([1](hu_core_news_lg/CHANGELOG.md), [2](hu_core_news_trf/CHANGELOG.md))
 
 ## Installation
 
-To get started using the tool, first, you need to do download a model. The easiest way to achieve this is fetch the model by installing the `huspacy` package from PyPI:
+To get started using the tool, first, you would need a model. The easiest way to achieve this is to install the package (from PyPI) and then fetch a model through it.
 
 ```bash
 pip install huspacy
@@ -53,8 +54,8 @@ nlp = huspacy.load()
 ```
 
 Alternatively, one can install the latest models from Hugging Face Hub directly:
-   - CPU optimized large model: `pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
-   - GPU optimized transformers model: `pip install https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
+   - CPU optimized [large model](https://huggingface.co/huspacy/hu_core_news_lg): `pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
+   - GPU optimized [transformers model](https://huggingface.co/huspacy/hu_core_news_trf): `pip install https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
 
 To speed up inference on GPUs, CUDA should be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
 
@@ -84,10 +85,7 @@ API Documentation is available in the [project wiki](https://github.com/huspacy/
 
 ## Development
  
-### Installing requirements
-
-- `poetry install` will install all the dependencies
-- For better performance you might need to [reinstall spacy with GPU support](https://spacy.io/usage), e.g. `poetry add spacy[cuda92]` will add support for CUDA 9.2 
+Each model has its own dependencies managed by `poetry`. For details check the models' readmes ([`lg`](hu_core_news_lg/README.md), [`trf`](hu_core_news_trf/README.md)).
 
 ### Repository structure
 

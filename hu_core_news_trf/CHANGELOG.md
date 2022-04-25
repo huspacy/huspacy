@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
+## 3.2.1
+### Changed
+- Minor improvements in the training pipeline
+
 ## 3.2.0
 ### Added
-- Transfomer encoder
+- Transformer encoder
 - Experimental edit-tree-lemmatizer
 - Experimental biaffine parser
 - Using the Szarvas-Farkas split for SzegedNER
