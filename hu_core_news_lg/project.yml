@@ -108,6 +108,14 @@ workflows:
     - pretrain_tagger
     - train_parser
     - train_ner
+    - backup_models
+    - train_parser
+    - train_ner
+    - backup_models
+    - train_parser
+    - train_ner
+    - backup_models
+    - find_best_model
 
     - assemble
     - evaluate
@@ -362,7 +370,7 @@ commands:
     help: "Train the NER model"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
-          --output ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}
+          --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
           --paths.vectors ${vars.models_path}/${vars.vectors}
@@ -374,7 +382,29 @@ commands:
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
     outputs:
-      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
+
+
+  - name: backup_models
+    help: "Backup models by renaming the NER and Parser models's folder. This step allows running training steps multiple times."
+    script:
+      - "bash ../scripts/backup.sh ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}"
+      - "bash ../scripts/backup.sh ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}"
+    deps:
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
+      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
+
+
+  - name: find_best_model
+    help: "Find the best models"
+    script:
+      - "rm -rf ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}"
+      - "python ../scripts/link_best_model.py ${vars.models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
+      - "rm -rf ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}"
+      - "python ../scripts/link_best_model.py ${vars.models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
+      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
 
 
   - name: assemble
@@ -385,10 +415,10 @@ commands:
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
-          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+          --paths.ner_model ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
       - ${vars.package_init}
     outputs:
