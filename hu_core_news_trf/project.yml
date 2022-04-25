@@ -336,7 +336,7 @@ commands:
       - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
 
   - name: backup_models
-    help: "Backup models by renaming the model folder. This step allows running training steps multiple times."
+    help: "Backup models by renaming the NER and Parser models's folder. This step allows running training steps multiple times."
     script:
       - "bash ../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}"
       - "bash ../scripts/backup.sh ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}"
