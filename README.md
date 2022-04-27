@@ -1,6 +1,6 @@
 <div align="center">
     <br>
-    <img src=".github/resources/logo.png" width="333" alt="HuSpaCy: Industrial strength Hungarian NLP"/>
+    <img src="https://raw.githubusercontent.com/huspacy/huspacy/develop/.github/resources/logo.png" width="333" alt="HuSpaCy: Industrial strength Hungarian NLP"/>
     <hr/>
 </div>
 <div align="center">
@@ -90,10 +90,6 @@ Each model has its own dependency structure managed by `poetry`. For details che
 
 ```
 ├── .github            -- Github configuration files
-├── data               -- Data files
-│   ├── external       -- External models required to train models (e.g. word vectors)
-│   ├── processed      -- Processed data ready to feed spacy
-│   └── raw            -- Raw data, mostly corpora as they are obtained from the web
 ├── hu_core_news_lg    -- SpaCy 3.x project files for building the large model
 │   ├── configs        -- SpaCy pipeline configuration files
 │   ├── meta.json      -- model metadata
