@@ -9,7 +9,7 @@ This model contains [floret](https://github.com/explosion/floret) vectors traine
 
 Make sure you have `gcc` and `parallel` installed.
 
-Activate the virtual environment: `poetry shell` and `cd hu_core_news_lg`
+Activate the virtual environment: `poetry shell` and `cd hu_vectors`
 
 1. Fetch datafiles: `python -m spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)
