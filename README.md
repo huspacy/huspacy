@@ -140,7 +140,7 @@ Additionally, please indicate the version of the model you used so that your res
   booktitle = {{XVIII. Magyar Sz{\'a}m{\'\i}t{\'o}g{\'e}pes Nyelv{\'e}szeti Konferencia}},
   author = {Orosz, Gy{\"o}rgy and Sz{\' a}nt{\' o}, Zsolt and Berkecz, P{\' e}ter and Szab{\' o}, Gerg{\H o} and Farkas, Rich{\' a}rd}, 
   location = {{Szeged}},
-  year = {in press 2021},
+  year = {2022},
 }
 ```
 
