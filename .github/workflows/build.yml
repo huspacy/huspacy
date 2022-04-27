@@ -38,8 +38,9 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
-          if [[ "$BRANCH_NAME" == *master ]]
+          if [[ "$BRANCH_NAME" == "master" ]]
           then
             poetry version --short
           else
@@ -48,7 +49,7 @@ jobs:
             poetry version --short
           fi
           poetry build -f wheel
-          if [[ "$BRANCH_NAME" == develop ]]
+          if [[ "$BRANCH_NAME" == "develop" ]]
           then
             poetry run twine upload --non-interactive dist/*
           fi
