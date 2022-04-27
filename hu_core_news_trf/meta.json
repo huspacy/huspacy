@@ -1,7 +1,7 @@
 {
   "lang": "hu",
-  "name": "hu_core_news_lg",
-  "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
+  "name": "hu_core_news_trf",
+  "description": "Hungarian transformer pipeline (huBert) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner",
   "author": "SzegedAI, MILAB",
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/huspacy/huspacy",
@@ -33,13 +33,14 @@
       "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
     },
     {
-      "name": "Webcorpuswiki word2vec model",
-      "url": "https://github.com/oroszgy/hunlp-resources/releases/tag/webcorpuswiki_word2vec_v0.1",
+      "name": "huBERT base model (cased)",
+      "url": "https://huggingface.co/SZTAKI-HLT/hubert-base-cc",
       "license": "CC-BY-SA-4.0",
-      "author": "György Orosz"
+      "author": "Dávid Márk Nemeskey (SZTAKI-HLT)"
     }
   ],
   "requirements": [
-    "lemmy3==3.2.0a"
+    "spacy-transformers ~= 1.1.4",
+    "spacy-experimental == 0.4.0"
   ]
 }

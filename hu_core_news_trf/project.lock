@@ -1,0 +1,104 @@
+preprocess_nerkor:
+  cmd: python -m spacy run preprocess_nerkor
+  script:
+    - mkdir -p ../data/processed/NerKor
+    - convert2conllu '../data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
+      ../data/processed/NerKor/dev.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
+      ../data/processed/NerKor/train.conllup
+    - convert2conllu '../data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
+      ../data/processed/NerKor/test.conllup
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  ../data/processed/NerKor/dev.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/train/*/*/*.conllup  ../data/processed/NerKor/train.iob
+    - ../scripts/convert_nerkor2iob.sh ../data/raw/NerKor/train-devel-test/test/*/*/*.conllup  ../data/processed/NerKor/test.iob
+    - spacy convert ../data/processed/NerKor/train.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/dev.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert ../data/processed/NerKor/test.iob ../data/processed/NerKor --converter
+      iob --n-sents 10
+  deps:
+    - path: ../data/raw/NerKor
+      md5: b950c6328675585a8377a7ef04ef6dd3
+  outs:
+    - path: ../data/processed/NerKor/train.iob
+      md5: 019cb9ccca28837032aff5c7f66c83b4
+    - path: ../data/processed/NerKor/dev.iob
+      md5: 3fa4ff252ebe8c487501b59dead60154
+    - path: ../data/processed/NerKor/test.iob
+      md5: b9f40b8e80cb51f411fb4d49f2d17053
+    - path: ../data/processed/NerKor/train.spacy
+      md5: 73eff46826c3b567ae375589fe6f0818
+    - path: ../data/processed/NerKor/dev.spacy
+      md5: 1c3a3c54f37108a1002d585c0169cce7
+    - path: ../data/processed/NerKor/test.spacy
+      md5: cbae80a7ac51f59094fdeb63597995eb
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_ud:
+  cmd: python -m spacy run preprocess_ud
+  script:
+    - mkdir -p ../data/processed/UD_Hungarian-Szeged
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ../data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-train.spacy ../data/processed/UD_Hungarian-Szeged/train.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-dev.spacy ../data/processed/UD_Hungarian-Szeged/dev.spacy
+    - mv ../data/processed/UD_Hungarian-Szeged/hu_szeged-ud-test.spacy ../data/processed/UD_Hungarian-Szeged/test.spacy
+  deps:
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+preprocess_szegedcorpus:
+  cmd: python -m spacy run preprocess_szegedcorpus
+  script:
+    - mkdir -p ../data/processed/SzegedCorpus/zip/
+    - bash -c 'cat ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu ../data/raw/SzegedCorpus/univdep.hu.train.conllu
+      > ../data/processed/SzegedCorpus/train.conllu'
+    - cp ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu ../data/processed/SzegedCorpus/dev.conllu
+    - cp ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu ../data/processed/SzegedCorpus/test.conllu
+    - python -m spacy convert ../data/processed/SzegedCorpus/train.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/SzegedCorpus/dev.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert ../data/processed/SzegedCorpus/test.conllu ../data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+  deps:
+    - path: ../data/raw/SzegedCorpus
+      md5: 88bdd041a3eda14fe444e3283857a5c7
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: ../data/processed/SzegedCorpus/train.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/dev.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/test.conllup
+      md5: null
+    - path: ../data/processed/SzegedCorpus/train.spacy
+      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+    - path: ../data/processed/SzegedCorpus/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: ../data/processed/SzegedCorpus/test.spacy
+      md5: c2e9e1a1c49870e616ed6b5102b9ce9c
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41

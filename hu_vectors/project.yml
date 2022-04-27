@@ -1,0 +1,274 @@
+title: "Hungarian word vectors"
+description: "Floret vectors"
+spacy_version: ">=3.2.0,<3.3.0"
+
+vars:
+  lang: hu
+  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  core_package_name: vectors
+  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  package_name: hu_vectors
+  package_version: 1.0
+
+  models_path: models
+  packages_path: packages
+
+  raw_data_path: data/raw
+  processed_data_path: data/processed
+  external_data_path: data/external
+  result_data_path: data/result
+
+  webcorpus_path: webcorpus2
+  floret_path: floret
+  scripts_path: ../scripts
+
+  nerkor: NerKor
+  szegedner: SzegedNER
+  ner_merged: ner_merged
+
+  wandb_entity: spacy-hu
+  wandb_project: hu_vectors-1.0
+
+  ner_config: ner
+  gpu: 1
+
+#TODO: remove GPU settings
+#TODO: provide examples for WANDB and GPU settings
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+directories: [configs, models, packages, data/raw, data/processed, data/external]
+
+assets:
+      
+  # sha256sums of webcorpus2
+  - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
+    url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/sha256sums
+  
+  # Floret
+  - dest: ${vars.floret_path}
+    git:
+      repo: https://github.com/explosion/floret
+      branch: main
+      path: ""
+
+  # Questions for testing vectors
+  - dest: ${vars.external_data_path}/questions-words-hu.txt
+    url: http://corpus.nytud.hu/efnilex-vect/data/questions-words-hu.txt
+    
+  # NerKor
+  - dest: ${vars.raw_data_path}/${vars.nerkor}
+    git:
+      repo: https://github.com/nytud/NYTK-NerKor
+      branch: main
+      path: data
+
+  # SzegedNER
+  - dest: ${vars.raw_data_path}/${vars.szegedner}
+    git:
+      repo: https://github.com/huspacy/huspacy-resources
+      branch: master
+      path: data/processed/szeged-ner
+      
+    # Word embeddings
+  - dest: ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
+    url: https://github.com/oroszgy/hunlp-resources/releases/download/webcorpuswiki_word2vec_v0.1/webcorpuswiki.word2vec.bz2
+
+workflows:
+  all:
+    - preprocess_webcorpus
+    - build_floret
+    - train_floret
+    - evaluate_floret
+
+  eval_on_ner:
+    - preprocess_nerkor
+    - preprocess_szegedner
+    - preprocess_merge
+    - init_bl_vectors
+    - train_bl_ner
+    - init_vectors
+    - train_ner
+    
+
+commands:
+  - name: preprocess_webcorpus
+    help: "Preprocess corpus"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned
+      - "parallel --colsep '  ' --bar --jobs 48 --ungroup
+            ${vars.scripts_path}/process_webcorpus2.sh {2} ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned 
+            :::: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums"
+      - bash -c "echo ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned/*.txt | xargs cat > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt"
+    deps:
+      - ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
+    outputs:
+      - ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt
+
+
+  - name: preprocess_nerkor
+    help: "Convert the NerKor data to spaCy's format"
+    script:
+      - "mkdir -p ${vars.processed_data_path}/${vars.nerkor}"
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/dev.conllup"
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/train.conllup"
+      - "python ../scripts/convert_to_conllu.py '${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/morph/*.conllup'
+          ${vars.processed_data_path}/${vars.nerkor}/test.conllup"
+
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/devel/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/dev.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/train/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/train.iob'
+      - 'bash ../scripts/convert_nerkor2iob.sh ${vars.raw_data_path}/${vars.nerkor}/train-devel-test/test/*/*/*.conllup  ${vars.processed_data_path}/${vars.nerkor}/test.iob'
+
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/train.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/dev.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.nerkor}/test.iob ${vars.processed_data_path}/${vars.nerkor} --converter iob --n-sents 10
+
+    deps:
+      - ${vars.raw_data_path}/${vars.nerkor}
+    outputs:
+      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/train.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.spacy
+      - ${vars.processed_data_path}/${vars.nerkor}/test.spacy
+      
+  - name: preprocess_szegedner
+    help: "Convert the SzegedNER data to spaCy's format"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.szegedner}
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/train.txt > ${vars.processed_data_path}/${vars.szegedner}/train.iob"
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/valid.txt > ${vars.processed_data_path}/${vars.szegedner}/dev.iob"
+      - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < ${vars.raw_data_path}/${vars.szegedner}/test.txt > ${vars.processed_data_path}/${vars.szegedner}/test.iob"
+
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.szegedner}/ --converter iob --n-sents 10
+
+    deps:
+      - ${vars.raw_data_path}/${vars.szegedner}/train.txt
+      - ${vars.raw_data_path}/${vars.szegedner}/valid.txt
+      - ${vars.raw_data_path}/${vars.szegedner}/test.txt
+    outputs:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/test.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/train.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.spacy
+      - ${vars.processed_data_path}/${vars.szegedner}/test.spacy
+
+
+  - name: preprocess_merge
+    help: "Concatenate IOB datasets to a new dataset"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.ner_merged}
+
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/train.iob ${vars.processed_data_path}/${vars.nerkor}/train.iob > ${vars.processed_data_path}/${vars.ner_merged}/train.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/dev.iob ${vars.processed_data_path}/${vars.nerkor}/dev.iob > ${vars.processed_data_path}/${vars.ner_merged}/dev.iob'
+      - bash -c 'cat ${vars.processed_data_path}/${vars.szegedner}/test.iob ${vars.processed_data_path}/${vars.nerkor}/test.iob > ${vars.processed_data_path}/${vars.ner_merged}/test.iob'
+
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/dev.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/train.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+      - spacy convert ${vars.processed_data_path}/${vars.ner_merged}/test.iob ${vars.processed_data_path}/${vars.ner_merged}/ --converter iob --n-sents 10
+
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedner}/train.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/dev.iob
+      - ${vars.processed_data_path}/${vars.szegedner}/test.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/train.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/dev.iob
+      - ${vars.processed_data_path}/${vars.nerkor}/test.iob
+    outputs:
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+
+
+
+  - name: build_floret
+    help: "Build floret"
+    script:
+      - "make -C ${vars.floret_path}"
+
+  - name: train_floret
+    help: "Train floret"
+    script:
+      - "${vars.floret_path}/floret cbow -dim 300 -mode floret -bucket 200000 -minn 4 -maxn 6 -minCount 100 -neg 10 -hashCount 2 -lr 0.01 -thread 70 -epoch 40 
+          -input ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt -output ${vars.models_path}/floret_vectors"
+
+
+  - name: evaluate_floret
+    help: "Measure accuracy on the floret vector with questions"
+    script:
+      - python ${vars.scripts_path}/eval_vectors.py ${vars.models_path}/floret_vectors.bin ${vars.external_data_path}/questions-words-hu.txt
+ 
+      
+  - name: init_vectors
+    help: "initalize fasttext, floret vectors"
+    script:
+      - "spacy init vectors ${vars.lang} ${vars.models_path}/floret_vectors.floret 
+          ${vars.models_path}/floret-vectors2 
+          --mode floret
+          -n ${vars.package_name}.vectors"
+    deps:
+      - ${vars.models_path}/floret_vectors.floret
+    outputs:
+      - ${vars.models_path}/floret-vectors2
+      
+      
+  - name: init_bl_vectors
+    help: "Initialize vectors"
+    script:
+      - "bash -c 'bzcat ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
+          > ${vars.external_data_path}/webcorpuswiki.word2vec.txt'"
+      #TODO: store the vectors in the models folder
+      - "spacy init vectors hu ${vars.external_data_path}/webcorpuswiki.word2vec.txt
+          ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+          -n ${vars.package_name}.vectors"
+    deps:
+      - ${vars.external_data_path}/webcorpuswiki.word2vec.bz2
+    outputs:
+      - ${vars.external_data_path}/webcorpuswiki.word2vec.vec
+      - ${vars.external_data_path}/webcorpuswiki.word2vec.txt
+
+
+  - name: train_bl_ner
+    help: "Train the NER on NerKor and SzegedNER with the pretrained tagger"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec"
+    deps:
+      - ${vars.models_path}/floret-vectors2
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+      - configs/${vars.ner_config}.cfg
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
+      
+      
+  - name: train_ner
+    help: "Train the NER on NerKor and SzegedNER with the pretrained tagger"
+    script:
+      - "spacy train configs/${vars.ner_config}.cfg
+          --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
+          --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
+          --training.logger.project_name ${vars.wandb_project}
+          --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+          --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+          --paths.vectors ${vars.models_path}/floret-vectors2"
+    deps:
+      - ${vars.models_path}/floret-vectors2
+      - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
+      - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+      - configs/${vars.ner_config}.cfg
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best

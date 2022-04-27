@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huspacy"
-version = "0.4.2"
+version = "0.4.3"
 description = "HuSpaCy: industrial strength Hungarian natural language processing"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 maintainers = ["György Orosz <gyorgy@orosz.link>"]
@@ -35,9 +35,16 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
-spacy = "^3.2.1"
+python = "^3.8"
+spacy = "~3.2.3"
 
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+pytest = "^7.0.0"
+flake8 = "^4.0.1"
+twine = "^4.0.0"
+lazydocs = "^0.4.8"
+pytest_codeblocks = "^0.14.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

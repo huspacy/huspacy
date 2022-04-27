@@ -27,7 +27,7 @@ preprocess_szegedcorpus:
       --converter conllu --n-sents 10
   deps:
     - path: ../data/raw/SzegedCorpus
-      md5: 88bdd041a3eda14fe444e3283857a5c7
+      md5: 5f5c6b74c19ff87d8d7b984d6d648c75
     - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
       md5: e8581e733642908c106841fc1469ae89
     - path: ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
@@ -42,13 +42,15 @@ preprocess_szegedcorpus:
     - path: ../data/processed/SzegedCorpus/test.conllup
       md5: null
     - path: ../data/processed/SzegedCorpus/train.spacy
-      md5: c30b83c9da0ad32568ae4cc650d8fe3f
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
     - path: ../data/processed/SzegedCorpus/dev.spacy
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/SzegedCorpus/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-  spacy_version: 3.2.0
-  spacy_git_version: 0fc3dee77
+
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+
 preprocess_ud:
   cmd: python -m spacy run preprocess_ud
   script:
@@ -76,8 +78,8 @@ preprocess_ud:
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/UD_Hungarian-Szeged/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-  spacy_version: 3.1.3
-  spacy_git_version: 8bda39f08
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
 train_lemmatizer:
   cmd: python -m spacy run train_lemmatizer
   script:
@@ -132,6 +134,7 @@ train_parser:
       md5: 117b7a88da63375ab98952934551211c
     - path: configs/parser.cfg
       md5: 57f8990f95b8b209e0537c07e1ef5fcf
+
   outs:
     - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
       md5: d3a792bdde8f214435a7ff1f04921e53
@@ -233,5 +236,38 @@ evaluate:
       md5: 4a92722a1de58e2db1d94003f759a620
     - path: ../models/../models/hu_core_news_lg-0.4.0/meta.json"
       md5: null
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+init_vectors:
+  cmd: python -m spacy run init_vectors
+  script:
+    - bash -c 'bzcat ../data/external/webcorpuswiki.word2vec.bz2 > ../data/external/webcorpuswiki.word2vec.txt'
+    - spacy init vectors hu ../data/external/webcorpuswiki.word2vec.txt ../data/external/webcorpuswiki.word2vec.vec
+      -n hu_core_news_lg.vectors
+  deps:
+    - path: ../data/external/webcorpuswiki.word2vec.bz2
+      md5: 4a3055c54a6f9a5f806ba09b21cb4583
+  outs:
+    - path: ../data/external/webcorpuswiki.word2vec.vec
+      md5: afba005527b24f19a3c47e6cccdd6eb4
+  spacy_version: 3.2.1
+  spacy_git_version: 800737b41
+train_parser_ud:
+  cmd: python -m spacy run train_parser_ud
+  script:
+    - spacy train configs/parser_ud.cfg --output ../models/hu_core_news_lg-parser-0.4.2
+      --gpu-id -1 --nlp.lang=hu --training.logger.project_name hu_core_news_lg-0.4.2-v2
+      --paths.vectors ../data/external/webcorpuswiki.word2vec.vec --paths.train ../data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev ../data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: ../data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: ccb7f151ec17c3ba2178ecba612ceb09
+    - path: ../data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: bb3c652b9a8d69a085a42a5c13f6f0ca
+    - path: configs/parser.cfg
+      md5: 57f8990f95b8b209e0537c07e1ef5fcf
+  outs:
+    - path: ../models/hu_core_news_lg-parser-0.4.2/model-best
+      md5: cfc6feb03949e2477880ff19f204e7ca
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
