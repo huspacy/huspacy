@@ -34,12 +34,19 @@ jobs:
         run: |
           poetry run pytest
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - name: Build package
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         run: |
-          if [[ "$BRANCH_NAME" == *master ]]
+          echo "Running the pipeline on $BRANCH_NAME branch"
+          if [[ "$BRANCH_NAME" == "master" ]]
           then
             poetry version --short
           else
@@ -47,8 +54,12 @@ jobs:
             poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
             poetry version --short
           fi
+
           poetry build -f wheel
-          if [[ "$BRANCH_NAME" == develop ]]
+
+          if [[ "$BRANCH_NAME" == "develop" ]]
           then
             poetry run twine upload --non-interactive dist/*
+          else
+            echo "Ignoring package creation"
           fi
