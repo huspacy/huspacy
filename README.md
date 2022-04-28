@@ -63,7 +63,7 @@ To speed up inference on GPUs, CUDA should be installed as described in [https:/
 
 HuSpaCy is fully compatible with [spaCy's API](https://spacy.io/api/doc/), newcomers can easily get started with [spaCy 101](https://spacy.io/usage/spacy-101) guide. 
 
-Although HuSpacy models can be leaded with `spacy.load(...)`, the tool provides convenience methods to easily access downloaded models.
+Although HuSpacy models can be loaded with `spacy.load(...)`, the tool provides convenience methods to easily access downloaded models.
 ```python
 # Load the model using spacy.load(...)
 import spacy
