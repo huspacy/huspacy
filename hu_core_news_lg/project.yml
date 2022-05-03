@@ -356,7 +356,7 @@ commands:
           --paths.vectors ${vars.models_path}/${vars.vectors}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
           --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
-          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
