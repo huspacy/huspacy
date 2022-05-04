@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.4
+  package_version: 3.2.3
 
   models_path: models
   packages_path: packages
@@ -35,7 +35,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.2.4
+  wandb_project: hu_core_news_lg-3.2.3
 
   assemble_config: assemble
   tagger_config: tagger
@@ -440,11 +440,11 @@ commands:
     script:
       - "mkdir -p ${vars.result_data_path}"
       - "python ../scripts/huspacyv3_benchmark.py raw-text
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
       - bash -c "python ../scripts/conll18_ud_eval.py
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
