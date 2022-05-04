@@ -6,7 +6,7 @@
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/huspacy/huspacy",
   "license": "cc-by-sa-4.0",
-  "spacy_version": ">=3.2.0,<3.3.0",
+  "spacy_version": ">=3.3.0,<3.4.0",
   "sources": [
     {
       "name": "UD Hungarian Szeged",
@@ -38,8 +38,5 @@
       "license": "CC-BY-SA-4.0",
       "author": "György Orosz"
     }
-  ],
-  "requirements": [
-    "lemmy3==3.2.0a"
   ]
 }
