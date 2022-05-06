@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Large) "
 description: "Word vector, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.2.0,<3.3.0"
+spacy_version: ">=3.3.0,<3.4.0"
 
 vars:
   lang: hu
@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.3
+  package_version: 3.3.0
 
   models_path: models
   packages_path: packages
@@ -35,7 +35,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.2.3
+  wandb_project: hu_core_news_lg-3.3.0
 
   assemble_config: assemble
   tagger_config: tagger
@@ -84,6 +84,7 @@ assets:
 
 workflows:
   prepare_data:
+    - init_vectors
     - preprocess_ud
     - preprocess_nerkor
     - preprocess_szegedcorpus
@@ -91,8 +92,7 @@ workflows:
     - preprocess_merge
 
   train_models:
-    - train_lemmatizer
-    - pretrain_tagger
+    - pretrain_tagger_lemmatizer
     - train_parser
     - train_ner
 
@@ -104,8 +104,7 @@ workflows:
     - preprocess_szegedner
     - preprocess_merge
 
-    - train_lemmatizer
-    - pretrain_tagger
+    - pretrain_tagger_lemmatizer
     - train_parser
     - train_ner
     - backup_models
@@ -126,19 +125,14 @@ workflows:
   tagger:
     - preprocess_szegedcorpus
     - preprocess_ud
-    - pretrain_tagger
+    - pretrain_tagger_lemmatizer
     - train_parser
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
-    - pretrain_tagger
+    - pretrain_tagger_lemmatizer
     - train_parser
-
-  lemmatizer:
-    - preprocess_szegedcorpus
-    - preprocess_ud
-    - train_lemmatizer
 
   ner:
     - preprocess_nerkor
@@ -296,25 +290,11 @@ commands:
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
 
 
-  - name: train_lemmatizer
-    help: "Train the lemmatizer"
-    script:
-      - "lemmy train ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu ${vars.models_path}/lemmy-${vars.package_version}.bin"
-      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu"
-      - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
-    deps:
-      - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
-      - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
-      - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
-    outputs:
-      - ${vars.models_path}/lemmy-${vars.package_version}.bin
-
-
-  - name: pretrain_tagger
-    help: "Pretrain the tagger on the full Szeged Corpus"
+  - name: pretrain_tagger_lemmatizer
+    help: "Pretrain the tagger and edit tree lemmatizer on the full Szeged Corpus"
     script:
       - "spacy train configs/${vars.tagger_config}.cfg
-            --output ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}
+            --output ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
             --paths.vectors ${vars.models_path}/${vars.vectors}
@@ -325,7 +305,7 @@ commands:
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
       - configs/${vars.tagger_config}.cfg
     outputs:
-      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best
 
 
   - name: train_parser
@@ -339,11 +319,11 @@ commands:
             --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-            --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
+            --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best
       - configs/${vars.parser_config}.cfg
     outputs:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
@@ -376,7 +356,7 @@ commands:
           --paths.vectors ${vars.models_path}/${vars.vectors}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
           --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
-          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
     deps:
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
@@ -414,12 +394,10 @@ commands:
           --code ${vars.package_init}
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-          --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
           --paths.ner_model ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
-      - ${vars.models_path}/lemmy-${vars.package_version}.bin
       - ${vars.package_init}
     outputs:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
@@ -462,11 +440,11 @@ commands:
     script:
       - "mkdir -p ${vars.result_data_path}"
       - "python ../scripts/huspacyv3_benchmark.py raw-text
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
       - bash -c "python ../scripts/conll18_ud_eval.py
-        ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
