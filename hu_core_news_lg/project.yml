@@ -440,16 +440,17 @@ commands:
     script:
       - "mkdir -p ${vars.result_data_path}"
       - "python ../scripts/huspacyv3_benchmark.py raw-text
-        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/test.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
       - bash -c "python ../scripts/conll18_ud_eval.py
-        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/test.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
       - ${vars.package_init}
+      - ${vars.processed_data_path}/${vars.treebank}/test.conllu
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu
       - ${vars.result_data_path}/ud_test_conll18.log
