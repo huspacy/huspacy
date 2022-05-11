@@ -47,10 +47,8 @@ preprocess_szegedcorpus:
       md5: bb3c652b9a8d69a085a42a5c13f6f0ca
     - path: ../data/processed/SzegedCorpus/test.spacy
       md5: c2e9e1a1c49870e616ed6b5102b9ce9c
-
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
-
 preprocess_ud:
   cmd: python -m spacy run preprocess_ud
   script:
@@ -134,7 +132,6 @@ train_parser:
       md5: 117b7a88da63375ab98952934551211c
     - path: configs/parser.cfg
       md5: 57f8990f95b8b209e0537c07e1ef5fcf
-
   outs:
     - path: ../models/hu_core_news_lg-parser-0.7.0/model-best
       md5: d3a792bdde8f214435a7ff1f04921e53
@@ -162,23 +159,23 @@ train_ner:
 assemble:
   cmd: python -m spacy run assemble
   script:
-    - spacy assemble configs/assemble.cfg --code ../huspacy/components.py ../models/hu_core_news_lg-0.4.0
-      --paths.parser_model ../models/hu_core_news_lg-parser-0.4.0/model-best --paths.lemmy_model
-      ../models/lemmy-0.4.0.bin --paths.ner_model ../models/hu_core_news_lg-ner_merged-0.4.0/model-best
+    - spacy assemble configs/assemble_lookups.cfg --code ../huspacy/tools/components.py
+      models/hu_core_news_lg-3.3.0-lookups --paths.lemmatizer_lookups models/ --paths.parser_model
+      models/hu_core_news_lg-parser-3.3.0/model-best --paths.ner_model models/hu_core_news_lg-ner-3.3.0/model-best
   deps:
-    - path: ../models/hu_core_news_lg-parser-0.4.0/model-best
-      md5: 51d8f98aeeb22943792b1a277fce47c4
-    - path: ../models/hu_core_news_lg-ner_merged-0.4.0/model-best
-      md5: 424beaeb3385032ce808e9536fedb76e
-    - path: ../models/lemmy-0.4.0.bin
-      md5: a6c3bee736a31ec47069405dc6b954b6
-    - path: ../huspacy/components.py
-      md5: dda213c21c12e22ceae3430395577ece
+    - path: models/lookups.bin
+      md5: 3b5de7e447f567c8e69b69d667365258
+    - path: models/hu_core_news_lg-parser-3.3.0/model-best
+      md5: 9a938a36a8d27b16cc1ecab0e93cd02d
+    - path: models/hu_core_news_lg-ner-3.3.0/model-best
+      md5: 13ab26ad63d88c8bcb882e47f58da929
+    - path: ../huspacy/tools/components.py
+      md5: c7c324a2c83a9566ef1e972026294831
   outs:
-    - path: ../models/hu_core_news_lg-0.4.0
-      md5: 3ea7063f0ac1dda716df9043b543c25d
-  spacy_version: 3.2.1
-  spacy_git_version: 800737b41
+    - path: models/hu_core_news_lg-3.3.0
+      md5: null
+  spacy_version: 3.3.0
+  spacy_git_version: Unknown
 package:
   cmd: python -m spacy run package
   script:
@@ -271,3 +268,17 @@ train_parser_ud:
       md5: cfc6feb03949e2477880ff19f204e7ca
   spacy_version: 3.2.1
   spacy_git_version: 800737b41
+train_lookup_lemmatizer:
+  cmd: python -m spacy run train_lookup_lemmatizer
+  script:
+    - mkdir -p models/hu_core_news_lg-lookup-lemmatizer-3.3.0
+    - python ../scripts/train_lookup_lemmatizer.py data/processed/SzegedCorpus/train.conllu
+      models/hu_core_news_lg-lookup-lemmatizer-3.3.0
+  deps:
+    - path: data/processed/SzegedCorpus/train.conllu
+      md5: 0ff9b45c205dce3ca8c3916301bab272
+  outs:
+    - path: models/hu_core_news_lg-lookup-lemmatizer-3.3.0
+      md5: 3b5de7e447f567c8e69b69d667365258
+  spacy_version: 3.3.0
+  spacy_git_version: Unknown
