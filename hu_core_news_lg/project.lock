@@ -159,21 +159,21 @@ train_ner:
 assemble:
   cmd: python -m spacy run assemble
   script:
-    - spacy assemble configs/assemble_lookups.cfg --code ../huspacy/tools/components.py
-      models/hu_core_news_lg-3.3.0-lookups --paths.lemmatizer_lookups models/ --paths.parser_model
-      models/hu_core_news_lg-parser-3.3.0/model-best --paths.ner_model models/hu_core_news_lg-ner-3.3.0/model-best
+    - spacy assemble configs/assemble.cfg --code ../huspacy/tools/components.py models/hu_core_news_lg-3.3.1
+      --paths.lemmatizer_lookups models/hu_core_news_lg-lookup-lemmatizer-3.3.1 --paths.parser_model
+      models/hu_core_news_lg-parser-3.3.1/model-best --paths.ner_model models/hu_core_news_lg-ner-3.3.1/model-best
   deps:
-    - path: models/lookups.bin
+    - path: models/hu_core_news_lg-lookup-lemmatizer-3.3.1/lookups.bin
       md5: 3b5de7e447f567c8e69b69d667365258
-    - path: models/hu_core_news_lg-parser-3.3.0/model-best
+    - path: models/hu_core_news_lg-parser-3.3.1/model-best
       md5: 9a938a36a8d27b16cc1ecab0e93cd02d
-    - path: models/hu_core_news_lg-ner-3.3.0/model-best
+    - path: models/hu_core_news_lg-ner-3.3.1/model-best
       md5: 13ab26ad63d88c8bcb882e47f58da929
     - path: ../huspacy/tools/components.py
       md5: c7c324a2c83a9566ef1e972026294831
   outs:
-    - path: models/hu_core_news_lg-3.3.0
-      md5: null
+    - path: models/hu_core_news_lg-3.3.1
+      md5: 2b6fa7a4d09a6779257dc2a1d6835619
   spacy_version: 3.3.0
   spacy_git_version: Unknown
 package:
@@ -195,23 +195,23 @@ package:
 evaluate_conll:
   cmd: python -m spacy run evaluate_conll
   script:
-    - mkdir -p ../data/result
-    - huspacyv3_benchmark raw-text ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-      --output-file ../data/result/ud_test.conllu --model-name ../models/hu_core_news_lg-0.4.0
-    - bash -c "conll18_ud_eval ../data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
-      ../data/result/ud_test.conllu -v | tee ../data/result/ud_test_conll18.log"
+    - mkdir -p data/result
+    - python ../scripts/huspacyv3_benchmark.py raw-text data/processed/UD_Hungarian-Szeged/test.conllu
+      --output-file data/result/ud_test.conllu --model-name models/hu_core_news_lg-3.3.1
+    - bash -c "python ../scripts/conll18_ud_eval.py data/processed/UD_Hungarian-Szeged/test.conllu
+      data/result/ud_test.conllu -v | tee data/result/ud_test_conll18.log"
   deps:
-    - path: ../models/hu_core_news_lg-0.4.0
-      md5: 3ea7063f0ac1dda716df9043b543c25d
-    - path: ../tools/components.py
-      md5: dda213c21c12e22ceae3430395577ece
+    - path: models/hu_core_news_lg-3.3.1
+      md5: 2b6fa7a4d09a6779257dc2a1d6835619
+    - path: ../huspacy/tools/components.py
+      md5: c7c324a2c83a9566ef1e972026294831
   outs:
-    - path: ../data/result/ud_test.conllu
-      md5: 2ff158ce27a8121f8f1f416a328c2106
-    - path: ../data/result/ud_test_conll18.log
-      md5: d47a7f618eff4b4e1208fbc2863834c6
-  spacy_version: 3.2.1
-  spacy_git_version: 800737b41
+    - path: data/result/ud_test.conllu
+      md5: 487748dab3b33e7cb8ee8b6c08623f86
+    - path: data/result/ud_test_conll18.log
+      md5: e2e5cd1c7de2a553d76704190deae36f
+  spacy_version: 3.3.0
+  spacy_git_version: Unknown
 evaluate:
   cmd: python -m spacy run evaluate
   script:

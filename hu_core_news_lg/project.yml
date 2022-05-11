@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Large) "
 description: "Word vector, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.3.1,<3.4.0"
+spacy_version: ">=3.3.0,<3.4.0"
 
 vars:
   lang: hu
@@ -93,6 +93,7 @@ workflows:
 
   train_models:
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
     - train_ner
 
@@ -105,6 +106,7 @@ workflows:
     - preprocess_merge
 
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
     - train_ner
     - backup_models
@@ -126,12 +128,14 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
 
   ner:
@@ -455,11 +459,11 @@ commands:
     script:
       - "mkdir -p ${vars.result_data_path}"
       - "python ../scripts/huspacyv3_benchmark.py raw-text
-        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/test.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
       - bash -c "python ../scripts/conll18_ud_eval.py
-        ${vars.processed_data_path}/${vars.treebank}/${vars.test_name}.conllu
+        ${vars.processed_data_path}/${vars.treebank}/test.conllu
         ${vars.result_data_path}/ud_test.conllu
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
