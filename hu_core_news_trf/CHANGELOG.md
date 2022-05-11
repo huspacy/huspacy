@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
+## 3.2.2
+### Added
+- Added lookup lemmatizer before edit tree lemmatizer in the pipeline
+- Added lemma smoother after edit tree lemmatizer in the pipeline
+
 ## 3.2.1
 ### Changed
 - Minor improvements in the training pipeline
