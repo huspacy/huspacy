@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pathlib import Path
 
 import typer
@@ -12,19 +13,13 @@ app = typer.Typer()
 
 @app.command()
 def main(input_file: str, output_path: Path, min_occurrences: int = 1):
-    token_lemma_occurrences = dict()
+    token_lemma_occurrences = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
     with open(input_file) as inp:
         for sentence in tqdm(list(parse_incr(inp))):
             for token in sentence:
-                if token["upos"] not in token_lemma_occurrences.keys():
-                    token_lemma_occurrences[token["upos"]] = dict()
-                if token["form"] not in token_lemma_occurrences[token["upos"]]:
-                    token_lemma_occurrences[token["upos"]][token["form"]] = {
-                        "lemma": token["lemma"], "occurrences": 1}
-                else:
-                    token_lemma_occurrences[token["upos"]
-                                            ][token["form"]]["occurrences"] += 1
+                token_lemma_occurrences[token["upos"]][token["form"]]["lemma"] = token["lemma"]
+                token_lemma_occurrences[token["upos"]][token["form"]]["occurrences"] += 1
 
     lookups = Lookups()
 
