@@ -11,6 +11,7 @@ from spacy.tokens.doc import Doc
 # noinspection PyUnresolvedReferences
 from spacy.training.example import Example
 from spacy.util import ensure_path
+from spacy.lookups import Lookups
 
 try:
     from lemmy import Lemmatizer
@@ -67,6 +68,61 @@ try:
             self._lemmy = Lemmatizer.from_disk(model_path)
 except ModuleNotFoundError:
     pass
+
+
+class LookupLemmatizer(Pipe):
+    # noinspection PyUnusedLocal
+    @staticmethod
+    @Hungarian.factory(
+        "lookup_lemmatizer",
+        assigns=["token.lemma"],
+        requires=["token.pos"],
+        default_config={
+            "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
+            "source": ""
+        },
+    )
+    def create(nlp: Language, name: str, scorer: Optional[Callable], source: str) -> "LookupLemmatizer":
+        return LookupLemmatizer(None, source, scorer)
+
+    def __init__(self, lookups: Optional[Lookups], source: str, scorer: Optional[Callable] = lemmatizer_score):
+        self._lookups: Optional[Lookups] = lookups
+        self.scorer = scorer
+        self.source = source
+
+    def __call__(self, doc: Doc) -> Doc:
+        assert self._lookups is not None, "Lookup table should be initialized first"
+
+        token: Token
+        for token in doc:
+            if token.text in self._lookups.get_table(f"lemma_lookups_{token.tag_}"):
+                token.lemma_ = self._lookups.get_table(f"lemma_lookups_{token.tag_}").get(token.text, token.text)
+        return doc
+
+    # noinspection PyUnusedLocal
+    def to_disk(self, path, exclude=tuple()):
+        assert self._lookups is not None, "Lookup table should be initialized first"
+
+        path: Path = ensure_path(path)
+        path.mkdir(exist_ok=True)
+        self._lookups.to_disk(path)
+
+    # noinspection PyUnusedLocal
+    def from_disk(self, path, exclude=tuple()) -> "LookupLemmatizer":
+        path: Path = ensure_path(path)
+        lookups = Lookups()
+        self._lookups = lookups.from_disk(path=path)
+        return self
+
+    def initialize(
+            self,
+            get_examples: Callable[[], Iterable[Example]],
+            *,
+            nlp: Language = None
+    ) -> None:
+        lookups = Lookups()
+        self._lookups = lookups.from_disk(path=self.source)
+
 
 
 @Hungarian.component("lemma_smoother", assigns=["token.lemma"], requires=["token.lemma"])

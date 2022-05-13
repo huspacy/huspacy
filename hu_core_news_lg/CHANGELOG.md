@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_lg`
 
+## 3.3.1
+### Added
+- Added lookup lemmatizer before edit tree lemmatizer in the pipeline
+- Added lemma smoother after edit tree lemmatizer in the pipeline
+
+## 3.3.0
+### Changed
+- Replaced Lemmy lemmatizer w/ edit tree lemmatizer
+
 ## 3.2.2
 ### Changed
 - Replaced static word vectors w/ char n-gram based floret ones
