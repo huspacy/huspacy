@@ -400,9 +400,11 @@ commands:
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
             --gpu-id ${vars.gpu}
+            --code ${vars.package_init}
             --output ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
             --gold-preproc
+            --code ${vars.package_init}
             --gpu-id ${vars.gpu}
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
@@ -448,6 +450,7 @@ commands:
       - "spacy package
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
+          --code ${vars.package_init}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
