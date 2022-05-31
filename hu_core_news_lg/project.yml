@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.3.0
+  package_version: 3.3.1
 
   models_path: models
   packages_path: packages
@@ -35,7 +35,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.3.0
+  wandb_project: hu_core_news_lg-3.3.1
 
   assemble_config: assemble
   tagger_config: tagger
@@ -93,6 +93,7 @@ workflows:
 
   train_models:
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
     - train_ner
 
@@ -105,6 +106,7 @@ workflows:
     - preprocess_merge
 
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
     - train_ner
     - backup_models
@@ -126,12 +128,14 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger_lemmatizer
+    - train_lookup_lemmatizer
     - train_parser
 
   ner:
@@ -308,6 +312,19 @@ commands:
       - ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best
 
 
+  - name: train_lookup_lemmatizer
+    help: "Train the lookup lemmatizer on the full Szeged Corpus"
+    script:
+      - "mkdir -p ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
+      - "python ../scripts/train_lookup_lemmatizer.py 
+            ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
+            ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}
+
+
   - name: train_parser
     help: "Train the parser on the Universal Dependencies
            dataset with the pretrained tagger model"
@@ -393,9 +410,11 @@ commands:
       - "spacy assemble configs/${vars.assemble_config}.cfg
           --code ${vars.package_init}
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
+          --paths.lemmatizer_lookups ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.ner_model ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
+      - ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}/lookups.bin
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
       - ${vars.package_init}

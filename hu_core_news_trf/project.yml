@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.1
+  package_version: 3.2.2
 
   transformer_models_path: models
   packages_path: packages
@@ -30,7 +30,7 @@ vars:
   ner_merged: ner_merged
   UD_SZC_merged: UD_SZC_merged
 
-  package_init: ../tools/components.py
+  package_init: ../huspacy/tools/components.py
 
   assemble_config: assemble
   tagger_config: tagger
@@ -38,7 +38,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.2.1
+  wandb_project: hu_core_news_trf-3.2.2
 
   gpu: 1
 
@@ -86,6 +86,7 @@ workflows:
   # Due to non-deterministic behaviour we retrain the components 3 times
   train_3x:
     - pretrain_tagger
+    - train_lookup_lemmatizer
 
     - train_parser
     - train_ner
@@ -109,6 +110,7 @@ workflows:
     - preprocess_merge
 
     - pretrain_tagger
+    - train_lookup_lemmatizer
     - train_parser
     - train_ner
     - backup_models
@@ -130,11 +132,13 @@ workflows:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger
+    - train_lookup_lemmatizer
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
     - pretrain_tagger
+    - train_lookup_lemmatizer
     - train_parser
 
   ner:
@@ -297,6 +301,19 @@ commands:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
 
 
+  - name: train_lookup_lemmatizer
+    help: "Train the lookup lemmatizer on the full Szeged Corpus"
+    script:
+      - "mkdir -p ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
+      - "python ../scripts/train_lookup_lemmatizer.py 
+            ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
+            ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
+    outputs:
+      - ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}
+
+
   - name: train_parser
     help: "Train the parser on the Universal Dependencies dataset with the pretrained tagger"
     script:
@@ -359,15 +376,19 @@ commands:
     help: "Assemble the tagger, parser and the NER components"
     script:
       - "spacy assemble configs/${vars.assemble_config}.cfg
+          --code ${vars.package_init}
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
           --paths.tagger_model ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+          --paths.lemmatizer_lookups ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}
           --paths.parser_model ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.ner_model ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
+      - ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}/lookups.bin
       - ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
       - ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
       - configs/${vars.assemble_config}.cfg
+      - ${vars.package_init}
     outputs:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
 
@@ -379,9 +400,11 @@ commands:
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
             --gpu-id ${vars.gpu}
+            --code ${vars.package_init}
             --output ${vars.transformer_models_path}/eval-tagger_parser-${vars.package_name}-${vars.package_version}.json"
       - "spacy evaluate
             --gold-preproc
+            --code ${vars.package_init}
             --gpu-id ${vars.gpu}
             ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
@@ -427,6 +450,7 @@ commands:
       - "spacy package
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
+          --code ${vars.package_init}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
