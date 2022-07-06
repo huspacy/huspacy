@@ -1,13 +1,13 @@
-title: "Hungarian word vectors"
+title: "Hungarian word vectors (large)"
 description: "Floret vectors"
 spacy_version: ">=3.2.0,<3.3.0"
 
 vars:
   lang: hu
   # The convention is to use the format: modeltype_preferreddomain_modelsize
-  core_package_name: vectors
+  core_package_name: vectors_web_lg
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
-  package_name: hu_vectors
+  package_name: hu_vectors_web_lg
   package_version: 1.0
 
   models_path: models
@@ -27,7 +27,7 @@ vars:
   ner_merged: ner_merged
 
   wandb_entity: spacy-hu
-  wandb_project: hu_vectors-1.0
+  wandb_project: hu_vectors_web_lg-1.0
 
   ner_config: ner
   gpu: 1
@@ -48,7 +48,7 @@ assets:
   # Floret
   - dest: ${vars.floret_path}
     git:
-      repo: https://github.com/explosion/floret
+      repo: https://github.com/qeterme/floret
       branch: main
       path: ""
 
