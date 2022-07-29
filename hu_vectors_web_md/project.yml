@@ -1,0 +1,112 @@
+title: "Hungarian word vectors (medium)"
+description: "Floret vectors"
+spacy_version: ">=3.2.0,<3.3.0"
+
+vars:
+  lang: hu
+  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  core_package_name: vectors_web_md
+  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  package_name: hu_vectors_web_md
+  package_version: 1.0
+
+  models_path: models
+  packages_path: packages
+
+  raw_data_path: data/raw
+  processed_data_path: data/processed
+  external_data_path: data/external
+  result_data_path: data/result
+
+  webcorpus_path: webcorpus2
+  floret_path: floret
+  scripts_path: ../scripts
+
+  wandb_entity: spacy-hu
+  wandb_project: hu_vectors_web_md-1.0
+
+  gpu: 1
+
+#TODO: remove GPU settings
+#TODO: provide examples for WANDB and GPU settings
+
+# These are the directories that the project needs. The project CLI will make
+# sure that they always exist.
+directories: [configs, models, packages, data/raw, data/processed, data/external]
+
+assets:
+      
+  # sha256sums of webcorpus2
+  - dest: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
+    url: https://nessie.ilab.sztaki.hu/~ndavid/Webcorpus2_clean/sha256sums
+  
+  # Floret
+  - dest: ${vars.floret_path}
+    git:
+      repo: https://github.com/qeterme/floret
+      branch: main
+      path: ""
+
+  # Questions for testing vectors
+  - dest: ${vars.external_data_path}/questions-words-hu.txt
+    url: http://corpus.nytud.hu/efnilex-vect/data/questions-words-hu.txt
+
+
+workflows:
+  all:
+    - preprocess_webcorpus
+    - build_floret
+    - train_floret
+    - evaluate_floret
+
+
+commands:
+  - name: preprocess_webcorpus
+    help: "Preprocess corpus"
+    script:
+      - mkdir -p ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned
+      - "parallel --colsep '  ' --bar --jobs 48 --ungroup
+            ${vars.scripts_path}/process_webcorpus2.sh {2} ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned 
+            :::: ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums"
+      - bash -c "echo ${vars.processed_data_path}/${vars.webcorpus_path}/cleaned/*.txt | xargs cat > ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt"
+    deps:
+      - ${vars.raw_data_path}/${vars.webcorpus_path}/sha256sums
+    outputs:
+      - ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt
+
+
+  - name: build_floret
+    help: "Build floret"
+    script:
+      - "make -C ${vars.floret_path}"
+
+
+  - name: train_floret
+    help: "Train floret"
+    script:
+        # dim mode bucket minn maxn mincount
+        # neg hashcount lr thread epoch
+      - "python ${vars.floret_path}/wandb_runner.py ${vars.floret_path}
+          100 floret 200000 4 6 100
+          10 2 0.11 30 5
+          ${vars.processed_data_path}/${vars.webcorpus_path}/corpus.txt ${vars.models_path}/floret_vectors
+          --wandb-project ${vars.wandb_project}"
+
+
+  - name: evaluate_floret
+    help: "Measure accuracy on the floret vector with questions"
+    script:
+      - python ${vars.scripts_path}/eval_vectors.py ${vars.models_path}/floret_vectors.bin ${vars.external_data_path}/questions-words-hu.txt
+
+
+  - name: init_vectors
+    help: "initalize fasttext, floret vectors"
+    script:
+      - "spacy init vectors ${vars.lang} ${vars.models_path}/floret_vectors.floret 
+          ${vars.models_path}/floret-vectors2 
+          --mode floret
+          -n ${vars.package_name}.vectors"
+    deps:
+      - ${vars.models_path}/floret_vectors.floret
+    outputs:
+      - ${vars.models_path}/floret-vectors2
