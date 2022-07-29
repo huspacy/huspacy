@@ -77,9 +77,9 @@ assets:
       branch: master
       path: data/processed/szeged-corpus/
 
-  # # Word embeddings
-  # - dest: ${vars.external_data_path}/vectors.floret
-  #   url: https://huggingface.co/huspacy/hu_vectors_web_lg/resolve/v1.0/floret/floret_vectors.floret
+  # Word embeddings
+  - dest: ${vars.external_data_path}/vectors.floret
+    url: https://huggingface.co/huspacy/hu_vectors_web_md/resolve/v1.0/floret/floret_vectors.floret
 
 
 workflows:
