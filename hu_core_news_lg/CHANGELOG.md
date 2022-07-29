@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_lg`
 
+## 3.4.0
+### Changed
+- spaCy 3.4.x compatibility
+- improved tagging performance
+
 ## 3.3.1
 ### Added
 - Added lookup lemmatizer before edit tree lemmatizer in the pipeline
@@ -47,12 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Compatibility w/ Spacy 3.x
 
-## `hu_core_ud_lg`
-
-Hungarian spacy model based on the [UD Hungarian corpus](https://github.com/UniversalDependencies/UD_Hungarian-Szeged)
 
 ## [0.3.1](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.3.1) - 2019-10-03
-## Fixed
+### Fixed
 - Compatibility w/ Spacy 2.2.x
 
 ## [0.3.0](https://github.com/huspacy/huspacy/releases/tag/hu_core_ud_lg-0.3.0) - 2019-09-26
