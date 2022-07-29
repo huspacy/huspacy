@@ -11,7 +11,7 @@ spacy = {extras = ["cuda111"], version = "~3.4.0"}
 spacy-huggingface-hub = "^0.0.6"
 spacy_conll = "^3.0"
 conllu = "^4.4"
-wandb = "^0.10.23"
+wandb = "^0.12.21"
 wheel = "^0.37.0"
 contexttimer = "^0.3.3"
 
