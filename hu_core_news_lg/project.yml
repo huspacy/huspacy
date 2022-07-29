@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.3.1
+  package_version: 4.0.0a0
 
   models_path: models
   packages_path: packages
@@ -35,7 +35,7 @@ vars:
   package_init: ../huspacy/tools/components.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.3.1
+  wandb_project: hu_core_news_lg-4.0.0a0
 
   assemble_config: assemble
   tagger_config: tagger
