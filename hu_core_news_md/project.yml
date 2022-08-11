@@ -313,7 +313,7 @@ commands:
     help: "Train the lookup lemmatizer on the full Szeged Corpus"
     script:
       - "mkdir -p ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
-      - "python ../scripts/train_lookup_lemmatizer_feat.py 
+      - "python ../scripts/train_lookup_lemmatizer.py
             ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
             ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
     deps:
