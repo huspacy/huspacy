@@ -1,0 +1,341 @@
+init_vectors:
+  cmd: python -m spacy run init_vectors
+  script:
+    - spacy init vectors hu data/external/vectors.floret --mode floret models/floret.vectors
+      -n hu_core_news_md.vectors
+  deps:
+    - path: data/external/vectors.floret
+      md5: 9a6de89bd57de32b2dabe3e0284e3ba7
+  outs:
+    - path: models/floret.vectors
+      md5: b4fc5ea219015e87694634b44e8b38f9
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+preprocess_ud:
+  cmd: python -m spacy run preprocess_ud
+  script:
+    - mkdir -p data/processed/UD_Hungarian-Szeged
+    - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      > data/processed/UD_Hungarian-Szeged/train.conllu"
+    - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      > data/processed/UD_Hungarian-Szeged/dev.conllu"
+    - bash -c "sed -E 's/(\w)(\+)(\w)/\1\3/' < data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      > data/processed/UD_Hungarian-Szeged/test.conllu"
+    - spacy convert data/processed/UD_Hungarian-Szeged/train.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert data/processed/UD_Hungarian-Szeged/dev.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+    - spacy convert data/processed/UD_Hungarian-Szeged/test.conllu data/processed/UD_Hungarian-Szeged/
+      --converter conllu --n-sents 10 --merge-subtokens
+  deps:
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-train.conllu
+      md5: e8581e733642908c106841fc1469ae89
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-dev.conllu
+      md5: 80ff7f86872655c1d7e3d5764387bc46
+    - path: data/raw/UD_Hungarian-Szeged/hu_szeged-ud-test.conllu
+      md5: dc824da852ac546914c331b58b0eb8f8
+  outs:
+    - path: data/processed/UD_Hungarian-Szeged/train.conllu
+      md5: 714fb4ba7f2912fc2140a2824ba0fcae
+    - path: data/processed/UD_Hungarian-Szeged/dev.conllu
+      md5: a8560ee85acf08a7dd936a97a23630be
+    - path: data/processed/UD_Hungarian-Szeged/test.conllu
+      md5: 655524ef1043ad3e1fe81ebc3a59d69c
+    - path: data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: afda6ce39251eac05d094c754bb2eda8
+    - path: data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: e5a71f5542588fa923ddc29e7e37babc
+    - path: data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: 50442e510e8dfebbd243c88f29e07544
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+preprocess_nerkor:
+  cmd: python -m spacy run preprocess_nerkor
+  script:
+    - mkdir -p data/processed/NerKor
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/devel/*/morph/*.conllup'
+      data/processed/NerKor/dev.conllup
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/train/*/morph/*.conllup'
+      data/processed/NerKor/train.conllup
+    - python ../scripts/convert_to_conllu.py 'data/raw/NerKor/train-devel-test/test/*/morph/*.conllup'
+      data/processed/NerKor/test.conllup
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/devel/*/*/*.conllup  data/processed/NerKor/dev.iob
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/train/*/*/*.conllup  data/processed/NerKor/train.iob
+    - bash ../scripts/convert_nerkor2iob.sh data/raw/NerKor/train-devel-test/test/*/*/*.conllup  data/processed/NerKor/test.iob
+    - spacy convert data/processed/NerKor/train.iob data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert data/processed/NerKor/dev.iob data/processed/NerKor --converter
+      iob --n-sents 10
+    - spacy convert data/processed/NerKor/test.iob data/processed/NerKor --converter
+      iob --n-sents 10
+  deps:
+    - path: data/raw/NerKor
+      md5: b950c6328675585a8377a7ef04ef6dd3
+  outs:
+    - path: data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+    - path: data/processed/NerKor/train.spacy
+      md5: 3ab77f5b9b5e9b717cd87a12c3e15519
+    - path: data/processed/NerKor/dev.spacy
+      md5: cfe2a598a6de7b7a5f8bf3b40f873fa0
+    - path: data/processed/NerKor/test.spacy
+      md5: 3bb3f3cd7a8fd94eb8e69fe7d3ee2b68
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+preprocess_szegedcorpus:
+  cmd: python -m spacy run preprocess_szegedcorpus
+  script:
+    - mkdir -p data/processed/SzegedCorpus
+    - bash -c 'cat data/processed/UD_Hungarian-Szeged/train.conllu data/raw/SzegedCorpus/univdep.hu.train.proj.f.conllu
+      > data/processed/SzegedCorpus/train.conllu'
+    - cp data/processed/UD_Hungarian-Szeged/dev.conllu data/processed/SzegedCorpus/dev.conllu
+    - cp data/processed/UD_Hungarian-Szeged/test.conllu data/processed/SzegedCorpus/test.conllu
+    - python -m spacy convert data/processed/SzegedCorpus/train.conllu data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert data/processed/SzegedCorpus/dev.conllu data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+    - python -m spacy convert data/processed/SzegedCorpus/test.conllu data/processed/SzegedCorpus
+      --converter conllu --n-sents 10
+  deps:
+    - path: data/raw/SzegedCorpus
+      md5: cb9dc3a08fb4c50e8e796c832ce0a550
+    - path: data/processed/UD_Hungarian-Szeged/train.conllu
+      md5: 714fb4ba7f2912fc2140a2824ba0fcae
+    - path: data/processed/UD_Hungarian-Szeged/dev.conllu
+      md5: a8560ee85acf08a7dd936a97a23630be
+    - path: data/processed/UD_Hungarian-Szeged/test.conllu
+      md5: 655524ef1043ad3e1fe81ebc3a59d69c
+  outs:
+    - path: data/processed/SzegedCorpus/train.conllup
+      md5: null
+    - path: data/processed/SzegedCorpus/dev.conllup
+      md5: null
+    - path: data/processed/SzegedCorpus/test.conllup
+      md5: null
+    - path: data/processed/SzegedCorpus/train.spacy
+      md5: 972de9845960e59e7bcff9959278c220
+    - path: data/processed/SzegedCorpus/dev.spacy
+      md5: e5a71f5542588fa923ddc29e7e37babc
+    - path: data/processed/SzegedCorpus/test.spacy
+      md5: 50442e510e8dfebbd243c88f29e07544
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+preprocess_szegedner:
+  cmd: python -m spacy run preprocess_szegedner
+  script:
+    - mkdir -p data/processed/SzegedNER
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/train.txt
+      > data/processed/SzegedNER/train.iob"
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/valid.txt
+      > data/processed/SzegedNER/dev.iob"
+    - bash -c "awk -f  ../scripts/convert_iobes_2_iob2.awk < data/raw/SzegedNER/test.txt
+      > data/processed/SzegedNER/test.iob"
+    - spacy convert data/processed/SzegedNER/dev.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/SzegedNER/train.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/SzegedNER/test.iob data/processed/SzegedNER/ --converter
+      iob --n-sents 10
+  deps:
+    - path: data/raw/SzegedNER/train.txt
+      md5: ea8aaad6a130ebe604c45ecf76f3be2b
+    - path: data/raw/SzegedNER/valid.txt
+      md5: 284d02c61a6ce24bb9964ff07a1def95
+    - path: data/raw/SzegedNER/test.txt
+      md5: 7c37c80dac8ebd321086f57a272c074e
+  outs:
+    - path: data/processed/SzegedNER/train.iob
+      md5: 65ba84abbbd01a91b28c98a0e8aba331
+    - path: data/processed/SzegedNER/dev.iob
+      md5: 8e35691e1da3ef6656755df8fa699b7a
+    - path: data/processed/SzegedNER/test.iob
+      md5: ea261aad4796bfcafaa0b622194af61f
+    - path: data/processed/SzegedNER/train.spacy
+      md5: fbcdafccec4869e84773794064d936e5
+    - path: data/processed/SzegedNER/dev.spacy
+      md5: 524c3ec6f6f22af2b56cc5730b1ef5fb
+    - path: data/processed/SzegedNER/test.spacy
+      md5: c89e1af255bfbf19778b44be70420ca1
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+preprocess_merge:
+  cmd: python -m spacy run preprocess_merge
+  script:
+    - mkdir -p data/processed/ner_merged
+    - bash -c 'cat data/processed/SzegedNER/train.iob data/processed/NerKor/train.iob
+      > data/processed/ner_merged/train.iob'
+    - bash -c 'cat data/processed/SzegedNER/dev.iob data/processed/NerKor/dev.iob
+      > data/processed/ner_merged/dev.iob'
+    - bash -c 'cat data/processed/SzegedNER/test.iob data/processed/NerKor/test.iob
+      > data/processed/ner_merged/test.iob'
+    - spacy convert data/processed/ner_merged/dev.iob data/processed/ner_merged/ --converter
+      iob --n-sents 10
+    - spacy convert data/processed/ner_merged/train.iob data/processed/ner_merged/
+      --converter iob --n-sents 10
+    - spacy convert data/processed/ner_merged/test.iob data/processed/ner_merged/
+      --converter iob --n-sents 10
+  deps:
+    - path: data/processed/SzegedNER/train.iob
+      md5: 65ba84abbbd01a91b28c98a0e8aba331
+    - path: data/processed/SzegedNER/dev.iob
+      md5: 8e35691e1da3ef6656755df8fa699b7a
+    - path: data/processed/SzegedNER/test.iob
+      md5: ea261aad4796bfcafaa0b622194af61f
+    - path: data/processed/NerKor/train.iob
+      md5: 92bbf42400b8a12654551d0c7b3e366d
+    - path: data/processed/NerKor/dev.iob
+      md5: 9ad09cb86ae88a9414d44cb094bbf70c
+    - path: data/processed/NerKor/test.iob
+      md5: 1e1389552b1df07e169251f6ce60cc0b
+  outs:
+    - path: data/processed/ner_merged/train.spacy
+      md5: d51527b0d96e3d826b7d4e7d43ac9000
+    - path: data/processed/ner_merged/dev.spacy
+      md5: 856b25b3c2e9982e6517ec052bf637f0
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+pretrain_tagger_lemmatizer:
+  cmd: python -m spacy run pretrain_tagger_lemmatizer
+  script:
+    - spacy train configs/tagger.cfg --output models/hu_core_news_md-tagger-etl-3.4.0
+      --gpu-id 1 --nlp.lang=hu --training.logger.project_name hu_core_news_md-3.4.0
+      --paths.vectors models/floret.vectors --paths.train data/processed/SzegedCorpus/train.spacy
+      --paths.dev data/processed/UD_Hungarian-Szeged/dev.spacy
+  deps:
+    - path: data/processed/SzegedCorpus/train.spacy
+      md5: 972de9845960e59e7bcff9959278c220
+    - path: data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: e5a71f5542588fa923ddc29e7e37babc
+    - path: configs/tagger.cfg
+      md5: 8c7819621a049ee4e1baf9d68cb65e66
+  outs:
+    - path: models/hu_core_news_md-tagger-etl-3.4.0/model-best
+      md5: 9a54e200a1a394ebe81293afa55e91ab
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+train_lookup_lemmatizer:
+  cmd: python -m spacy run train_lookup_lemmatizer
+  script:
+    - mkdir -p models/hu_core_news_md-lookup-lemmatizer-3.4.0
+    - python ../scripts/train_lookup_lemmatizer_feat.py data/processed/SzegedCorpus/train.conllu
+      models/hu_core_news_md-lookup-lemmatizer-3.4.0
+  deps:
+    - path: data/processed/SzegedCorpus/train.conllu
+      md5: 0ff9b45c205dce3ca8c3916301bab272
+  outs:
+    - path: models/hu_core_news_md-lookup-lemmatizer-3.4.0
+      md5: e127e08ddf852b94d4759d93d3de152b
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+train_parser:
+  cmd: python -m spacy run train_parser
+  script:
+    - spacy train configs/parser.cfg --output models/hu_core_news_md-parser-3.4.0
+      --gpu-id 1 --nlp.lang=hu --training.logger.project_name hu_core_news_md-3.4.0
+      --paths.vectors models/floret.vectors --paths.train data/processed/UD_Hungarian-Szeged/train.spacy
+      --paths.dev data/processed/UD_Hungarian-Szeged/dev.spacy --paths.tagger_model
+      models/hu_core_news_md-tagger-etl-3.4.0/model-best
+  deps:
+    - path: data/processed/UD_Hungarian-Szeged/train.spacy
+      md5: afda6ce39251eac05d094c754bb2eda8
+    - path: data/processed/UD_Hungarian-Szeged/dev.spacy
+      md5: e5a71f5542588fa923ddc29e7e37babc
+    - path: models/hu_core_news_md-tagger-etl-3.4.0/model-best
+      md5: 9a54e200a1a394ebe81293afa55e91ab
+    - path: configs/parser.cfg
+      md5: cc1570d168d67ea1b299c2644d4c2977
+  outs:
+    - path: models/hu_core_news_md-parser-3.4.0/model-best
+      md5: cf90b0571c7f33283fcc303b27c0ba7d
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+train_ner:
+  cmd: python -m spacy run train_ner
+  script:
+    - spacy train configs/ner.cfg --output models/hu_core_news_md-ner-3.4.0 --nlp.lang=hu
+      --gpu-id 1 --training.logger.project_name hu_core_news_md-3.4.0 --paths.vectors
+      models/floret.vectors --paths.train data/processed/ner_merged/train.spacy --paths.dev
+      data/processed/ner_merged/dev.spacy --paths.tagger_model models/hu_core_news_md-tagger-etl-3.4.0/model-best
+  deps:
+    - path: data/processed/ner_merged/train.spacy
+      md5: d51527b0d96e3d826b7d4e7d43ac9000
+    - path: data/processed/ner_merged/dev.spacy
+      md5: 856b25b3c2e9982e6517ec052bf637f0
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+  outs:
+    - path: models/hu_core_news_md-ner-3.4.0/model-best
+      md5: c38d08f9b645dd8be3c393e8e3fad911
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+assemble:
+  cmd: python -m spacy run assemble
+  script:
+    - spacy assemble configs/assemble.cfg --code ../huspacy/tools/components.py models/hu_core_news_md-3.4.0
+      --paths.lemmatizer_lookups models/hu_core_news_md-lookup-lemmatizer-3.4.0 --paths.parser_model
+      models/hu_core_news_md-parser-3.4.0/model-best --paths.ner_model models/hu_core_news_md-ner-3.4.0/model-best
+  deps:
+    - path: models/hu_core_news_md-lookup-lemmatizer-3.4.0/lookups.bin
+      md5: e127e08ddf852b94d4759d93d3de152b
+    - path: models/hu_core_news_md-parser-3.4.0/model-best
+      md5: cf90b0571c7f33283fcc303b27c0ba7d
+    - path: models/hu_core_news_md-ner-3.4.0/model-best
+      md5: c38d08f9b645dd8be3c393e8e3fad911
+    - path: ../huspacy/tools/components.py
+      md5: d92ea1e02ff7ac6297069cd9200c37de
+  outs:
+    - path: models/hu_core_news_md-3.4.0
+      md5: 23ef9823a6e22bf2478765936e551802
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+evaluate:
+  cmd: python -m spacy run evaluate
+  script:
+    - spacy evaluate --gpu-id -1 --code ../huspacy/tools/components.py models/hu_core_news_md-3.4.0
+      data/processed/UD_Hungarian-Szeged/test.spacy --output models/eval-parser-hu_core_news_md-3.4.0.json
+    - spacy evaluate --gold-preproc --gpu-id -1 --code ../huspacy/tools/components.py
+      models/hu_core_news_md-3.4.0 data/processed/ner_merged/test.spacy --output models/eval-ner-hu_core_news_md-3.4.0.json
+    - python ../scripts/merge_eval_jsons.py models/eval-parser-hu_core_news_md-3.4.0.json
+      models/eval-ner-hu_core_news_md-3.4.0.json models/hu_core_news_md-3.4.0/meta.json
+  deps:
+    - path: models/hu_core_news_md-3.4.0
+      md5: 0e6a9924b9d1c55c9ac4ade384331256
+    - path: data/processed/UD_Hungarian-Szeged/test.spacy
+      md5: 50442e510e8dfebbd243c88f29e07544
+    - path: data/processed/ner_merged/test.spacy
+      md5: b32bb1f542d2db5898e6007a6bf27697
+  outs:
+    - path: models/eval-parser-hu_core_news_md-3.4.0.json
+      md5: d33775f7672de3b770bcfcb4bfca846e
+    - path: models/eval-parser-hu_core_news_md-3.4.0.json
+      md5: d33775f7672de3b770bcfcb4bfca846e
+    - path: models/hu_core_news_md-3.4.0/meta.json"
+      md5: null
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown
+evaluate_conll:
+  cmd: python -m spacy run evaluate_conll
+  script:
+    - mkdir -p data/result
+    - python ../scripts/huspacyv3_benchmark.py raw-text data/processed/UD_Hungarian-Szeged/test.conllu
+      --output-file data/result/ud_test.conllu --model-name models/hu_core_news_md-3.4.0
+    - bash -c "python ../scripts/conll18_ud_eval.py data/processed/UD_Hungarian-Szeged/test.conllu
+      data/result/ud_test.conllu -v | tee data/result/ud_test_conll18.log"
+  deps:
+    - path: models/hu_core_news_md-3.4.0
+      md5: 0e6a9924b9d1c55c9ac4ade384331256
+    - path: ../huspacy/tools/components.py
+      md5: d92ea1e02ff7ac6297069cd9200c37de
+  outs:
+    - path: data/result/ud_test.conllu
+      md5: ecc17dfda6d197fd2bce9d00bd878eaa
+    - path: data/result/ud_test_conll18.log
+      md5: d741ac3cb97f44408ba944fca3a66bca
+  spacy_version: 3.4.0
+  spacy_git_version: Unknown

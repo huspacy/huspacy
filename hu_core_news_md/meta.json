@@ -1,6 +1,6 @@
 {
   "lang": "hu",
-  "name": "hu_core_news_lg",
+  "name": "hu_core_news_md",
   "description": "Core Hungarian model for HuSpaCy. Components: tok2vec, senter, tagger, morphologizer, lemmatizer, parser, ner",
   "author": "SzegedAI, MILAB",
   "email": "gyorgy@orosz.link",
@@ -31,12 +31,6 @@
       "url": "https://rgai.inf.u-szeged.hu/node/130",
       "license": "CC-BY-NC-SA-3.0",
       "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
-    },
-    {
-      "name": "Webcorpuswiki word2vec model",
-      "url": "https://github.com/oroszgy/hunlp-resources/releases/tag/webcorpuswiki_word2vec_v0.1",
-      "license": "CC-BY-SA-4.0",
-      "author": "György Orosz"
     }
   ]
 }

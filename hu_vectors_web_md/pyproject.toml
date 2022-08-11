@@ -1,19 +1,18 @@
 [tool.poetry]
-name = "hu_core_news_lg"
-version = "3.4.0"
-description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
+name = "hu_vectors_web_md"
+version = "1.0"
+description = "Hungarian word vectors"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-spacy = {extras = ["cuda111"], version = "~3.4.0"}
-spacy-huggingface-hub = "0.0.6"
-spacy_conll = "^3.0"
-conllu = "^4.4"
-wandb = "^0.12.21"
+spacy = "~3.2.3"
+spacy-huggingface-hub = "^0.0.6"
+wandb = "^0.10.23"
 wheel = "^0.37.0"
 contexttimer = "^0.3.3"
+floret = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.1"
