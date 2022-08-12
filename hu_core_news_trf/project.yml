@@ -147,6 +147,13 @@ workflows:
     - preprocess_merge
     - train_ner
 
+  assemble_and_package:
+    - assemble
+    - evaluate
+    - evaluate_conll
+    - package
+    - smoke_test
+
   publish:
     - push
 
