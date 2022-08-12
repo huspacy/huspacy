@@ -1,73 +1,16 @@
 import re
 from pathlib import Path
-from typing import Optional, Callable, Iterable
+from typing import Optional, Callable, Iterable, Dict
 
 from spacy.lang.hu import Hungarian
 from spacy.language import Language
+from spacy.lookups import Lookups
 from spacy.pipeline import Pipe
 from spacy.pipeline.lemmatizer import lemmatizer_score
 from spacy.tokens import Token
 from spacy.tokens.doc import Doc
-# noinspection PyUnresolvedReferences
-from spacy.training.example import Example
+from spacy.training import Example
 from spacy.util import ensure_path
-from spacy.lookups import Lookups
-
-try:
-    from lemmy import Lemmatizer
-
-
-    class HunLemmatizer(Pipe):
-        # noinspection PyUnusedLocal
-        @staticmethod
-        @Hungarian.factory(
-            "lemmatizer",
-            assigns=["token.lemma"],
-            requires=["token.pos"],
-            default_config={
-                "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
-            },
-            # default_score_weights={"lemma_acc": 1.0},
-        )
-        def create(nlp: Language, name: str, scorer: Optional[Callable]) -> "HunLemmatizer":
-            return HunLemmatizer(None, scorer)
-
-        def __init__(self, model: Optional[Lemmatizer], scorer: Optional[Callable] = lemmatizer_score):
-            self._lemmy: Optional[Lemmatizer] = model
-            self.scorer = scorer
-
-        def __call__(self, doc: Doc) -> Doc:
-            assert self._lemmy is not None, "The lemmatizer should be initialized first"
-
-            token: Token
-            for token in doc:
-                token.lemma_ = self._lemmy.lemmatize(token.tag_, token.text, token.is_sent_start)
-            return doc
-
-        # noinspection PyUnusedLocal
-        def to_disk(self, path, exclude=tuple()):
-            assert self._lemmy is not None, "The lemmatizer should be initialized first"
-
-            path: Path = ensure_path(path)
-            path.mkdir(exist_ok=True)
-            self._lemmy.to_disk(path / "model")
-
-        # noinspection PyUnusedLocal
-        def from_disk(self, path, exclude=tuple()) -> "HunLemmatizer":
-            path: Path = ensure_path(path)
-            self._lemmy = Lemmatizer.from_disk(path / "model")
-            return self
-
-        def initialize(
-                self,
-                get_examples: Callable[[], Iterable[Example]],
-                *,
-                nlp: Language = None,
-                model_path: str = None
-        ) -> None:
-            self._lemmy = Lemmatizer.from_disk(model_path)
-except ModuleNotFoundError:
-    pass
 
 
 class LookupLemmatizer(Pipe):
@@ -95,8 +38,13 @@ class LookupLemmatizer(Pipe):
 
         token: Token
         for token in doc:
-            if token.text in self._lookups.get_table(f"lemma_lookups_{token.tag_}"):
-                token.lemma_ = self._lookups.get_table(f"lemma_lookups_{token.tag_}").get(token.text, token.text)
+            lemma_lookup_table = self._lookups.get_table(f"lemma_lookups")
+            if token.text in lemma_lookup_table:
+                lemma_by_pos: Dict[str, str] = lemma_lookup_table[token.text]
+                feats_str = ("|" + str(token.morph)) if str(token.morph) else ""
+                key = token.pos_ + feats_str
+                if key in lemma_by_pos:
+                    token.lemma_ = lemma_by_pos[key]
         return doc
 
     # noinspection PyUnusedLocal
@@ -122,7 +70,6 @@ class LookupLemmatizer(Pipe):
     ) -> None:
         lookups = Lookups()
         self._lookups = lookups.from_disk(path=self.source)
-
 
 
 @Hungarian.component("lemma_smoother", assigns=["token.lemma"], requires=["token.lemma"])
