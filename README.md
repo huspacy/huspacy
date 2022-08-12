@@ -35,7 +35,7 @@ The second model ([`hu_core_news_trf`](https://huggingface.co/huspacy/hu_core_ne
 It comes with much higher accuracy in the price of increased computational resource usage. We suggest using it with GPU support.
 
 A demo of these models is available at [Hugging Face Spaces](https://huggingface.co/spaces/huspacy/demo).
-Models' changes are recorded in respective changelog files. ([`lg`](hu_core_news_lg/CHANGELOG.md), [`trf`](hu_core_news_trf/CHANGELOG.md), [`vectors`](hu_vectors/CHANGELOG.md))
+Models' changes are recorded in respective changelog files. ([`lg`](hu_core_news_lg/CHANGELOG.md), [`trf`](hu_core_news_trf/CHANGELOG.md), [`vectors`](hu_vectors_web_lg/CHANGELOG.md))
 
 ## Installation
 
@@ -110,7 +110,7 @@ Each model has its own dependency structure managed by `poetry`. For details che
 │   ├── pyproject.toml -- Python project definition file
 │   ├── CHANGELOG.md   -- Model changelog
 │   └── README.md      -- Instructions on building a model from scratch
-├── hu_vectors         -- Spacy 3.x project files for building word vectors
+├── hu_vectors_web_lg  -- Spacy 3.x project files for building word vectors
 │   ├── configs        -- SpaCy pipeline configuration files
 │   ├── poetry.lock    -- Poetry lock file
 │   ├── poetry.toml    -- Poetry configs
