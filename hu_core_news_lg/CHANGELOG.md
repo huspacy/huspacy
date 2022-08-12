@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_lg`
 
+## 3.4.1
+### Changed
+- Improved lookup lemmatizer: bugfix and morph. feats usage for indexing lemma
+
 ## 3.4.0
 ### Changed
 - spaCy 3.4.x compatibility
