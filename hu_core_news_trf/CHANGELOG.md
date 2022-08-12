@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
+## 3.2.3
+### Changed
+- Improved lookup lemmatizer: bugfix and morph. feats usage for indexing lemma
+
 ## 3.2.2
 ### Added
 - Added lookup lemmatizer before edit tree lemmatizer in the pipeline
