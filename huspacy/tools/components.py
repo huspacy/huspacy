@@ -1,13 +1,15 @@
 import re
 from pathlib import Path
-from typing import Optional, Callable, Iterable, Dict
+from typing import Optional, Callable, Iterable, Dict, Union, Tuple, Iterator
 
+import spacy
 from spacy.lang.hu import Hungarian
 from spacy.language import Language
 from spacy.lookups import Lookups
 from spacy.pipeline import Pipe
 from spacy.pipeline.lemmatizer import lemmatizer_score
-from spacy.tokens import Token
+from spacy.symbols import NOUN, PROPN, PRON
+from spacy.tokens import Token, Span
 from spacy.tokens.doc import Doc
 from spacy.training import Example
 from spacy.util import ensure_path
@@ -122,3 +124,54 @@ class HunSentencizer(Pipe):
                     next_token.is_sent_start = True
 
         return doc
+
+
+
+@spacy.registry.callbacks("hungarian_noun_chunker")
+def create_callback():
+    def hungarian_noun_chunker(lang_cls):
+        #lang_cls.Defaults.stop_words.add("good")
+        lang_cls.Defaults.syntax_iterators = {"noun_chunks": noun_chunks}
+        return lang_cls
+
+    return hungarian_noun_chunker
+    
+def noun_chunks(doc: Union[Doc, Span]) -> Iterator[Tuple[int, int, int]]:
+    np_label: int = doc.vocab.strings.add("NP")
+    
+    np_chunks: Iterator[Tuple[int, int, int]] = []
+    for sent in doc.sents:
+        np_chunks.extend(preorder_noun_chunking(sent.root, np_label))
+
+    return np_chunks
+
+def preorder_noun_chunking(word: Token, np_label: int) -> Iterator[Tuple[int, int, int]]:
+    res: Iterator[Tuple[int, int, int]] = []
+    np_right_edge: int = -1
+    
+    if word.pos in (NOUN, PROPN, PRON):
+        np_left_edge: int = word.left_edge.i
+        np_right_edge = word.i
+        
+        # Exclude PUNCT on the left
+        if word.left_edge.pos_ == "PUNCT":
+            np_left_edge += 1
+            
+        # Exclude words like "mint", "ám"
+        if word.doc[np_left_edge].dep_ in ["cc", "mark"]:
+            np_left_edge += 1
+        
+        # Merge appos, flat:name to the NP if it's on the right side
+        # Checking the other elements right of the NP
+        for child in word.children:
+            if child.dep_ in ["appos", "flat:name"] and child.i > np_right_edge:
+                np_right_edge = child.i
+        
+        res.append([np_left_edge, np_right_edge + 1, np_label])
+        
+    for child in word.children:
+        # Check the right side of the nouns
+        if child.i > np_right_edge:
+            res.extend(preorder_noun_chunking(child, np_label))
+        
+    return res
