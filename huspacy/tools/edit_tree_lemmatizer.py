@@ -50,6 +50,7 @@ DEFAULT_EDIT_TREE_LEMMATIZER_MODEL = Config().from_str(default_model_config)["mo
         "min_tree_freq": 3,
         "overwrite": False,
         "top_k": 1,
+        "overwrite_labels": True,
         "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
     },
     default_score_weights={"lemma_acc": 1.0},
@@ -62,6 +63,7 @@ def make_edit_tree_lemmatizer(
     min_tree_freq: int,
     overwrite: bool,
     top_k: int,
+    overwrite_labels: bool,
     scorer: Optional[Callable],
 ):
     """Construct an EditTreeLemmatizer component."""
@@ -73,6 +75,7 @@ def make_edit_tree_lemmatizer(
         min_tree_freq=min_tree_freq,
         overwrite=overwrite,
         top_k=top_k,
+        overwrite_labels=overwrite_labels,
         scorer=scorer,
     )
 
@@ -98,6 +101,7 @@ class EditTreeLemmatizer(TrainablePipe):
         min_tree_freq: int = 3,
         overwrite: bool = False,
         top_k: int = 1,
+        overwrite_labels,
         scorer: Optional[Callable] = lemmatizer_score,
     ):
         """
@@ -118,6 +122,7 @@ class EditTreeLemmatizer(TrainablePipe):
         self.min_tree_freq = min_tree_freq
         self.overwrite = overwrite
         self.top_k = top_k
+        self.overwrite_labels = overwrite_labels
 
         self.trees = EditTrees(self.vocab.strings)
         self.tree2label: Dict[int, int] = {}
@@ -248,10 +253,11 @@ class EditTreeLemmatizer(TrainablePipe):
     ):
         validate_get_examples(get_examples, "EditTreeLemmatizer.initialize")
 
-        if labels is None:
-            self._labels_from_data(get_examples)
-        else:
-            self._add_labels(labels)
+        if self.overwrite_labels:
+            if labels is None:
+                self._labels_from_data(get_examples)
+            else:
+                self._add_labels(labels)
 
         # Sample for the model.
         doc_sample = []
