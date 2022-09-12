@@ -301,6 +301,27 @@ commands:
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
 
 
+  - name: debug_lemmatizer
+    help: "Debug lemmatizer"
+    script:
+      - "spacy train configs/${vars.tagger_config}.cfg
+            --output ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}-debug
+            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
+            --training.logger.project_name ${vars.wandb_project}
+            --training.logger.run_name debug
+            --training.max_steps 1
+            --nlp.batch_size 2
+            --corpora.train.limit 1
+            --corpora.dev.limit 1
+            --code ../huspacy/tools/edit_tree_lemmatizer.py
+            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/dev.spacy
+            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.tagger_config}.cfg
+
+
   - name: pretrain_tagger_lemmatizer
     help: "Pretrain the tagger and edit tree lemmatizer on the full Szeged Corpus"
     script:
