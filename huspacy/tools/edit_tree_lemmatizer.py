@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from typing import cast, Any, Callable, Dict, Iterable, List, Optional
 from typing import Sequence, Tuple, Union
 from collections import Counter
@@ -75,6 +77,12 @@ def make_edit_tree_lemmatizer(
     )
 
 
+# _f = open("lemmatizer.log", "w")
+# def debug(*args):
+#     _f.write(" ".join(args) + "\n")
+def debug(*args):
+    pass
+
 class EditTreeLemmatizer(TrainablePipe):
     """
     Lemmatizer that lemmatizes each word using a predicted edit tree.
@@ -126,13 +134,15 @@ class EditTreeLemmatizer(TrainablePipe):
         truths = []
         for eg in examples:
             eg_truths = []
-            for (predicted, gold_lemma) in zip(
-                eg.predicted, eg.get_aligned("LEMMA", as_string=True)
+            for (predicted, gold_lemma, gold_pos, gold_sent_start) in zip(
+                eg.predicted, eg.get_aligned("LEMMA", as_string=True), eg.get_aligned("POS", as_string=True), eg.get_aligned_sent_starts()
             ):
                 if gold_lemma is None:
                     label = -1
                 else:
-                    tree_id = self.trees.add(predicted.text, gold_lemma)
+                    form = self._get_true_cased_form(predicted.text, gold_sent_start, gold_pos)
+                    tree_id = self.trees.add(form, gold_lemma)
+                    # debug(f"@get_loss: {predicted}/{gold_pos}[{gold_sent_start}]->{form}|{gold_lemma}[{tree_id}]")
                     label = self.tree2label.get(tree_id, 0)
                 eg_truths.append(label)
 
@@ -177,7 +187,10 @@ class EditTreeLemmatizer(TrainablePipe):
                 for candidate in candidates:
                     candidate_tree_id = self.cfg["labels"][candidate]
 
-                    if self.trees.apply(candidate_tree_id, token.text) is not None:
+                    form: str = self._get_true_cased_form_of_token(token)
+
+                    # debug(f"@scores2guesses: {token}/{token.pos_}[{token.is_sent_start}]->{form}[{candidate_tree_id}]")
+                    if self.trees.apply(candidate_tree_id, form) is not None:
                         tree_id = candidate_tree_id
                         break
                 doc_compat_guesses.append(tree_id)
@@ -200,7 +213,9 @@ class EditTreeLemmatizer(TrainablePipe):
                         if self.backoff is not None:
                             doc[j].lemma = getattr(doc[j], self.backoff)
                     else:
-                        lemma = self.trees.apply(tree_id, doc[j].text)
+                        form = self._get_true_cased_form_of_token(doc[j])
+                        lemma = self.trees.apply(tree_id, form) or form
+                        # debug(f"@set_annotations: {doc[j]}/{doc[j].pos_}[{doc[j].is_sent_start}]->{form}|{lemma}[{tree_id}]")
                         doc[j].lemma_ = lemma
 
     @property
@@ -352,9 +367,11 @@ class EditTreeLemmatizer(TrainablePipe):
         for example in get_examples():
             for token in example.reference:
                 if token.lemma != 0:
-                    tree_id = trees.add(token.text, token.lemma_)
+                    form = self._get_true_cased_form_of_token(token)
+                    # debug("_labels_from_data", str(token) + "->" + form, token.lemma_)
+                    tree_id = trees.add(form, token.lemma_)
                     tree_freqs[tree_id] += 1
-                    repr_pairs[tree_id] = (token.text, token.lemma_)
+                    repr_pairs[tree_id] = (form, token.lemma_)
 
         # Construct trees that make the frequency cut-off using representative
         # form - token pairs.
@@ -362,6 +379,16 @@ class EditTreeLemmatizer(TrainablePipe):
             if freq >= self.min_tree_freq:
                 form, lemma = repr_pairs[tree_id]
                 self._pair2label(form, lemma, add_label=True)
+
+    @lru_cache()
+    def _get_true_cased_form(self, token: str, is_sent_start: bool, pos: str) -> str:
+        if is_sent_start and pos != "PROPN":
+            return token.lower()
+        else:
+            return token
+
+    def _get_true_cased_form_of_token(self, token: Token) -> str:
+        return self._get_true_cased_form(token.text, token.is_sent_start, token.pos_)
 
     def _pair2label(self, form, lemma, add_label=False):
         """
