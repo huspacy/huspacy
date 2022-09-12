@@ -308,6 +308,7 @@ commands:
             --output ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
+            --code ../huspacy/tools/edit_tree_lemmatizer.py
             --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
