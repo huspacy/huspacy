@@ -30,7 +30,7 @@ vars:
   ner_merged: ner_merged
   UD_SZC_merged: UD_SZC_merged
 
-  package_init: ../huspacy/tools/components.py
+  package_init: ../huspacy/tools/custom_code.py
 
   assemble_config: assemble
   tagger_config: tagger
