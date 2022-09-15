@@ -32,7 +32,7 @@ vars:
   szfsszegedner: SZFSSzegedNER
   vectors: floret.vectors
 
-  package_init: ../huspacy/tools/components.py
+  package_init: ../huspacy/tools/custom_code.py
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_lg-3.4.1
