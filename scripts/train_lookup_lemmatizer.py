@@ -1,7 +1,9 @@
 from collections import defaultdict
 from operator import itemgetter
 from pathlib import Path
+from re import Pattern
 from typing import Tuple, Dict, Iterator
+import re
 
 import typer
 from conllu import parse_incr, TokenList
@@ -11,7 +13,7 @@ from spacy.lookups import Lookups, Table
 from tqdm import tqdm
 
 app = typer.Typer()
-
+NUMBER_FORMAT: Pattern = re.compile(r"\d")
 
 @app.command()
 def main(input_file: str, output_path: Path, min_occurrences: int = 1):
@@ -27,9 +29,12 @@ def main(input_file: str, output_path: Path, min_occurrences: int = 1):
         for sentence in tqdm(parse_it, desc="Computing lemmata frequencies"):
             token: Token
             for token in sentence:
+                form = mask_numbers(token["form"])
+                lemma = mask_numbers(token["lemma"])
+
                 feats_str = ("|" + token["feats"]) if token["feats"] else ""
-                key = (token["form"], token["upos"] + feats_str)
-                lemma_lookup_table[key][token["lemma"]] += 1
+                key = (form, token["upos"] + feats_str)
+                lemma_lookup_table[key][lemma] += 1
     lemma_lookup_table = dict(lemma_lookup_table)
 
     lookups = Lookups()
@@ -46,6 +51,10 @@ def main(input_file: str, output_path: Path, min_occurrences: int = 1):
 
     lookups.set_table(name=f"lemma_lookups", table=table)
     lookups.to_disk(output_path)
+
+
+def mask_numbers(token: str) -> str:
+    return NUMBER_FORMAT.sub("0", token)
 
 
 if __name__ == "__main__":
