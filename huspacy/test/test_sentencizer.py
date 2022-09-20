@@ -5,11 +5,13 @@ from spacy import Language
 from spacy.lang.hu import Hungarian
 from spacy.tokens import Doc
 
+import sys
+
 
 @pytest.fixture(scope="module")
 def nlp():
     # noinspection PyUnresolvedReferences
-    from tools import components
+    from tools import custom_code
     nlp = Hungarian()
     nlp.add_pipe("hun_sentencizer")
     return nlp

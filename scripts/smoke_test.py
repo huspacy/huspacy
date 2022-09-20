@@ -10,7 +10,7 @@ import typer
 import sys
 sys.path.append("../huspacy")
 # noinspection PyUnresolvedReferences
-import tools.components
+import tools.custom_code
 
 app = typer.Typer()
 
