@@ -11,7 +11,7 @@ import sys
 @pytest.fixture(scope="module")
 def nlp():
     # noinspection PyUnresolvedReferences
-    from tools import custom_code
+    from tools.components import hun_sentencizer
     nlp = Hungarian()
     nlp.add_pipe("hun_sentencizer")
     return nlp
