@@ -486,14 +486,17 @@ commands:
       - "spacy package
           ${vars.models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
-          --code '${vars.package_init},${vars.components_path}/__init__.py,${vars.components_path}/edit_tree_lemmatizer.py,${vars.components_path}/hun_sentencizer.py,${vars.components_path}/lemma_postprocessing.py,${vars.components_path}/lookup_lemmatizer.py'
+          --code '${vars.components_path}/edit_tree_lemmatizer.py,${vars.components_path}/hun_sentencizer.py,${vars.components_path}/lemma_postprocessing.py,${vars.components_path}/lookup_lemmatizer.py'
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
+      - ${vars.components_path}/edit_tree_lemmatizer.py
+      - ${vars.components_path}/hun_sentencizer.py
+      - ${vars.components_path}/lemma_postprocessing.py
+      - ${vars.components_path}/lookup_lemmatizer.py
       - meta.json
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
