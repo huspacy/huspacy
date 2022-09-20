@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
+## 3.2.4
+### Changed
+- Improved NER: using beam_ner with update_prob=1.0
+
 ## 3.2.3
 ### Changed
 - Improved lookup lemmatizer: bugfix and morph. feats usage for indexing lemma
