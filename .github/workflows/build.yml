@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          poetry run flake8 huspacy
+          poetry run flake8 huspacy ../scripts
 
       - name: Test with pytest
         run: |
