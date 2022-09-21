@@ -33,12 +33,11 @@ packages = [
     {include = "huspacy"},
 ]
 
-
 [tool.poetry.dependencies]
 python = "^3.8"
-spacy = "~3.2.3"
 
 [tool.poetry.dev-dependencies]
+spacy = "^3.2.3"
 bump2version = "^1.0.1"
 pytest = "^7.0.0"
 flake8 = "^4.0.1"
