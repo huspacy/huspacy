@@ -14,7 +14,7 @@ __DEFAULT_MODEL = "hu_core_news_lg"
 
 __AVAILABLE_MODELS: Dict[str, List[str]] = {
     "hu_core_news_lg": ["3.2.1", "3.2.2", "3.3.0", "3.3.1", "3.4.0", "3.4.1", "3.4.2"],
-    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4"]
+    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4"],
 }
 
 
@@ -49,10 +49,10 @@ def download(model_name: str = __DEFAULT_MODEL, version: str = __DEFAULT_VERSION
     Returns: None
 
     """
-    assert model_name in __AVAILABLE_MODELS, \
-        f"{model_name} is not a valid model name"
-    assert version == "main" or version in __AVAILABLE_MODELS[model_name], \
-        f"{version} is not a valid version for {model_name}"
+    assert model_name in __AVAILABLE_MODELS, f"{model_name} is not a valid model name"
+    assert (
+        version == "main" or version in __AVAILABLE_MODELS[model_name]
+    ), f"{version} is not a valid version for {model_name}"
 
     download_url = __URL.format(version=version, model_name=model_name)
     cmd = [sys.executable, "-m", "pip", "install"] + [download_url]
@@ -61,11 +61,11 @@ def download(model_name: str = __DEFAULT_MODEL, version: str = __DEFAULT_VERSION
 
 # noinspection PyDefaultArgument,PyUnresolvedReferences
 def load(
-        name: Union[str, Path] = __DEFAULT_MODEL,
-        vocab: Union["Vocab", bool] = True,
-        disable: Optional[Iterable[str]] = None,
-        exclude: Optional[Iterable[str]] = None,
-        config: Union[Dict[str, Any], "Config", None] = None,
+    name: Union[str, Path] = __DEFAULT_MODEL,
+    vocab: Union["Vocab", bool] = True,
+    disable: Optional[Iterable[str]] = None,
+    exclude: Optional[Iterable[str]] = None,
+    config: Union[Dict[str, Any], "Config", None] = None,
 ) -> "Language":
     """Loads a HuSpaCy model.
 
@@ -88,6 +88,4 @@ def load(
     exclude = exclude or SimpleFrozenList()
     config = config or SimpleFrozenDict()
 
-    return load_model(
-        name, vocab=vocab, disable=disable, exclude=exclude, config=config
-    )
+    return load_model(name, vocab=vocab, disable=disable, exclude=exclude, config=config)
