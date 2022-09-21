@@ -3,8 +3,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, Dict, List, Optional, Union, Any
 
-from packaging import version
-from packaging.version import Version
+import packaging.version
 
 from huspacy.utils import run_command
 
@@ -26,35 +25,35 @@ def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]
         Dict[str, List[str]]: Valid model names and associated versions
     """
     if spacy_version is not None:
-        spacy_version: Version = version.parse(spacy_version)
+        spacy_version: packaging.version.Version = packaging.version.parse(spacy_version)
         available_models = defaultdict(list)
         for model_name, versions in __AVAILABLE_MODELS.items():
             for ver in versions:
-                model_ver = version.parse(ver)
+                model_ver = packaging.version.parse(ver)
                 if model_ver.major == spacy_version.major and model_ver.minor == spacy_version.minor:
-                    available_models[model_name].append(model_ver)
+                    available_models[model_name].append(ver)
 
         return dict(available_models)
     else:
         return __AVAILABLE_MODELS
 
 
-def download(model_name: str = __DEFAULT_MODEL, version: str = __DEFAULT_VERSION) -> None:
+def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_VERSION) -> None:
     """Downloads a HuSpaCy model.
 
     Args:
         model_name (str): model name, if not provided it defaults to `hu_core_news_lg`
-        version (str): model version, if not provided it defaults to the latest version
+        model_version (str): model version, if not provided it defaults to the latest version ("main")
 
     Returns: None
 
     """
     assert model_name in __AVAILABLE_MODELS, f"{model_name} is not a valid model name"
     assert (
-        version == "main" or version in __AVAILABLE_MODELS[model_name]
-    ), f"{version} is not a valid version for {model_name}"
+        model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
+    ), f"{model_version} is not a valid version for {model_name}"
 
-    download_url = __URL.format(version=version, model_name=model_name)
+    download_url = __URL.format(version=model_version, model_name=model_name)
     cmd = [sys.executable, "-m", "pip", "install"] + [download_url]
     run_command(cmd)
 
