@@ -88,3 +88,6 @@ def load(
     config = config or SimpleFrozenDict()
 
     return load_model(name, vocab=vocab, disable=disable, exclude=exclude, config=config)
+
+
+__all__ = ["load", "download", "get_valid_models"]
