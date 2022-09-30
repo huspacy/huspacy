@@ -12,6 +12,7 @@ Changes proposed in this pull request:
 <!-- Please complete this checklist BEFORE submitting your PR to speed along the review process. -->
 - [ ] If this PR fixes a bug, I've added a test that will fail without my fix.
 - [ ] If this PR adds a new feature, I've added tests that sufficiently cover my new functionality.
+- [ ] All changelog files are updated
 
 ## After submitting
 
