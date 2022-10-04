@@ -1,4 +1,4 @@
-title: "Core Hungarian spaCy model (Transformer) "
+title: "Core Hungarian spaCy model (Transformer (huBERT)) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
 spacy_version: ">=3.2.0,<3.3.0"
 
@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.4
+  package_version: 3.2.5
 
   transformer_models_path: models
   packages_path: packages
@@ -42,7 +42,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.2.4
+  wandb_project: hu_core_news_trf-3.2.5
 
   gpu: 1
 
@@ -55,7 +55,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
-      branch: r2.9
+      branch: r2.10
       path: ""
 
   # NerKor
@@ -76,7 +76,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
     git:
       repo: https://github.com/huspacy/huspacy-resources
-      branch: master
+      branch: v3
       path: data/processed/szeged-corpus/
 
 workflows:

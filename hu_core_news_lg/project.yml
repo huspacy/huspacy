@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.4.1
+  package_version: 3.4.2
 
   models_path: models
   packages_path: packages
@@ -40,7 +40,7 @@ vars:
   components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.4.1
+  wandb_project: hu_core_news_lg-3.4.2
 
   assemble_config: assemble
   tagger_config: tagger
@@ -58,7 +58,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
-      branch: r2.9
+      branch: r2.10
       path: ""
 
   # NerKor
@@ -79,7 +79,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
     git:
       repo: https://github.com/huspacy/huspacy-resources
-      branch: master
+      branch: v3
       path: data/processed/szeged-corpus/
 
   # Word embeddings

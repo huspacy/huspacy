@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `hu_core_news_trf`
 
+## 3.2.5
+### Changed
+- Improved NER: using beam_ner with update_prob=1.0
+- Using the r2.10 version on UD corpus ([Github Changelog](https://github.com/UniversalDependencies/UD_Hungarian-Szeged/tree/master))
+- Using the v3 version on Szeged-Corpus ([Github Changelog](https://github.com/huspacy/huspacy-resources/tree/master/data/processed/szeged-corpus))
+
+## 3.2.4
+### Changed
+- Updated dependencies
+
 ## 3.2.3
 ### Changed
 - Improved lookup lemmatizer: bugfix and morph. feats usage for indexing lemma
