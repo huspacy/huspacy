@@ -1,0 +1,46 @@
+{
+  "lang": "hu",
+  "name": "hu_core_news_trf_xl",
+  "description": "Hungarian transformer pipeline (XLM-RoBERTa) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner",
+  "author": "SzegedAI, MILAB",
+  "email": "gyorgy@orosz.link",
+  "url": "https://github.com/huspacy/huspacy",
+  "license": "cc-by-sa-4.0",
+  "spacy_version": ">=3.2.0,<3.3.0",
+  "sources": [
+    {
+      "name": "UD Hungarian Szeged",
+      "url": "https://universaldependencies.org/treebanks/hu_szeged/index.html",
+      "license": "CC-BY-NC-SA-3.0",
+      "author": "Richárd Farkas, Katalin Simkó, Zsolt Szántó, Viktor Varga, Veronika Vincze (MTA-SZTE Research Group on Artificial Intelligence)"
+    },
+    {
+      "name": "NYTK-NerKor Corpus",
+      "url": "https://github.com/nytud/NYTK-NerKor",
+      "license": "CC BY-SA 4.0",
+      "author": "Eszter Simon, Noémi Vadász (Department of Language Technology and Applied Linguistics)"
+    },
+    {
+      "name": "hunNERwiki",
+      "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
+      "license": "CC-BY-SA-3.0",
+      "author": "Eszter Simon, Dávid Márk Nemeskey (HLT Group, Budapest University of Technology and Economics)"
+    },
+    {
+      "name": "Szeged NER Corpus",
+      "url": "https://rgai.inf.u-szeged.hu/node/130",
+      "license": "CC-BY-NC-SA-3.0",
+      "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
+    },
+    {
+      "name": "huBERT base model (cased)",
+      "url": "https://huggingface.co/SZTAKI-HLT/hubert-base-cc",
+      "license": "CC-BY-SA-4.0",
+      "author": "Dávid Márk Nemeskey (SZTAKI-HLT)"
+    }
+  ],
+  "requirements": [
+    "spacy-transformers ~= 1.1.4",
+    "spacy-experimental == 0.4.0"
+  ]
+}

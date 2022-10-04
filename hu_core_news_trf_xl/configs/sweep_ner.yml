@@ -1,0 +1,48 @@
+project: spacy_trf_ner
+command:
+- python
+- -m
+- spacy
+- train
+- ./configs/ner.cfg
+- --output
+- ../transformer_models/sweep_ner_merged
+- --gpu-id
+- 0
+- ${args}
+method: bayes
+metric:
+  name: ents_f
+  goal: maximize
+parameters:
+  components.ner.model.extra_state_tokens:
+    values:
+    - true
+    - false
+  components.ner.model.hidden_width:
+    values:
+    - 64
+    - 128
+  components.ner.model.maxout_pieces:
+    values:
+    - 2
+    - 3
+  nlp.lang:
+    values:
+    - hu
+  paths.dev:
+    values:
+      - ../data/processed/ner_merged/dev.spacy
+  paths.train:
+    values:
+      - ../data/processed/ner_merged/train.spacy
+  training.dropout:
+    values:
+    - 0.3
+    - 0.4
+    - 0.5
+  training.optimizer.L2:
+    values:
+    - 1
+    - 0.1
+    - 0.5

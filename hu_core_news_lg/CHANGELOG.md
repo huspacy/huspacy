@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 3.4.2
 ### Changed
 - Improved NER: using beam_ner with update_prob=1.0
+- Using the r2.10 version on UD corpus ([Github Changelog](https://github.com/UniversalDependencies/UD_Hungarian-Szeged/tree/master))
+- Using the v3 version on Szeged-Corpus ([Github Changelog](https://github.com/huspacy/huspacy-resources/tree/master/data/processed/szeged-corpus))
 
 ## 3.4.1
 ### Changed
