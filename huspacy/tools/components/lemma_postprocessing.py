@@ -1,8 +1,10 @@
+import re
+
+from spacy import Language
 from spacy.lang.hu import Hungarian
 from spacy.pipeline import Pipe
-from spacy import Language
+from spacy.tokens import Token
 from spacy.tokens.doc import Doc
-import re
 
 
 @Hungarian.component(
@@ -29,110 +31,80 @@ def lemma_case_smoother(doc: Doc) -> Doc:
 
 
 class LemmaSmoother(Pipe):
-    """Smooths lemma by applying rules.
+    """Smooths lemma by applying rules."""
 
-    Args:
-        Pipe (Pipe): spaCy Pipe
-    """
+    _DATE_PATTERN = re.compile(r"(\d+)-[j]?[éá]n?a?(t[őó]l)?")
+    _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*[%]?(_km/h)?)")
 
     @staticmethod
-    @Hungarian.factory(
-        "lemma_smoother", assigns=["token.lemma"], requires=["token.lemma", "token.pos"]
-    )
+    @Hungarian.factory("lemma_smoother", assigns=["token.lemma"], requires=["token.lemma", "token.pos"])
     def create_lemma_smoother(nlp: Hungarian, name: str) -> "LemmaSmoother":
         return LemmaSmoother()
 
-    def __init__(self):
-        self._date_regex = re.compile(r"(\d+)-[j]?[éá]n?a?(t[őó]l)?")
-        self._number_regex = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*[%]?(_km/h)?)")
-
     def __call__(self, doc: Doc) -> Doc:
         rules = [
-            self.remove_exclamation_marks,
-            self.remove_question_marks,
-            self.fix_date_suffixes,
+            self._remove_exclamation_marks,
+            self._remove_question_marks,
+            self._remove_date_suffixes,
             self.remove_suffix_after_numbers,
         ]
 
         for token in doc:
             for rule in rules:
-                modified = rule(token.text, token.lemma_, token.pos_)
-                token.lemma_ = modified if modified != None else token.lemma_
+                rule(token)
 
         return doc
 
-    def remove_exclamation_marks(self, token: str, lemma: str, pos: str) -> str:
+    @classmethod
+    def _remove_exclamation_marks(cls, token: Token) -> None:
         """Removes exclamation marks from the lemma.
 
         Args:
-            token (str): The original token.
-            lemma (str): The original lemma.
-            pos (str): The part-of-speech tag of the token.
-
-        Returns:
-            str: The modified lemma.
+            token (Token): The original token.
         """
 
-        if "!" != lemma and "!" in lemma:
-            return lemma.split("!")[0]
+        if "!" != token.lemma_ and "!" in token.lemma_:
+            token.lemma_ = token.lemma_.split("!")[0]
 
-    def remove_question_marks(self, token: str, lemma: str, pos: str) -> str:
+    @classmethod
+    def _remove_question_marks(cls, token: Token) -> None:
         """Removes question marks from the lemma.
 
         Args:
-            token (str): The original token.
-            lemma (str): The original lemma.
-            pos (str): The part-of-speech tag of the token.
-
-        Returns:
-            str: The modified lemma.
+            token (Token): The original token.
         """
 
-        if "?" != lemma and "?" in lemma:
-            return lemma.split("?")[0]
+        if "?" != token.lemma_ and "?" in token.lemma_:
+            token.lemma_ = token.lemma_.split("?")[0]
 
-    def fix_date_suffixes(self, token: str, lemma: str, pos: str) -> str:
+    @classmethod
+    def _remove_date_suffixes(cls, token: Token) -> None:
         """Fixes the suffixes of dates.
 
         Args:
-            token (str): The original token.
-            lemma (str): The original lemma.
-            pos (str): The part-of-speech tag of the token.
-
-        Returns:
-            str: The modified lemma.
+            token (Token): The original token.
         """
 
-        if pos == "NOUN" and re.match(self._date_regex, lemma):
-            return re.search(self._date_regex, lemma).group(0) + "."
+        if token.pos_ == "NOUN" and re.match(cls._DATE_PATTERN, token.lemma_):  # FIXME: performance
+            token.lemma_ = re.search(cls._DATE_PATTERN, token.lemma_).group(0) + "."
 
-    def remove_suffix_after_numbers(self, token: str, lemma: str, pos: str) -> str:
+    @classmethod
+    def remove_suffix_after_numbers(cls, token: Token) -> None:
         """Removes suffixes after numbers.
 
         Args:
             token (str): The original token.
-            lemma (str): The original lemma.
-            pos (str): The part-of-speech tag of the token.
-
-        Returns:
-            str: The modified lemma.
         """
 
-        if pos == "NUM" and re.match(self._number_regex, token):
-            return re.search(self._number_regex, token).group(0)
+        if token.pos_ == "NUM" and re.match(cls._NUMBER_PATTERN, token.text):
+            token.lemma_ = re.search(cls._NUMBER_PATTERN, token.text).group(0)
 
 
 class RomanToArabic(Pipe):
-    """Converts roman numerals to arabic numerals.
-
-    Args:
-        Pipe (Pipe): spaCy Pipe
-    """
+    """Converts roman numerals to arabic numerals."""
 
     @staticmethod
-    @Language.factory(
-        "roman_to_arabic", assigns=["token.lemma"], requires=["token.text"]
-    )
+    @Language.factory("roman_to_arabic", assigns=["token.lemma"], requires=["token.text"])
     def create_component(nlp: Language, name: str):
         return RomanToArabic()
 
