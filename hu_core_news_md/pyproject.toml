@@ -19,5 +19,5 @@ wandb = "^0.12.21"
 bump2version = "^1.0.1"
 
 [build-system]
-requires = ["poetry>=1.1.10", "pip>=21.2.4"]
+requires = ["poetry>=1.1.10", "pip>=22.2.2"]
 build-backend = "poetry.masonry.api"
