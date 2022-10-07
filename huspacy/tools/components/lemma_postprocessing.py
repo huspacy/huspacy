@@ -33,7 +33,7 @@ def lemma_case_smoother(doc: Doc) -> Doc:
 class LemmaSmoother(Pipe):
     """Smooths lemma by applying rules."""
 
-    _DATE_PATTERN = re.compile(r"(\d+)-[j]?[éá]n?a?(t[őó]l)?")
+    _DATE_PATTERN = re.compile(r"(\d+)-[j]?[éá]?n?a?(t[őó]l)?")
     _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*[%]?(_km/h)?)")
 
     @staticmethod
@@ -86,7 +86,7 @@ class LemmaSmoother(Pipe):
         """
 
         if token.pos_ == "NOUN" and re.match(cls._DATE_PATTERN, token.lemma_):  # FIXME: performance
-            token.lemma_ = re.search(cls._DATE_PATTERN, token.lemma_).group(0) + "."
+            token.lemma_ = re.search(cls._DATE_PATTERN, token.lemma_).group(1) + "."
 
     @classmethod
     def remove_suffix_after_numbers(cls, token: Token) -> None:
