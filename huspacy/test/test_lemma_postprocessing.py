@@ -7,7 +7,7 @@ from spacy.tokens import Doc
 @pytest.fixture(scope="module")
 def nlp_lemma_smoother():
     # noinspection PyUnresolvedReferences
-    from tools.components import lemma_postprocessing
+    from huspacy.components import lemma_postprocessing
 
     nlp = Hungarian()
     nlp.add_pipe("lemma_smoother")
@@ -33,7 +33,7 @@ def test_lemma_smoother(nlp_lemma_smoother: Language, token: str, pos: str, lemm
 @pytest.fixture(scope="module")
 def nlp_roman_to_arabic():
     # noinspection PyUnresolvedReferences
-    from tools.components import lemma_postprocessing
+    from huspacy.components import lemma_postprocessing
 
     nlp = Hungarian()
     nlp.add_pipe("roman_to_arabic")

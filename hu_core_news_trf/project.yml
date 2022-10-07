@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Transformer (huBERT)) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.2.0,<3.3.0"
+spacy_version: ">=3.4.0,<3.5.0"
 
 vars:
   lang: hu
@@ -316,7 +316,7 @@ commands:
     help: "Train the lookup lemmatizer on the full Szeged Corpus"
     script:
       - "mkdir -p ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
-      - "python ../scripts/train_lookup_lemmatizer.py 
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/train_lookup_lemmatizer.py 
             ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
             ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
     deps:
