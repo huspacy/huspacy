@@ -46,7 +46,7 @@ vars:
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_trf-3.2.5
 
-  gpu: 1
+  gpu: 2
 
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
