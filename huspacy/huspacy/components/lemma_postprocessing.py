@@ -35,7 +35,7 @@ class LemmaSmoother(Pipe):
     """Smooths lemma by applying rules."""
 
     _DATE_PATTERN = re.compile(r"(\d+)-j?[éá]?n?a?(t[őó]l)?")
-    _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*%?(_km/h)?)")
+    _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*%?)")
 
     # noinspection PyUnusedLocal
     @staticmethod
