@@ -1,4 +1,5 @@
 import re
+from typing import List, Callable
 
 from spacy import Language
 from spacy.lang.hu import Hungarian
@@ -33,16 +34,17 @@ def lemma_case_smoother(doc: Doc) -> Doc:
 class LemmaSmoother(Pipe):
     """Smooths lemma by applying rules."""
 
-    _DATE_PATTERN = re.compile(r"(\d+)-[j]?[éá]?n?a?(t[őó]l)?")
-    _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*[%]?(_km/h)?)")
+    _DATE_PATTERN = re.compile(r"(\d+)-j?[éá]?n?a?(t[őó]l)?")
+    _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*%?(_km/h)?)")
 
+    # noinspection PyUnusedLocal
     @staticmethod
     @Hungarian.factory("lemma_smoother", assigns=["token.lemma"], requires=["token.lemma", "token.pos"])
     def create_lemma_smoother(nlp: Hungarian, name: str) -> "LemmaSmoother":
         return LemmaSmoother()
 
     def __call__(self, doc: Doc) -> Doc:
-        rules = [
+        rules: List[Callable] = [
             self._remove_exclamation_marks,
             self._remove_question_marks,
             self._remove_date_suffixes,
@@ -89,11 +91,10 @@ class LemmaSmoother(Pipe):
             token (Token): The original token.
         """
 
-        try:
-            if token.pos_ == "NOUN":
-                token.lemma_ = cls._DATE_PATTERN.search(token.lemma_).group(1) + "."
-        except (AttributeError):
-            pass
+        if token.pos_ == "NOUN":
+            match = cls._DATE_PATTERN.match(token.lemma_)
+            if match is not None:
+                token.lemma_ = match.group(1) + "."
 
     @classmethod
     def _remove_suffix_after_numbers(cls, token: Token) -> None:
@@ -103,11 +104,10 @@ class LemmaSmoother(Pipe):
             token (str): The original token.
         """
 
-        try:
-            if token.pos_ == "NUM":
-                token.lemma_ = cls._NUMBER_PATTERN.search(token.text).group(0)
-        except (AttributeError):
-            pass
+        if token.pos_ == "NUM":
+            match = cls._NUMBER_PATTERN.match(token.text)
+            if match is not None:
+                token.lemma_ = match.group(0)
 
 
 class RomanToArabic(Pipe):
@@ -132,26 +132,27 @@ class RomanToArabic(Pipe):
 
     def __call__(self, doc: Doc) -> Doc:
         for token in doc:
-            try:
-                if token.pos_ == "ADJ":
-                    roman = self._regex.search(token.text).group(0)
-                    romans = roman.split("-")
-                    values = []
+            if token.pos_ == "ADJ":
+                match = self._regex.search(token.text)
+                if match is None:
+                    continue
 
-                    for r in romans:
-                        dot = "." if "." == r[-1] else ""
-                        r = r[:-1] if dot else r
+                roman: str = match.group(0)
+                romans: List[str] = roman.split("-")
+                values = []
 
-                        int_val = 0
-                        for i in range(len(r)):
-                            if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
-                                int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
-                            else:
-                                int_val += self._rom_val[r[i]]
+                for r in romans:
+                    dot = "." if "." == r[-1] else ""
+                    r = r[:-1] if dot else r
 
-                        values.append(str(int_val) + dot)
+                    int_val = 0
+                    for i in range(len(r)):
+                        if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
+                            int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
+                        else:
+                            int_val += self._rom_val[r[i]]
 
-                    token.lemma_ = "-".join(values)
-            except (AttributeError):
-                pass
+                    values.append(str(int_val) + dot)
+
+                token.lemma_ = "-".join(values)
         return doc

@@ -1,5 +1,4 @@
 import pytest
-import pytest
 from spacy import Language
 from spacy.lang.hu import Hungarian
 from spacy.tokens import Doc
@@ -44,15 +43,15 @@ def nlp_roman_to_arabic():
 @pytest.mark.parametrize(
     "token,expected_lemma",
     [
-        ['I.', '1.'],
-        ['II.', '2.'],
-        ['III.', '3.'],
-        ['IV', '4'],
-        ['DCCLVI', '756'],
-        ['C-D.', '100-500.'],
+        ["I.", "1."],
+        ["II.", "2."],
+        ["III.", "3."],
+        ["IV", "4"],
+        ["DCCLVI", "756"],
+        ["C-D.", "100-500."],
     ],
 )
 def test_roman_to_arabic(nlp_roman_to_arabic: Language, token: str, expected_lemma: str):
-    doc: Doc = Doc(nlp_roman_to_arabic.vocab, words=[token], pos=['ADJ'])
+    doc: Doc = Doc(nlp_roman_to_arabic.vocab, words=[token], pos=["ADJ"])
     processed: Doc = nlp_roman_to_arabic(doc)
     assert processed[0].lemma_ == expected_lemma
