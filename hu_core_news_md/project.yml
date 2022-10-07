@@ -32,7 +32,12 @@ vars:
   szfsszegedner: SZFSSzegedNER
   vectors: floret.vectors
 
-  package_init: ../huspacy/tools/components.py
+  package_init: ../huspacy/tools/custom_code.py
+  components_path: '../huspacy/tools/components/edit_tree_lemmatizer.py,../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
+  components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
+  components_sentencizer_path: ../huspacy/tools/components/hun_sentencizer.py
+  components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
+  components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
 
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_md-3.4.1
@@ -320,9 +325,9 @@ commands:
     help: "Train the lookup lemmatizer on the full Szeged Corpus"
     script:
       - "mkdir -p ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
-      - "python ../scripts/train_lookup_lemmatizer.py
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/train_lookup_lemmatizer.py 
             ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
-            ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
+            ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
     deps:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
     outputs:
@@ -485,14 +490,17 @@ commands:
       - "spacy package
           ${vars.models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
-          --code ${vars.package_init}
+          --code ${vars.components_path}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
+      - ${vars.components_edit_tree_lemmatizer_path}
+      - ${vars.components_sentencizer_path}
+      - ${vars.components_lemma_postprocessing_path}
+      - ${vars.components_lookup_lemmatizer_path}
       - meta.json
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
