@@ -85,8 +85,11 @@ class LemmaSmoother(Pipe):
             token (Token): The original token.
         """
 
-        if token.pos_ == "NOUN" and re.match(cls._DATE_PATTERN, token.lemma_):  # FIXME: performance
-            token.lemma_ = re.search(cls._DATE_PATTERN, token.lemma_).group(1) + "."
+        try:
+            if token.pos_ == "NOUN":
+                token.lemma_ = cls._DATE_PATTERN.search(token.lemma_).group(1) + "."
+        except (AttributeError):
+            pass
 
     @classmethod
     def _remove_suffix_after_numbers(cls, token: Token) -> None:
@@ -96,8 +99,11 @@ class LemmaSmoother(Pipe):
             token (str): The original token.
         """
 
-        if token.pos_ == "NUM" and re.match(cls._NUMBER_PATTERN, token.text):
-            token.lemma_ = re.search(cls._NUMBER_PATTERN, token.text).group(0)
+        try:
+            if token.pos_ == "NUM":
+                token.lemma_ = cls._NUMBER_PATTERN.search(token.text).group(0)
+        except (AttributeError):
+            pass
 
 
 class RomanToArabic(Pipe):
@@ -122,23 +128,26 @@ class RomanToArabic(Pipe):
 
     def __call__(self, doc: Doc) -> Doc:
         for token in doc:
-            if token.pos_ == "ADJ" and re.match(self._regex, token.text):
-                roman = re.search(self._regex, token.text).group(0)
-                romans = roman.split("-")
-                values = []
+            try:
+                if token.pos_ == "ADJ":
+                    roman = self._regex.search(token.text).group(0)
+                    romans = roman.split("-")
+                    values = []
 
-                for r in romans:
-                    dot = "." if "." == r[-1] else ""
-                    r = r[:-1] if dot else r
+                    for r in romans:
+                        dot = "." if "." == r[-1] else ""
+                        r = r[:-1] if dot else r
 
-                    int_val = 0
-                    for i in range(len(r)):
-                        if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
-                            int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
-                        else:
-                            int_val += self._rom_val[r[i]]
+                        int_val = 0
+                        for i in range(len(r)):
+                            if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
+                                int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
+                            else:
+                                int_val += self._rom_val[r[i]]
 
-                    values.append(str(int_val) + dot)
+                        values.append(str(int_val) + dot)
 
-                token.lemma_ = "-".join(values)
+                    token.lemma_ = "-".join(values)
+            except (AttributeError):
+                pass
         return doc
