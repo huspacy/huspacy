@@ -63,8 +63,10 @@ class LemmaSmoother(Pipe):
             token (Token): The original token.
         """
 
-        if "!" != token.lemma_ and "!" in token.lemma_:
-            token.lemma_ = token.lemma_.split("!")[0]
+        if "!" != token.lemma_:
+            exclamation_mark_index = token.lemma_.find("!")
+            if exclamation_mark_index != -1:
+                token.lemma_ = token.lemma_[:exclamation_mark_index]
 
     @classmethod
     def _remove_question_marks(cls, token: Token) -> None:
@@ -74,8 +76,10 @@ class LemmaSmoother(Pipe):
             token (Token): The original token.
         """
 
-        if "?" != token.lemma_ and "?" in token.lemma_:
-            token.lemma_ = token.lemma_.split("?")[0]
+        if "?" != token.lemma_:
+            question_mark_index = token.lemma_.find("?")
+            if question_mark_index != -1:
+                token.lemma_ = token.lemma_[:question_mark_index]
 
     @classmethod
     def _remove_date_suffixes(cls, token: Token) -> None:
