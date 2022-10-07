@@ -62,14 +62,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "confection"
-version = "0.0.2"
+version = "0.0.3"
 description = "The sweetest config system for Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<1.10.0"
+pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<1.11.0"
 srsly = ">=2.4.0,<3.0.0"
 
 [[package]]
@@ -908,7 +908,7 @@ test = ["pytest (>=3.0.0)", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "920a8c7078fd67d22dfe858ae2e007e224c27f78e1d5eb65b7d3c59c3018021c"
+content-hash = "6722a70031277ea58e5b71535b42a7d23c7de2dbf6b78aac83f2e44c6d5f069c"
 
 [metadata.files]
 blis = [
@@ -962,8 +962,8 @@ colorama = [
     {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
 confection = [
-    {file = "confection-0.0.2-py3-none-any.whl", hash = "sha256:20663e54b472d77f2add23c2bc2ecad33b9fcb3c3679d303b74003ad45ff5927"},
-    {file = "confection-0.0.2.tar.gz", hash = "sha256:1833a11052db95f212b447009e3d0dd6f09a9ad38228054cefe0daf540134792"},
+    {file = "confection-0.0.3-py3-none-any.whl", hash = "sha256:51af839c1240430421da2b248541ebc95f9d0ee385bcafa768b8acdbd2b0111d"},
+    {file = "confection-0.0.3.tar.gz", hash = "sha256:4fec47190057c43c9acbecb8b1b87a9bf31c469caa0d6888a5b9384432fdba5a"},
 ]
 conllu = [
     {file = "conllu-4.5.2-py2.py3-none-any.whl", hash = "sha256:660e7305b25d1993404e17197c1a17a08f2214ae780d9a7d69361274aaea260d"},

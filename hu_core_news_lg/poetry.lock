@@ -749,7 +749,7 @@ test = ["pytest (>=3.0.0)", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "86ae0d85a70f033e34b0a3862d4172f7759c501c644fa67cbf7e6ca50f2dd829"
+content-hash = "104b308dc64809d307d7fdb627051cb5921c467889f57e3a167323afbc87ec72"
 
 [metadata.files]
 blis = [
