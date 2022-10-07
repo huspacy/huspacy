@@ -6,7 +6,7 @@ command:
 - train
 - ./configs/tagger.cfg
 - --output
-- ../transformer_models/sweep_tagger
+- ../models/sweep_tagger
 - --gpu-id
 - 0
 - ${args}
