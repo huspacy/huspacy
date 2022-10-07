@@ -1,18 +1,21 @@
+import re
+from collections import defaultdict
+from operator import itemgetter
 from pathlib import Path
 from re import Pattern
-import re
-from typing import Optional, Callable, Iterable, Dict
+from typing import Optional, Callable, Iterable, Dict, Tuple
 
 from spacy.lang.hu import Hungarian
 from spacy.language import Language
+from spacy.lookups import Lookups, Table
 from spacy.pipeline import Pipe
 from spacy.pipeline.lemmatizer import lemmatizer_score
 from spacy.tokens import Token
 from spacy.tokens.doc import Doc
+
 # noinspection PyUnresolvedReferences
 from spacy.training.example import Example
 from spacy.util import ensure_path
-from spacy.lookups import Lookups
 
 
 class LookupLemmatizer(Pipe):
@@ -24,15 +27,45 @@ class LookupLemmatizer(Pipe):
         "lookup_lemmatizer",
         assigns=["token.lemma"],
         requires=["token.pos"],
-        default_config={
-            "scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"},
-            "source": ""
-        },
+        default_config={"scorer": {"@scorers": "spacy.lemmatizer_scorer.v1"}, "source": ""},
     )
     def create(nlp: Language, name: str, scorer: Optional[Callable], source: str) -> "LookupLemmatizer":
         return LookupLemmatizer(None, source, scorer)
 
-    def __init__(self, lookups: Optional[Lookups], source: str, scorer: Optional[Callable] = lemmatizer_score):
+    def train(self, sentences: Iterable[Iterable[Tuple[str, str, str, str]]], min_occurrences: int = 1) -> None:
+        # Lookup table which maps (upos, form) to (lemma -> frequency),
+        # e.g. `{ ("NOUN", "alma"): { "alma" : 99, "alom": 1} }`
+        lemma_lookup_table: Dict[Tuple[str, str], Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+        for sentence in sentences:
+            for token, pos, feats, lemma in sentence:
+                token = self.__mask_numbers(token)
+                lemma = self.__mask_numbers(lemma)
+                feats_str = ("|" + feats) if feats else ""
+                key = (token, pos + feats_str)
+                lemma_lookup_table[key][lemma] += 1
+        lemma_lookup_table = dict(lemma_lookup_table)
+
+        self._lookups = Lookups()
+        table = Table(name="lemma_lookups")
+
+        lemma_freq: Dict[str, int]
+        for (form, pos), lemma_freq in dict(lemma_lookup_table).items():
+            most_freq_lemma, freq = sorted(lemma_freq.items(), key=itemgetter(1), reverse=True)[0]
+            if freq >= min_occurrences:
+                if form not in table:
+                    # lemma by pos
+                    table[form]: Dict[str, str] = dict()
+                table[form][pos] = most_freq_lemma
+
+        self._lookups.set_table(name=f"lemma_lookups", table=table)
+
+    def __init__(
+        self,
+        lookups: Optional[Lookups] = None,
+        source: Optional[str] = None,
+        scorer: Optional[Callable] = lemmatizer_score,
+    ):
         self._lookups: Optional[Lookups] = lookups
         self.scorer = scorer
         self.source = source
@@ -73,12 +106,7 @@ class LookupLemmatizer(Pipe):
         self._lookups = lookups.from_disk(path=path)
         return self
 
-    def initialize(
-            self,
-            get_examples: Callable[[], Iterable[Example]],
-            *,
-            nlp: Language = None
-    ) -> None:
+    def initialize(self, get_examples: Callable[[], Iterable[Example]], *, nlp: Language = None) -> None:
         lookups = Lookups()
         self._lookups = lookups.from_disk(path=self.source)
 
