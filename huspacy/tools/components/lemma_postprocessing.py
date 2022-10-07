@@ -46,7 +46,7 @@ class LemmaSmoother(Pipe):
             self._remove_exclamation_marks,
             self._remove_question_marks,
             self._remove_date_suffixes,
-            self.remove_suffix_after_numbers,
+            self._remove_suffix_after_numbers,
         ]
 
         for token in doc:
@@ -89,7 +89,7 @@ class LemmaSmoother(Pipe):
             token.lemma_ = re.search(cls._DATE_PATTERN, token.lemma_).group(1) + "."
 
     @classmethod
-    def remove_suffix_after_numbers(cls, token: Token) -> None:
+    def _remove_suffix_after_numbers(cls, token: Token) -> None:
         """Removes suffixes after numbers.
 
         Args:
