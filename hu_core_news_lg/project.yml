@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Large) "
 description: "Word vector, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.4.1,<3.5.0"
+spacy_version: ">=3.4.0,<3.5.0"
 
 vars:
   lang: hu
@@ -32,6 +32,7 @@ vars:
   szfsszegedner: SZFSSzegedNER
   vectors: floret.vectors
 
+  #TODO: config needs to be repopulated
   package_init: ../huspacy/tools/custom_code.py
   components_path: '../huspacy/tools/components/edit_tree_lemmatizer.py,../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
   components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
@@ -361,6 +362,7 @@ commands:
            dataset with the pretrained tagger model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
+            --code ${vars.components_edit_tree_lemmatizer_path} 
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -400,6 +402,7 @@ commands:
     help: "Train the NER model"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
+          --code ${vars.components_edit_tree_lemmatizer_path} 
           --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}

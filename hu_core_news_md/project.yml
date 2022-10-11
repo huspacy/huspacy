@@ -340,6 +340,7 @@ commands:
            dataset with the pretrained tagger model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
+            --code ${vars.components_edit_tree_lemmatizer_path} 
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -379,6 +380,7 @@ commands:
     help: "Train the NER model"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
+          --code ${vars.components_edit_tree_lemmatizer_path} 
           --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}

@@ -34,6 +34,7 @@ vars:
   package_init: ../huspacy/tools/custom_code.py
   components_path: '../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
   components_sentencizer_path: ../huspacy/tools/components/hun_sentencizer.py
+  components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
   components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
   components_lemmatizer: ../huspacy/tools/components/edit_tree_lemmatizer.py
   components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
@@ -332,6 +333,7 @@ commands:
     help: "Train the parser on the Universal Dependencies dataset with the pretrained tagger"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
+            --code ${vars.components_edit_tree_lemmatizer_path}
             --output ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
