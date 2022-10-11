@@ -153,7 +153,7 @@ Additionally, please indicate the version of the model you used so that your res
 
 This library is released under the [Apache 2.0 License](https://github.com/huspacy/huspacy/blob/master/LICENSE)
 
-Trained models have their own license ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-nc/4.0/)) as described on the [models page](https://huggingface.co/huspacy/).
+Trained models have their own license ([CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) as described on the [models page](https://huggingface.co/huspacy/).
 
 ## Contact
 For feature request issues and bugs please use the [GitHub Issue Tracker](https://github.com/huspacy/huspacy/issues). Otherwise, please use the [Discussion Forums](https://github.com/huspacy/huspacy/discussions).
