@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "hu_core_news_trf_xl"
+version = "3.4.0"
+description = "Hungarian transformer pipeline (XLM-RoBERTa) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner"
+authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
+license = "cc-by-sa-4.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+spacy = {extras = ["cuda111"], version = "~3.4.1"}
+spacy-experimental = "0.6.0"
+spacy-huggingface-hub = "0.0.6"
+spacy-transformers = "1.1.8"
+spacy-loggers = "~1.0.3"
+spacy_conll = "^3.0"
+torch = "~1.10.0+cu111"
+conllu = "^4.4.1"
+wandb = "^0.13.3"
+wheel = "^0.37.0"
+contexttimer = "^0.3.3"
+setuptools = "^65.4.1"
+
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+
+[build-system]
+requires = ["poetry>=1.1.10", "pip>=22.2.2"]
+build-backend = "poetry.masonry.api"

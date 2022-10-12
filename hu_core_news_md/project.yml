@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_md
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.4.0
+  package_version: 3.4.1
 
   models_path: models
   packages_path: packages
@@ -32,10 +32,15 @@ vars:
   szfsszegedner: SZFSSzegedNER
   vectors: floret.vectors
 
-  package_init: ../huspacy/tools/components.py
+  package_init: ../huspacy/tools/custom_code.py
+  components_path: '../huspacy/tools/components/edit_tree_lemmatizer.py,../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
+  components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
+  components_sentencizer_path: ../huspacy/tools/components/hun_sentencizer.py
+  components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
+  components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_md-3.4.0
+  wandb_project: hu_core_news_md-3.4.1
 
   assemble_config: assemble
   tagger_config: tagger
@@ -53,7 +58,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
-      branch: r2.9
+      branch: r2.10
       path: ""
 
   # NerKor
@@ -74,7 +79,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
     git:
       repo: https://github.com/huspacy/huspacy-resources
-      branch: master
+      branch: v3
       path: data/processed/szeged-corpus/
 
   # Word embeddings
@@ -305,6 +310,7 @@ commands:
             --output ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
+            --code ${vars.components_edit_tree_lemmatizer_path}
             --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
@@ -320,7 +326,7 @@ commands:
     help: "Train the lookup lemmatizer on the full Szeged Corpus"
     script:
       - "mkdir -p ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
-      - "python ../scripts/train_lookup_lemmatizer.py
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/train_lookup_lemmatizer.py 
             ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
             ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
     deps:
@@ -334,6 +340,7 @@ commands:
            dataset with the pretrained tagger model"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
+            --code ${vars.components_edit_tree_lemmatizer_path} 
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -373,6 +380,7 @@ commands:
     help: "Train the NER model"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
+          --code ${vars.components_edit_tree_lemmatizer_path} 
           --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
@@ -474,6 +482,7 @@ commands:
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
       - ${vars.package_init}
+      - ${vars.processed_data_path}/${vars.treebank}/test.conllu
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu
       - ${vars.result_data_path}/ud_test_conll18.log
@@ -485,14 +494,17 @@ commands:
       - "spacy package
           ${vars.models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
-          --code ${vars.package_init}
+          --code ${vars.components_path}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
+      - ${vars.components_edit_tree_lemmatizer_path}
+      - ${vars.components_sentencizer_path}
+      - ${vars.components_lemma_postprocessing_path}
+      - ${vars.components_lookup_lemmatizer_path}
       - meta.json
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl

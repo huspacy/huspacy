@@ -1,6 +1,6 @@
-title: "Core Hungarian spaCy model (Transformer) "
+title: "Core Hungarian spaCy model (Transformer (huBERT)) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.2.0,<3.3.0"
+spacy_version: ">=3.4.0,<3.5.0"
 
 vars:
   lang: hu
@@ -9,7 +9,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.2.4
+  package_version: 3.4.0
 
   transformer_models_path: models
   packages_path: packages
@@ -30,7 +30,14 @@ vars:
   ner_merged: ner_merged
   UD_SZC_merged: UD_SZC_merged
 
-  package_init: ../huspacy/tools/components.py
+  #TODO: cleanup this section
+  package_init: ../huspacy/tools/custom_code.py
+  components_path: '../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
+  components_sentencizer_path: ../huspacy/tools/components/hun_sentencizer.py
+  components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
+  components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
+  components_lemmatizer: ../huspacy/tools/components/edit_tree_lemmatizer.py
+  components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
 
   assemble_config: assemble
   tagger_config: tagger
@@ -38,9 +45,9 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.2.4
+  wandb_project: hu_core_news_trf-3.4.0
 
-  gpu: 1
+  gpu: 2
 
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
@@ -51,7 +58,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.treebank}
     git:
       repo: https://github.com/UniversalDependencies/${vars.treebank}
-      branch: r2.9
+      branch: r2.10
       path: ""
 
   # NerKor
@@ -72,7 +79,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
     git:
       repo: https://github.com/huspacy/huspacy-resources
-      branch: master
+      branch: v3
       path: data/processed/szeged-corpus/
 
 workflows:
@@ -295,6 +302,7 @@ commands:
     help: "pretrain the tagger, morphology, sentencizer and lemmatizer on the full Szeged Corpus"
     script:
       - "spacy train configs/${vars.tagger_config}.cfg
+            --code ${vars.components_lemmatizer}
             --output ${vars.transformer_models_path}/${vars.package_name}-tagger-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -312,7 +320,7 @@ commands:
     help: "Train the lookup lemmatizer on the full Szeged Corpus"
     script:
       - "mkdir -p ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
-      - "python ../scripts/train_lookup_lemmatizer.py 
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/train_lookup_lemmatizer.py 
             ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
             ${vars.transformer_models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}"
     deps:
@@ -325,6 +333,7 @@ commands:
     help: "Train the parser on the Universal Dependencies dataset with the pretrained tagger"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
+            --code ${vars.components_edit_tree_lemmatizer_path}
             --output ${vars.transformer_models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -457,13 +466,16 @@ commands:
       - "spacy package
           ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
           --build 'wheel'
-          --code ${vars.package_init}
+          --code ${vars.components_path}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"
     deps:
       - ${vars.transformer_models_path}/${vars.package_name}-${vars.package_version}
+      - ${vars.components_sentencizer_path}
+      - ${vars.components_lemma_postprocessing_path}
+      - ${vars.components_lookup_lemmatizer_path}
       - meta.json
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
