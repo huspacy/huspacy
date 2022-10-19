@@ -40,11 +40,22 @@ python = "^3.7"
 spacy = "^3.2.3"
 bump2version = "^1.0.1"
 pytest = "^7.0.0"
-flake8 = "^5.0.4"
+flake8 = "*"
 twine = "^4.0.0"
 lazydocs = "^0.4.8"
 pytest_codeblocks = "^0.14.0"
 
+[tool.poetry.group.dev.dependencies]
+mkdocs = "^1.4.1"
+mkdocs-material = "^8.5.6"
+mkdocs-git-revision-date-localized-plugin = "^1.1.0"
+mkdocstrings = {extras = ["python"], version = "^0.19.0"}
+mkdocs-gen-files = "^0.4.0"
+mkdocs-autorefs = "^0.4.1"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [
+    "poetry-core>=1.0.0",
+    "wheel"
+]
 build-backend = "poetry.core.masonry.api"
