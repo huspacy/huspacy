@@ -1,0 +1,36 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - docs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout huspacy
+      uses: actions/checkout@v3
+
+    - name: Checkout huspacy/huspacy.github.io
+      uses: actions/checkout@v3
+      with:
+        repository: huspacy/huspacy.github.io
+        path: huspacy.github.io
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install Python dependencies
+      run: |
+        cd huspacy
+        poetry install
+
+    - name: Generate docs
+      run: |
+        poetry shell
+        cd ../../huspacy-github.io
+        mkdocs gh-deploy --config-file ../huspacy/mkdocs.yml --remote-branch docs
