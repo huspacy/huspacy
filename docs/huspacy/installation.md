@@ -1,4 +1,4 @@
-## Primary method
+# :octicons-package-dependencies-24: Installation
 
 To get started using the tool, first, we need to download one of the models. The easiest way to achieve this is to install `huspacy` (from [PyPI](https://pypi.org/project/huspacy/)) and then fetch a model through its API.
 
@@ -13,7 +13,7 @@ import huspacy
 huspacy.download()
 ```
 
-## Alternative method
+### Install the models directly
 
 You can install the latest models directly from 🤗 Hugging Face Hub:
 

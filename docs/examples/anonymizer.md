@@ -1,4 +1,4 @@
-# Text Anonymization
+# :fontawesome-solid-user-secret: Text Anonymization
 
 Using Presidio[¹] and Faker[²], we can easily make a simple text anonymization tool or PII (Personally Identifiable Information) removal tool. The (hu)spaCy integration of Presidio can be used to identify and remove personal data, such as names, locations, phone numbers, or even bank details. This tool uses (hu)spaCy's Named Entity Recognition facilities and further pattern matching rules. What is more, an easy-to-use de-identification method is provided by Faker as we show below.
 

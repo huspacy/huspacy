@@ -1,4 +1,4 @@
-# Relation Extraction
+# :material-axis-arrow: Relation Extraction
 
 By using a set of simplerules, we can extract an ordered sequence of subject-verb-object triples from a document or sentence. For example, in the sentence "Anna éppen házat épít magának." (Anna builds a house for herself.) "Anna" will be the subject, "épít" will be the verb, and the "ház" will be the object. This triple will be an extracted relation. Using HuSpaCy for tagging and dependency parsing and the modified code for extraction, we can make a simple relaction extraction tool.
 

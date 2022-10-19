@@ -1,4 +1,4 @@
-# Keyphrase Extraction
+# :octicons-key-24: Keyphrase Extraction
 
 Keyphrase extraction is a well-studied problem of natural language processing, thus many ready-made solutions exist. `textacy` is higher-level NLP library (built on spaCy) implementing several keyword extraction methods. By using this tool, we can easily build a simple solution for this problem.
 

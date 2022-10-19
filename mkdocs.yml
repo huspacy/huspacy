@@ -5,31 +5,36 @@ site_url: https://huspacy.github.io
 repo_url: https://github.com/huspacy/huspacy
 repo_name: huspacy/huspacy
 nav:
-  - Home: index.md
+  - Welcome: index.md
   - Docs:
       - Installation: huspacy/installation.md
       - Quickstart: huspacy/quickstart.md
-      - Integrating with R: huspacy/usage_in_r.md
-      - Reference:
+      - Usage in R: huspacy/usage_in_r.md
+      - API:
           - huspacy: reference/huspacy/__init__.md
           - components:
               - edit_tree_lemmatizer.py: reference/huspacy/components/edit_tree_lemmatizer.md
               - hun_sentencizer.py: reference/huspacy/components/hun_sentencizer.md
               - lookup_lemmatizer.py: reference/huspacy/components/lookup_lemmatizer.md
               - lemma_postprocessing.py: reference/huspacy/components/lemma_postprocessing.md
+      - Under the hood: huspacy/under_the_hood.md
       - Changelog: huspacy/changelog.md
   - Models:
-      - Introduction: models/index.md
+      - Overview: models/index.md
       - Changelogs:
           - hu_core_news_md: models/changelog_md.md
           - hu_core_news_lg: models/changelog_lg.md
           - hu_core_news_trf: models/changelog_trf.md
-  - Application examples:
-      - Anonymizer: examples/anonymizer.md
-      - Entity linking: examples/dbpedia.md
-      - Keyphrase extraction: examples/keyphrase.md
-      - Relation extraction: examples/relation.md
+  - Recipes:
+    - Application examples:
+        - Anonymizer: examples/anonymizer.md
+        - Entity linking: examples/dbpedia.md
+        - Keyphrase extraction: examples/keyphrase.md
+        - Relation extraction: examples/relation.md
+        - Demo: https://huggingface.co/spaces/huspacy/example-applications
+    - FAQ: faq.md
   - Demo: https://huggingface.co/spaces/huspacy/demo
+  - Contact us: contact.md
 
 theme:
   name: material
@@ -40,20 +45,18 @@ theme:
     - navigation.tracking
     - navigation.sections
     - navigation.instant
-    - navigation.expand
+#    - navigation.expand
     - navigation.tabs
 #    - navigation.indexes
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
-      primary: teal
       toggle:
         icon: material/brightness-auto
         name: Switch to light mode
 
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
-      primary: teal
       scheme: default
       toggle:
         icon: material/brightness-7
@@ -61,7 +64,6 @@ theme:
 
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
-      primary: white
       scheme: slate
       toggle:
         icon: material/brightness-4
@@ -96,15 +98,48 @@ plugins:
       fallback_to_build_date: true
 
 markdown_extensions:
-  - tables
+  - abbr
+  - admonition
   - attr_list
+  - def_list
+  - footnotes
   - md_in_html
+  - toc:
+      permalink: '#'
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: 'invoke-ai'
+      repo: 'InvokeAI'
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - tables
 
+extra_css:
+  - stylesheets/extra.css
 
 #extra:
 #  analytics:

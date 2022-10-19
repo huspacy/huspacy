@@ -1,4 +1,4 @@
-# DBpedia Spotlight
+# :material-link-plus: Entity Linking
 
 Using the DBpedia Spotlight integration for SpaCy[¹], we can easily extract and link DBpedia entities from any text.
 
