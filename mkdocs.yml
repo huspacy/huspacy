@@ -13,10 +13,10 @@ nav:
       - API:
           - huspacy: reference/huspacy/__init__.md
           - components:
-              - edit_tree_lemmatizer.py: reference/huspacy/components/edit_tree_lemmatizer.md
-              - hun_sentencizer.py: reference/huspacy/components/hun_sentencizer.md
-              - lookup_lemmatizer.py: reference/huspacy/components/lookup_lemmatizer.md
-              - lemma_postprocessing.py: reference/huspacy/components/lemma_postprocessing.md
+              - edit_tree_lemmatizer: reference/huspacy/components/edit_tree_lemmatizer.md
+              - hun_sentencizer: reference/huspacy/components/hun_sentencizer.md
+              - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
+              - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
       - Under the hood: huspacy/under_the_hood.md
       - Changelog: huspacy/changelog.md
   - Models:
