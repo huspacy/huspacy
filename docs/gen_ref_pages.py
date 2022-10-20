@@ -13,7 +13,6 @@ for path in sorted(Path(SOURCE_ROOT).rglob("*.py")):  #
 
     parts = list(module_path.parts)
     if parts[0] == "huspacy":
-        print(parts)
 
         if parts[-1] == "__init__":  #
             parts = parts[:-1]

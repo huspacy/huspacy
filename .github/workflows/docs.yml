@@ -21,6 +21,7 @@ jobs:
         repository: huspacy/huspacy.github.io
         path: huspacy.github.io
         ssh-key: ${{ secrets.GH_PAGES_GIT_KEY }}
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -41,5 +42,17 @@ jobs:
       run: |
         cd repo/huspacy
         source ./.venv/bin/activate
+        
         cd ../../huspacy.github.io
-        mkdocs gh-deploy --config-file ../repo/mkdocs.yml --remote-branch gh-pages
+        git checkout gh-pages
+        git pull --rebase
+        
+        cd ../repo
+        mkdocs build -d --clean -d ../huspacy.github.io
+        
+        cd ../huspacy.github.io
+        git config user.email "gyorgy+bot@orosz.link"
+        git config user.name "HuSpaCy Bot"
+        git add .
+        git commit -m "Updated website to reflect changes at https://github.com/huspacy/huspacy/commit/$GITHUB_SHA"
+        git push origin gh-pages

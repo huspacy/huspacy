@@ -4,6 +4,7 @@ site_author: György Orosz, SzegedAI
 site_url: https://huspacy.github.io
 repo_url: https://github.com/huspacy/huspacy
 repo_name: huspacy/huspacy
+
 nav:
   - Welcome: index.md
   - Docs:
