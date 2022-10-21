@@ -19,6 +19,7 @@ nav:
               - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
       - Under the hood: huspacy/under_the_hood.md
+      - Publications: huspacy/publications.md
       - Changelog: huspacy/changelog.md
   - Models:
       - Overview: models/index.md
@@ -39,7 +40,10 @@ nav:
         - Keyphrase extraction: examples/keyphrase.md
         - Relation extraction: examples/relation.md
         - Demo: https://huggingface.co/spaces/huspacy/example-applications
-    - FAQ: faq.md
+    - Tips and tricks:
+        - Rule-base sentencizer: recipes/sentencizer.md
+        - Roman numbers: recipes/roman_nums.md
+    - FAQ: recipes/faq.md
   - Demo: https://huggingface.co/spaces/huspacy/demo
   - Contact us: contact.md
 
@@ -48,6 +52,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
     logo: material/code-tags
+  favicon: assets/favicon-32x32.png
   features:
     - navigation.tracking
     - navigation.sections

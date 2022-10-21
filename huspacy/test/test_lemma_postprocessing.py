@@ -52,6 +52,6 @@ def nlp_roman_to_arabic():
     ],
 )
 def test_roman_to_arabic(nlp_roman_to_arabic: Language, token: str, expected_lemma: str):
-    doc: Doc = Doc(nlp_roman_to_arabic.vocab, words=[token], pos=["ADJ"])
+    doc: Doc = Doc(nlp_roman_to_arabic.vocab, words=[token])
     processed: Doc = nlp_roman_to_arabic(doc)
     assert processed[0].lemma_ == expected_lemma
