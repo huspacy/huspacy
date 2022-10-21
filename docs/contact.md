@@ -1,6 +1,6 @@
 # :material-email-fast-outline: Contact
 
-For feature request issues and bugs please use the [GitHub Issue Tracker](https://github.com/huspacy/huspacy/issues). Otherwise, please use the [Discussion Forums](https://github.com/huspacy/huspacy/discussions).
+For feature requests, issues and bugs please use the [GitHub Issue Tracker](https://github.com/huspacy/huspacy/issues). Otherwise, reach out to us in the [Discussion Forum](https://github.com/huspacy/huspacy/discussions).
 
 ## Authors
 

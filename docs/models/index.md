@@ -1,21 +1,16 @@
 # :octicons-database-24: Models overview
 
-We provide several pretrained models, the ([`hu_core_news_lg`](https://huggingface.co/huspacy/hu_core_news_lg)) one is a
-CNN-based large model which achieves a good balance between accuracy and processing speed.
-This default model provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed
-morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word
+We provide several pretrained models:
+ 1. [`hu_core_news_lg`](https://huggingface.co/huspacy/hu_core_news_lg) is a CNN-based large model which achieves a good balance between accuracy and processing speed. This default model provides tokenization, sentence splitting, part-of-speech tagging (UD labels w/ detailed morphosyntactic features), lemmatization, dependency parsing and named entity recognition and ships with pretrained word
 vectors.
+2. [`hu_core_news_trf`](https://huggingface.co/huspacy/hu_core_news_trf) is built on [huBERT](https://huggingface.co/SZTAKI-HLT/hubert-base-cc) and provides the same functionality as the large model except the word vectors. It comes with much higher accuracy in the price of increased computational resource usage. We suggest using it with GPU support. 
+3. [`hu_core_news_md`](https://huggingface.co/huspacy/hu_core_news_md) greatly improves on `hu_core_news_lg`'s throughput by loosing some accuracy. This model could be a good choice when processing speed is crucial.
 
-The second model ([`hu_core_news_trf`](https://huggingface.co/huspacy/hu_core_news_trf)) is built
-on [huBERT](https://huggingface.co/SZTAKI-HLT/hubert-base-cc) and provides the same functionality as the large model
-except the word vectors.
-It comes with much higher accuracy in the price of increased computational resource usage. We suggest using it with GPU
-support.
-
-The [`hu_core_news_md`](https://huggingface.co/huspacy/hu_core_news_md) pipeline greatly improves on `hu_core_news_lg`'s
-throughput by loosing some accuracy. This model could be a good choice when processing speed is crucial.
+HuSpaCy's model versions follows [spaCy's versioning scheme](https://spacy.io/models#model-versioning).
 
 A demo of these models is available at [Hugging Face Spaces](https://huggingface.co/spaces/huspacy/demo).
+
+To read more about the model's architecture we suggest reading [the relevant sections from spaCy's documentation](https://spacy.io/models#design).
 
 ### Comparison
 

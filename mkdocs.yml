@@ -22,10 +22,16 @@ nav:
       - Changelog: huspacy/changelog.md
   - Models:
       - Overview: models/index.md
-      - Changelogs:
-          - hu_core_news_md: models/changelog_md.md
-          - hu_core_news_lg: models/changelog_lg.md
-          - hu_core_news_trf: models/changelog_trf.md
+      - Performance comparison: models_gen/performance.md
+      - hu_core_news_md:
+          - Description: models_gen/index_md.md
+          - Changelog: models/changelog_md.md
+      - hu_core_news_lg:
+          - Description: models_gen/index_lg.md
+          - Changelog: models/changelog_lg.md
+      - hu_core_news_trf:
+          - Description: models_gen/index_trf.md
+          - Changelog: models/changelog_trf.md
   - Recipes:
     - Application examples:
         - Anonymizer: examples/anonymizer.md
@@ -79,6 +85,7 @@ plugins:
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
+        - docs/gen_models_pages.py
   - mkdocstrings:
       handlers:
         python:
