@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hu_core_news_lg"
-version = "3.4.2"
+version = "3.4.3a0"
 description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
