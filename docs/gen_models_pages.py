@@ -19,6 +19,10 @@ DOC_URI_TEMPLATE = "https://huggingface.co/huspacy/hu_core_news_{slug}/raw/main/
 
 COMPARISON_TEMPLATE = """
 
+{description}
+
+### Performance comparison
+
 | Models | `md` | `lg` | `trf`|
 | ------ | ---- | ---- | ---- |
 | Latest version | {md_version} | {lg_version} | {trf_version} |
@@ -32,12 +36,11 @@ COMPARISON_TEMPLATE = """
 | Size | {md_size} | {lg_size} | {trf_size} |
 """
 
-DOC_TEMPLATE = """
-# `{name}` model
-
-## Installation
+INSTALL_TEMPLATE = """
 
 You can either install the model through `pip`:
+
+## Installation
 
 ```bash
 # Install the latest model
@@ -60,6 +63,11 @@ huspacy.download("hu_core_news_{name}", "{latest_version}")
 ```
 
 Available model versions: {versions}
+"""
+
+DETAILS_TEMPLATE = """
+
+{introduction}
 
 ## Details
 
@@ -77,18 +85,27 @@ def read_metadata(slug: str) -> Dict:
     return metadata
 
 
-def create_doc(name: str, uri: str) -> str:
-    readme_text: str = requests.get(uri).text
-    meta_end_idx = readme_text.find("---", readme_text.find("---") + 3) + 3
-    readme_text = readme_text[meta_end_idx:]
+def create_details_docs(slug: str) -> str:
+    uri = DOC_URI_TEMPLATE.format(slug=slug)
+    details: str = requests.get(uri).text
+    meta_end_idx = details.find("---", details.find("---") + 3) + 3
+    details = details[meta_end_idx:]
+
+    introduction = Path(f"docs/models/readme_{slug}.md").open().read()
+    return DETAILS_TEMPLATE.format(introduction=introduction, details=details)
+
+
+def create_install_doc(name: str) -> str:
     versions_available = get_valid_models()[f"hu_core_news_{name}"]
     versions = ", ".join([f"`{version}`" for version in versions_available])
 
-    return DOC_TEMPLATE.format(name=name, details=readme_text, versions=versions, latest_version=versions_available[-1])
+    return INSTALL_TEMPLATE.format(name=name, versions=versions, latest_version=versions_available[-1])
 
 
 def generate_description(models_metadata: Dict[str, Dict]) -> str:
+    description = Path("docs/models/index.md").open().read()
     return COMPARISON_TEMPLATE.format(
+        description=description,
         md_version=models_metadata["md"]["version"],
         md_pos_acc=models_metadata["md"]["performance"]["pos_acc"] * 100,
         md_morph_acc=models_metadata["md"]["performance"]["morph_acc"] * 100,
@@ -121,15 +138,20 @@ def generate_description(models_metadata: Dict[str, Dict]) -> str:
 
 def main():
     models_meta = {slug: read_metadata(slug) for slug in MODEL_SLUGS}
-    perf_doc_path = Path("models_gen/performance.md")
+    perf_doc_path = Path("models_gen/index.md")
     with mkdocs_gen_files.open(perf_doc_path, "w") as fd:
         print(generate_description(models_meta), file=fd)
 
     for slug in MODEL_SLUGS:
-        doc = create_doc(slug, DOC_URI_TEMPLATE.format(slug=slug))
+        install_doc = create_install_doc(slug)
+        doc_path = Path(f"models_gen/install_{slug}.md")
+        with mkdocs_gen_files.open(doc_path, "w") as fd:
+            print(install_doc, file=fd)
+
+        details_docs = create_details_docs(slug)
         doc_path = Path(f"models_gen/index_{slug}.md")
         with mkdocs_gen_files.open(doc_path, "w") as fd:
-            print(doc, file=fd)
+            print(details_docs, file=fd)
 
 
 main()

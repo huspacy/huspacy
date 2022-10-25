@@ -20,18 +20,24 @@ nav:
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
       - Under the hood: huspacy/under_the_hood.md
       - Publications: huspacy/publications.md
+      - Development: huspacy/develop.md
       - Changelog: huspacy/changelog.md
   - Models:
-      - Overview: models/index.md
-      - Performance comparison: models_gen/performance.md
+      - Overview: models_gen/index.md
       - hu_core_news_md:
-          - Description: models_gen/index_md.md
+          - Overview: models_gen/index_md.md
+          - Installation: models_gen/install_md.md
+          - Development: models/develop_md.md
           - Changelog: models/changelog_md.md
       - hu_core_news_lg:
-          - Description: models_gen/index_lg.md
+          - Overview: models_gen/index_lg.md
+          - Installation: models_gen/install_lg.md
+          - Development: models/develop_lg.md
           - Changelog: models/changelog_lg.md
       - hu_core_news_trf:
-          - Description: models_gen/index_trf.md
+          - Overview: models_gen/index_trf.md
+          - Installation: models_gen/install_trf.md
+          - Development: models/develop_trf.md
           - Changelog: models/changelog_trf.md
   - Recipes:
     - Application examples:
