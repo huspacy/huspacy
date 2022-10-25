@@ -1,0 +1,159 @@
+site_name: HuSpaCy
+site_description: Industrial-strength Hungarian natural language processing
+site_author: György Orosz, SzegedAI
+site_url: https://huspacy.github.io
+repo_url: https://github.com/huspacy/huspacy
+repo_name: huspacy/huspacy
+
+nav:
+  - Welcome: index.md
+  - Docs:
+      - Installation: huspacy/installation.md
+      - Quickstart: huspacy/quickstart.md
+      - Usage in R: huspacy/usage_in_r.md
+      - API:
+          - huspacy: reference/huspacy/__init__.md
+          - components:
+              - edit_tree_lemmatizer: reference/huspacy/components/edit_tree_lemmatizer.md
+              - hun_sentencizer: reference/huspacy/components/hun_sentencizer.md
+              - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
+              - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
+      - Under the hood: huspacy/under_the_hood.md
+      - Publications: huspacy/publications.md
+      - Changelog: huspacy/changelog.md
+  - Models:
+      - Overview: models/index.md
+      - Performance comparison: models_gen/performance.md
+      - hu_core_news_md:
+          - Description: models_gen/index_md.md
+          - Changelog: models/changelog_md.md
+      - hu_core_news_lg:
+          - Description: models_gen/index_lg.md
+          - Changelog: models/changelog_lg.md
+      - hu_core_news_trf:
+          - Description: models_gen/index_trf.md
+          - Changelog: models/changelog_trf.md
+  - Recipes:
+    - Application examples:
+        - Anonymizer: examples/anonymizer.md
+        - Entity linking: examples/dbpedia.md
+        - Keyphrase extraction: examples/keyphrase.md
+        - Relation extraction: examples/relation.md
+        - Demo: https://huggingface.co/spaces/huspacy/example-applications
+    - Tips and tricks:
+        - Rule-base sentencizer: recipes/sentencizer.md
+        - Roman numbers: recipes/roman_nums.md
+    - FAQ: recipes/faq.md
+  - Demo: https://huggingface.co/spaces/huspacy/demo
+  - Contact us: contact.md
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/code-tags
+  favicon: assets/favicon-32x32.png
+  features:
+    - navigation.tracking
+    - navigation.sections
+    - navigation.instant
+#    - navigation.expand
+    - navigation.tabs
+#    - navigation.indexes
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+watch:
+  - huspacy
+
+plugins:
+  - search
+  - autorefs
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+        - docs/gen_models_pages.py
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            heading_level: 2
+            show_source: False
+            show_root_toc_entry: False
+            docstring_section_style: table
+            line_length: 80
+            show_if_no_docstring: True
+            show_signature_annotations: False
+            separate_signature: True
+            filters: ["!^_"]
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      fallback_to_build_date: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: '#'
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: 'huspacy'
+      repo: 'huspacy'
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - tables
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  analytics:
+    provider: google
+    property: G-HQPTKYY3SL

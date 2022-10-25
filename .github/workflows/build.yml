@@ -1,10 +1,17 @@
 name: Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
-  build:
-
+  build_and_test:
     runs-on: ubuntu-latest
     defaults:
       run:

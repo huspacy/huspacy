@@ -132,27 +132,26 @@ class RomanToArabic(Pipe):
 
     def __call__(self, doc: Doc) -> Doc:
         for token in doc:
-            if token.pos_ == "ADJ":
-                match = self._regex.search(token.text)
-                if match is None:
-                    continue
+            match = self._regex.search(token.text)
+            if match is None:
+                continue
 
-                roman: str = match.group(0)
-                romans: List[str] = roman.split("-")
-                values = []
+            roman: str = match.group(0)
+            romans: List[str] = roman.split("-")
+            values = []
 
-                for r in romans:
-                    dot = "." if "." == r[-1] else ""
-                    r = r[:-1] if dot else r
+            for r in romans:
+                dot = "." if "." == r[-1] else ""
+                r = r[:-1] if dot else r
 
-                    int_val = 0
-                    for i in range(len(r)):
-                        if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
-                            int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
-                        else:
-                            int_val += self._rom_val[r[i]]
+                int_val = 0
+                for i in range(len(r)):
+                    if i > 0 and self._rom_val[r[i]] > self._rom_val[r[i - 1]]:
+                        int_val += self._rom_val[r[i]] - 2 * self._rom_val[r[i - 1]]
+                    else:
+                        int_val += self._rom_val[r[i]]
 
-                    values.append(str(int_val) + dot)
+                values.append(str(int_val) + dot)
 
-                token.lemma_ = "-".join(values)
+            token.lemma_ = "-".join(values)
         return doc
