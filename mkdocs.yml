@@ -10,7 +10,6 @@ nav:
   - Docs:
       - Installation: huspacy/installation.md
       - Quickstart: huspacy/quickstart.md
-      - Usage in R: huspacy/usage_in_r.md
       - API:
           - huspacy: reference/huspacy/__init__.md
           - components:
@@ -49,6 +48,7 @@ nav:
     - Tips and tricks:
         - Rule-base sentencizer: recipes/sentencizer.md
         - Roman numbers: recipes/roman_nums.md
+        - Usage in R: huspacy/usage_in_r.md
     - FAQ: recipes/faq.md
   - Demo: https://huggingface.co/spaces/huspacy/demo
   - Contact us: contact.md
