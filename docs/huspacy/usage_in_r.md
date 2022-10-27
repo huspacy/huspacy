@@ -6,7 +6,7 @@
 2. Create a new environment using the [`environemnt.yml`] file in the [huspacy-in-r repository](https://github.com/huspacy/huspacy-in-r): `$ conda env create -n huspacyr --file ./environment.yml`
 3. Activate the environment: `$ conda activate huspacyr`
 
-The demo environment install the 3.4.3 version of the `hu_core_news_lg` model. If you need another model or version use `pip` (cf. [`md`](models_gen/install_md/), [`lg`](models_gen/install_lg/), [`trf`](models_gen/install_trf/)) to install the necessary model files to the conda environment.
+The demo environment comes with the 3.4.3 version of the `hu_core_news_lg` model. If you need another model (or version) use `pip` (cf. [`md`](models_gen/install_md/), [`lg`](models_gen/install_lg/), [`trf`](models_gen/install_trf/)) to install the necessary model files to the conda environment.
 
 Having all dependencies installed, all you need to do is to load `spacyr` in the installed environment:
 

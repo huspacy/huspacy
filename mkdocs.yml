@@ -46,6 +46,7 @@ nav:
         - Relation extraction: examples/relation.md
         - Demo: https://huggingface.co/spaces/huspacy/example-applications
     - Tips and tricks:
+        - Sentiment lexicons: recipes/sentiment.md
         - Rule-base sentencizer: recipes/sentencizer.md
         - Roman numbers: recipes/roman_nums.md
         - Usage in R: huspacy/usage_in_r.md

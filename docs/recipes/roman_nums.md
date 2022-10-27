@@ -4,6 +4,7 @@ In order to process numbers, `roman_to_arabic` module should be added to the pip
 
 ```python
 import huspacy
+import huspacy.components
 
 nlp = huspacy.load("hu_core_news_lg")
 nlp.add_pipe("roman_to_arabic")

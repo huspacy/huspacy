@@ -5,6 +5,7 @@ In order to use it, you should replace the `senter` pipeline step:
 
 ```python
 import huspacy
+import huspacy.components
 
 nlp = huspacy.load("hu_core_news_lg")
 nlp.replace_pipe("senter", "hun_sentencizer")
