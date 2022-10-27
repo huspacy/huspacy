@@ -1,5 +1,9 @@
 import json
-from importlib.resources import files
+
+try:
+    from importlib.resources import files
+except:
+    from importlib_resources import files
 from io import BytesIO
 from typing import List, Dict
 from urllib.request import urlopen
