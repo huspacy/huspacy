@@ -17,6 +17,7 @@ nav:
               - hun_sentencizer: reference/huspacy/components/hun_sentencizer.md
               - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
+              - sentiment: reference/huspacy/components/sentiment.md
       - Under the hood: huspacy/under_the_hood.md
       - Publications: huspacy/publications.md
       - Development: huspacy/develop.md
@@ -164,3 +165,7 @@ extra:
   analytics:
     provider: google
     property: G-HQPTKYY3SL
+
+#  version:
+#    provider: mike
+#    default: stable

@@ -1,3 +1,7 @@
+"""
+This module contains various rule-based components aiming to improve on baseline lemmatization tools.
+"""
+
 import re
 from typing import List, Callable
 
@@ -32,7 +36,7 @@ def lemma_case_smoother(doc: Doc) -> Doc:
 
 
 class LemmaSmoother(Pipe):
-    """Smooths lemma by applying rules."""
+    """Smooths lemma by fixing common errors of the edit-tree lemmatizer."""
 
     _DATE_PATTERN = re.compile(r"(\d+)-j?[éá]?n?a?(t[őó]l)?")
     _NUMBER_PATTERN = re.compile(r"(\d+([-,/_.:]?(._)?\d+)*%?)")

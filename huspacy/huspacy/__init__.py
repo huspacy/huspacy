@@ -23,6 +23,9 @@ def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]
     """
     Returns valid model names and versions for the given spacy version
 
+    Args:
+        spacy_version (Optional[str]): spaCy version to compare with
+
     Returns:
         Dict[str, List[str]]: Valid model names and associated versions
     """
@@ -47,8 +50,8 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
         model_name (str): model name, if not provided it defaults to `hu_core_news_lg`
         model_version (str): model version, if not provided it defaults to the latest version ("main")
 
-    Returns: None
-
+    Returns:
+        None
     """
     assert model_name in __AVAILABLE_MODELS, f"{model_name} is not a valid model name"
     assert (
@@ -76,7 +79,7 @@ def load(
         disable (Iterable[str]): Names of pipeline components to disable. Disabled pipes will be loaded but they
             won't be run unless you explicitly enable them by calling nlp.enable_pipe.
         exclude (Iterable[str]): Names of pipeline components to exclude. Excluded components won't be loaded.
-        config (Dict[str, Any] / Config): Config overrides as nested dict or dict
+        config (Union[Dict[str, Any], Config]): Config overrides as nested dict or dict
         keyed by section values in dot notation.
 
     Returns:

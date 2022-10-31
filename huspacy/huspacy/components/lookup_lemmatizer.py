@@ -19,6 +19,11 @@ from spacy.util import ensure_path
 
 
 class LookupLemmatizer(Pipe):
+    """
+    LookupLemmatizer learn `(token, pos, morph. feat) -> lemma` mappings during training, and applies them at prediction
+    time.
+    """
+
     _number_pattern: Pattern = re.compile(r"\d")
 
     # noinspection PyUnusedLocal
@@ -33,6 +38,14 @@ class LookupLemmatizer(Pipe):
         return LookupLemmatizer(None, source, scorer)
 
     def train(self, sentences: Iterable[Iterable[Tuple[str, str, str, str]]], min_occurrences: int = 1) -> None:
+        """
+
+        Args:
+            sentences (Iterable[Iterable[Tuple[str, str, str, str]]]): Sentences to learn the mappings from
+            min_occurrences (int): mapping occurring less than this threshold are not learned
+
+        """
+
         # Lookup table which maps (upos, form) to (lemma -> frequency),
         # e.g. `{ ("NOUN", "alma"): { "alma" : 99, "alom": 1} }`
         lemma_lookup_table: Dict[Tuple[str, str], Dict[str, int]] = defaultdict(lambda: defaultdict(int))
