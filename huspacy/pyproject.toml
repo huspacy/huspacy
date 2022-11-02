@@ -33,13 +33,15 @@ packages = [
     { include = "huspacy" },
 ]
 
-
 [tool.poetry.dependencies]
 python = "^3.8"
 importlib_resources = { version = "*", python = "<3.9" }
-transformers = { version="^4.24.0", extras = ["hf"] }
-spacy-alignments = { version="^0.8.6", extras = ["hf"] }
+transformers = { version = "^4.24.0", optional = true }
+spacy-alignments = { version = "^0.8.6", optional = true }
+torch = { version = "*", optional = true }
 
+[tool.poetry.extras]
+trf = ["transformers", "spacy-alignments", "torch"]
 
 [tool.poetry.group.dev]
 optional = true
@@ -65,6 +67,15 @@ mkdocstrings = { extras = ["python"], version = "^0.19.0" }
 mkdocs-gen-files = "^0.4.0"
 mkdocs-autorefs = "^0.4.1"
 
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+addopts = "-ra -v"
+testpaths = [
+    "test",
+]
 
 [build-system]
 requires = [

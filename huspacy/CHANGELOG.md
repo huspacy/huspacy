@@ -6,17 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## 0.6
+### Changed
 - Dropped Python 3.7 support
-- Added support for sentiment lexicons
+
+### New
+- Added a lookup component for sentiment lexicons
+- Added integration for novakat's onpp NER model (`nerpp`)
 
 ## 0.5.1
 ### Changed
 - Dropped Python 3.6 support
+
+### New
 - Added support for `hu_core_news_lg` `v3.4.3`
 
 ## 0.5
-### Components
-- `trainable_lemmatizer_v2`: fork
+### New
+- `trainable_lemmatizer_v2`: fork and minor improvement of spaCy's trainable lemmatizer
 - `LemmaSmoother` for improving lemmatization output of the `trainable_lemmatizer`
 - `RomanToArabic` for convert Roman numbers to Arabic ones
 - `LookupLemmatizer` to memoize token,pos -> lemma transformations
