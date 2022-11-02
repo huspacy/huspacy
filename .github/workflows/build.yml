@@ -59,8 +59,6 @@ jobs:
 
       - name: Build package
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         run: |
           echo "Running the pipeline on $BRANCH_NAME branch"
@@ -111,4 +109,7 @@ jobs:
           path: huspacy/dist
 
       - name: Publish package
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: poetry run twine upload --non-interactive dist/*
