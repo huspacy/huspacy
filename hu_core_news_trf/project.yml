@@ -32,8 +32,8 @@ vars:
 
   #TODO: cleanup this section
   package_init: ../huspacy/tools/custom_code.py
-  components_path: '../huspacy/tools/components/hun_sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
-  components_sentencizer_path: ../huspacy/tools/components/hun_sentencizer.py
+  components_path: '../huspacy/tools/components/sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
+  components_sentencizer_path: ../huspacy/tools/components/sentencizer.py
   components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
   components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
   components_lemmatizer: ../huspacy/tools/components/edit_tree_lemmatizer.py
