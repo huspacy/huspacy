@@ -18,10 +18,12 @@ jobs:
         working-directory: huspacy
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.8, 3.9, 3.10]
 
     steps:
       - uses: actions/checkout@v2
+        name: Checkout
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -31,15 +33,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade poetry
-          poetry install
+          poetry install --with dev
 
-      - name: Lint with flake8
-        run: |
-          poetry run flake8 huspacy ../scripts
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
 
       - name: Test with pytest
         run: |
           poetry run pytest
+
+      - name: Lint with flake8
+        run: |
+          poetry run flake8 huspacy ../scripts
 
       - name: Extract branch name
         shell: bash
