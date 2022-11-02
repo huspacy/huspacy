@@ -14,10 +14,11 @@ nav:
           - huspacy: reference/huspacy/__init__.md
           - components:
               - edit_tree_lemmatizer: reference/huspacy/components/edit_tree_lemmatizer.md
-              - hun_sentencizer: reference/huspacy/components/hun_sentencizer.md
+              - sentencizer: reference/huspacy/components/sentencizer.md
               - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
               - sentiment: reference/huspacy/components/sentiment.md
+              - nerpp: reference/huspacy/components/nerpp.md
       - Under the hood: huspacy/under_the_hood.md
       - Publications: huspacy/publications.md
       - Development: huspacy/develop.md
@@ -47,6 +48,7 @@ nav:
         - Relation extraction: examples/relation.md
         - Demo: https://huggingface.co/spaces/huspacy/example-applications
     - Tips and tricks:
+        - Extended entity recognition: recipes/nerpp.md
         - Sentiment lexicons: recipes/sentiment.md
         - Rule-base sentencizer: recipes/sentencizer.md
         - Roman numbers: recipes/roman_nums.md
