@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   publish_docs:
@@ -36,7 +41,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         cd repo/huspacy
-        poetry install
+        poetry install --with docs
 
     - name: Generate docs
       run: |
@@ -49,7 +54,10 @@ jobs:
         
         cd ../repo
         mkdocs build -d --clean -d ../huspacy.github.io
-        
+
+    - name: Publish
+      if:  ${{ steps.extract_branch.outputs.branch }} == 'master'
+      run: |
         cd ../huspacy.github.io
         git config user.email "gyorgy+bot@orosz.link"
         git config user.name "HuSpaCy Bot"
