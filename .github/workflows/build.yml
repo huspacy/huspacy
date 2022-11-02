@@ -75,6 +75,12 @@ jobs:
 
           poetry build -f wheel
 
+      - uses: actions/upload-artifact@v3
+        if: matrix.python-version == '3.9'
+        with:
+          name: wheel-${{ matrix.python-version }}
+          path: huspacy/dist/*.whl
+
   publish_package:
     runs-on: ubuntu-latest
     needs: build_and_test
@@ -102,7 +108,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: wheel-3.9
-          path: dist
+          path: huspacy/dist
 
       - name: Publish package
         run: poetry run twine upload --non-interactive dist/*
