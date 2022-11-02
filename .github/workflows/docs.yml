@@ -40,7 +40,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: huspacy/.venv
-        key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
     - name: Install Python dependencies
       run: |

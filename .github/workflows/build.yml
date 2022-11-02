@@ -39,7 +39,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: huspacy/.venv
-          key: ${{ runner.os }}-${{ matrix.python-version }}poetry-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Test with pytest
         run: |
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: huspacy/.venv
-          key: ${{ runner.os }}-${{ matrix.python-version }}poetry-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install Python dependencies
         run: poetry install --with dev
