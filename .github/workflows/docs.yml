@@ -11,7 +11,7 @@ on:
       - develop
 
 jobs:
-  publish_docs:
+  docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,10 +33,14 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install Poetry
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade poetry
+    - uses: Gr1N/setup-poetry@v7
+      with:
+        poetry-version: 1.2.2
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
     - name: Install Python dependencies
       run: |
@@ -56,9 +60,9 @@ jobs:
         mkdocs build -d --clean -d ../huspacy.github.io
 
     - name: Publish
-      if:  ${{ steps.extract_branch.outputs.branch }} == 'master'
+      if: github.ref == 'refs/heads/master' #|| github.ref == 'refs/heads/develop'
       run: |
-        cd ../huspacy.github.io
+        cd huspacy.github.io
         git config user.email "gyorgy+bot@orosz.link"
         git config user.name "HuSpaCy Bot"
         git add .
