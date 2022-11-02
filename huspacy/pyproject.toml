@@ -33,20 +33,31 @@ packages = [
     { include = "huspacy" },
 ]
 
+
 [tool.poetry.dependencies]
 python = "^3.7"
 importlib_resources = { version = "*", python = "<3.9" }
+transformers = { version="^4.24.0", extras = ["hf"] }
+spacy-alignments = { version="^0.8.6", extras = ["hf"] }
 
-[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
 spacy = "^3.2.3"
 bump2version = "^1.0.1"
 pytest = "^7.0.0"
 flake8 = "*"
 twine = "^4.0.0"
+
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 lazydocs = "^0.4.8"
 pytest_codeblocks = "^0.14.0"
-
-[tool.poetry.group.dev.dependencies]
 mkdocs = "^1.4.1"
 mkdocs-material = "^8.5.6"
 mkdocs-git-revision-date-localized-plugin = "^1.1.0"
@@ -54,9 +65,10 @@ mkdocstrings = { extras = ["python"], version = "^0.19.0" }
 mkdocs-gen-files = "^0.4.0"
 mkdocs-autorefs = "^0.4.1"
 
+
 [build-system]
 requires = [
-    "poetry-core>=1.0.0",
+    "poetry-core>=1.2.0",
     "wheel"
 ]
 build-backend = "poetry.core.masonry.api"
