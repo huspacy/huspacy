@@ -35,7 +35,7 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 importlib_resources = { version = "*", python = "<3.9" }
 transformers = { version="^4.24.0", extras = ["hf"] }
 spacy-alignments = { version="^0.8.6", extras = ["hf"] }
