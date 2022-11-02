@@ -43,7 +43,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run pytest
+          poetry run pytest -m "not slow"
 
       - name: Setup flake8 annotations
         uses: rbialon/flake8-annotations@v1
