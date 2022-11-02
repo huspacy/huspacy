@@ -39,7 +39,7 @@ jobs:
 
     - uses: actions/cache@v2
       with:
-        path: ~/.cache/pypoetry/virtualenvs
+        path: huspacy/.venv
         key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
     - name: Install Python dependencies
