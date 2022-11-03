@@ -12,7 +12,7 @@ try:
     from transformers.models.auto.modeling_auto import AutoModelForTokenClassification
     from spacy_alignments import get_alignments
 except ImportError:
-    logging.warn("Transformer base components won't be available until dependencies are installed.")
+    logging.warning("The nerpp component won't be available until dependencies are installed.")
 
 
 @Hungarian.factory(

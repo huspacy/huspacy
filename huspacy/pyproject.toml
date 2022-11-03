@@ -52,7 +52,8 @@ bump2version = "^1.0.1"
 pytest = "^7.0.0"
 flake8 = "*"
 twine = "^4.0.0"
-
+### Quirks ###
+importlib-metadata = "<5"  # https://github.com/PyCQA/flake8/issues/1701
 
 [tool.poetry.group.docs]
 optional = true
