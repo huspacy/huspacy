@@ -6,11 +6,11 @@ from spacy.lang.hu import Hungarian
 from spacy.pipeline import Pipe
 from spacy.tokens import Doc
 from spacy.training import biluo_tags_to_spans, iob_to_biluo
-from spacy_alignments import get_alignments
 
 try:
     from transformers import AutoTokenizer, BertTokenizerFast, BertForTokenClassification
     from transformers.models.auto.modeling_auto import AutoModelForTokenClassification
+    from spacy_alignments import get_alignments
 except ImportError:
     logging.warn("Transformer base components won't be available until dependencies are installed.")
 
