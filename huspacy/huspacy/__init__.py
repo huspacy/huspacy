@@ -7,7 +7,7 @@ import packaging.version
 
 from huspacy.utils import run_command
 
-__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
+__URL = "https://huggingface.co/huspacy/{model_name}/resolve/v{version}/{model_name}-any-py3-none-any.whl"
 __DEFAULT_VERSION = "main"
 __DEFAULT_MODEL = "hu_core_news_lg"
 
