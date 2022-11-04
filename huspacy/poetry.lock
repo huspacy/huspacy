@@ -1392,8 +1392,8 @@ trf = ["transformers", "spacy-alignments", "torch"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.7,<=3.10"
-content-hash = "07f924e9704ee68aad4b553461c00199e5abe1cf6735869212206d3ce93db04c"
+python-versions = ">=3.7,<3.11"
+content-hash = "43a66785db96d8b885bc6aba880af3356a38eef2e165a338ee80eb420f53e9ed"
 
 [metadata.files]
 attrs = [

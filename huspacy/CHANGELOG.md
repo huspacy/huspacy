@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a lookup component for sentiment lexicons
 - Added integration for novakat's onpp NER model (`nerpp`)
 
+### Fixed
+- `packaging` dependency was implicit which might cause model loading failures
+
 ## 0.5.1
 ### Changed
 - Dropped Python 3.6 support
