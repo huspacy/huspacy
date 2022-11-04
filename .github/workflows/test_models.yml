@@ -30,12 +30,9 @@ jobs:
           poetry-version: 1.2.2
 
       - name: Install Python dependencies
-        run: poetry install --with dev --all-extras
+        run: |
+          poetry install --with dev --all-extras
 
-      - uses: actions/cache@v2
-        with:
-          path: huspacy/.venv
-          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Test with pytest
         run: |
