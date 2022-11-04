@@ -5,10 +5,10 @@ from typing import List, Any, Optional
 
 
 def run_command(
-        cmd_list: List[str],
-        *,
-        stdin: Optional[Any] = None,
-        capture: bool = False,
+    cmd_list: List[str],
+    *,
+    stdin: Optional[Any] = None,
+    capture: bool = False,
 ) -> subprocess.CompletedProcess:
     """Run a command on the command line as a subprocess. If the subprocess
     returns a non-zero exit code, a system exit is performed.
@@ -17,7 +17,7 @@ def run_command(
     stdin (Optional[Any]): stdin to read from or None.
     capture (bool): Whether to capture the output and errors. If False,
         the stdout and stderr will not be redirected, and if there's an error,
-        sys.exit will be called with the return code. You should use capture=False
+        `sys.exit` will be called with the return code. You should use capture=False
         when you want to turn over execution to the command, and capture=True
         when you want to run the command more like a function.
     RETURNS (Optional[CompletedProcess]): The process object.

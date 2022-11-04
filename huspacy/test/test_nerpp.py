@@ -21,7 +21,7 @@ def nlp():
     [("A Ford Focus egy alsó-középkategóriás családi autó".split(), [("Ford Focus", "CAR")])],
 )
 @pytest.mark.slow
-def test_sentencizer(nlp: Language, tokens: List[str], entities: List[Tuple[str, str]]):
+def test_nerpp(nlp: Language, tokens: List[str], entities: List[Tuple[str, str]]):
     doc: Doc = Doc(nlp.vocab, words=tokens)
     processed: Doc = nlp(doc)
     actual_ents: List[Span] = [ent for ent in processed.spans["ents"]]

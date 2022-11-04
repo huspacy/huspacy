@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  test_models:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: huspacy
+    strategy:
+      matrix:
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: Gr1N/setup-poetry@v7
+        with:
+          poetry-version: 1.2.2
+
+      - name: Install Python dependencies
+        run: poetry install --with dev
+
+      - uses: actions/cache@v2
+        with:
+          path: huspacy/.venv
+          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
+
+      - name: Test with pytest
+        run: |
+          poetry run pytest -m "slow"
