@@ -1,4 +1,4 @@
-name: Build
+name: Build and test
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           poetry-version: 1.2.2
 
       - name: Install Python dependencies
-        run: poetry install --with dev --all-extras
+        run: poetry install --with dev
 
       - uses: actions/cache@v2
         with:
@@ -45,12 +45,12 @@ jobs:
         run: |
           poetry run pytest -m "not slow"
 
-      - name: Setup flake8 annotations
-        uses: rbialon/flake8-annotations@v1
-
-      - name: Lint with flake8
-        run: |
-          poetry run flake8 huspacy ../scripts
+#      - name: Setup flake8 annotations
+#        uses: rbialon/flake8-annotations@v1
+#
+#      - name: Lint with flake8
+#        run: |
+#          poetry run flake8 huspacy ../scripts
 
       - name: Extract branch name
         shell: bash

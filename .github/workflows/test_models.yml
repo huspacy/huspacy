@@ -1,4 +1,4 @@
-name: Build
+name: Test models
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           poetry-version: 1.2.2
 
       - name: Install Python dependencies
-        run: poetry install --with dev
+        run: poetry install --with dev --all-extras
 
       - uses: actions/cache@v2
         with:
