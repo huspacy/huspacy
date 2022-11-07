@@ -9,7 +9,7 @@ from spacy.tokens import Doc, Span
 @pytest.fixture(scope="module")
 def nlp():
     # noinspection PyUnresolvedReferences
-    from huspacy.components import nerpp
+    from huspacy.integrations import nerpp
 
     nlp = Hungarian()
     nlp.add_pipe("nerpp")

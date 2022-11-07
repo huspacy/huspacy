@@ -74,9 +74,9 @@ mkdocs-autorefs = "^0.4.1"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
-addopts = "-ra -v"
+addopts = "-ra -v -m 'not slow'"
 testpaths = [
-    "test",
+    "tests",
 ]
 
 [build-system]

@@ -1,6 +1,6 @@
 ## Install dependencies
 
-Make sure you have poetry installed, then issue: `poetry install --with docs --with dev`
+Make sure you have poetry installed, then issue: `poetry install --with docs --with dev --all-extras`
 
 ## Release steps
 

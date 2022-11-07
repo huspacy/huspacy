@@ -7,7 +7,7 @@ while one can also load the [PrecoSenti](https://opendata.hu/dataset/hungarian-s
 
 ```python
 import huspacy
-import huspacy.components
+import huspacy.integrations
 
 # Load the default lexicon
 nlp = huspacy.load("hu_core_news_lg")

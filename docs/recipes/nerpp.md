@@ -8,7 +8,7 @@ Loading the model can be achieved by adding the `nerpp` component.
 
 ```python
 import huspacy
-import huspacy.components
+import huspacy.integrations
 
 # Load the default lexicon
 nlp = huspacy.load("hu_core_news_lg")
