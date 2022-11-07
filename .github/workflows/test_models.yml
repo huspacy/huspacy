@@ -3,8 +3,7 @@ name: Test models
 on:
   push:
     branches:
-      - master
-      - develop
+      - never
 
 jobs:
   test_models:
