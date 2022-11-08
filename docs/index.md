@@ -1,10 +1,7 @@
----
-title: Welcome
----
-
 # 
 
 <div align="center" markdown>
+
 ![project logo](https://raw.githubusercontent.com/huspacy/huspacy/develop/.github/resources/logo.png)
 
 [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/huspacy/huspacy)

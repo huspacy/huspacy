@@ -1,4 +1,4 @@
-# # :octicons-command-palette-24: Quicstart
+# :octicons-command-palette-24: Quickstart
 HuSpaCy is fully compatible with [spaCy's API](https://spacy.io/api/doc/), newcomers can easily get started with [spaCy 101](https://spacy.io/usage/spacy-101) guide.
 
 Although HuSpacy models can be loaded with `spacy.load(...)`, the tool provides convenience methods to easily access downloaded models.

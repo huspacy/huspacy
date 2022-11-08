@@ -20,7 +20,7 @@ nav:
               - sentiment: reference/huspacy/components/sentiment.md
               - nerpp: reference/huspacy/components/nerpp.md
       - Under the hood: huspacy/under_the_hood.md
-      - Publications: huspacy/publications.md
+      - Citing: huspacy/publications.md
       - Development: huspacy/develop.md
       - Changelog: huspacy/changelog.md
   - Models:
