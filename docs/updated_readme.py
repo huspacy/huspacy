@@ -20,7 +20,7 @@ This repository contains material to build HuSpaCy and all of its models in a re
 
 {quickstart}
 
-API Documentation is available in [our website](https://huspacy.github.io/docs/huspacy/).
+API Documentation is available in [our website](https://huspacy.github.io/).
 
 {models}
 

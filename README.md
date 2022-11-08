@@ -83,7 +83,7 @@ doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 
 As HuSpaCy is built on spaCy, the returned [`doc` document](https://spacy.io/api/doc#_title) contains all the annotations given by the pipeline components.
 
-API Documentation is available in [our website](https://huspacy.github.io/docs/huspacy/).
+API Documentation is available in [our website](https://huspacy.github.io/).
 
 #  Models overview
 
