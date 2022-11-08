@@ -353,6 +353,7 @@ commands:
     help: "Train the NER on NerKor and SzegedNER with the pretrained tagger"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
+          --code ${vars.components_edit_tree_lemmatizer_path}
           --output ${vars.transformer_models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
