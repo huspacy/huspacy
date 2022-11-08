@@ -1,4 +1,4 @@
-# Citing
+# :simple-semanticscholar: Citing
 
 If you use any of the models or HuSpaCy as library in your research, please cite this [paper](https://arxiv.org/abs/2201.01956):
 

@@ -1,7 +1,3 @@
-## Install dependencies
-
-Make sure you have poetry installed, then issue: `poetry install --with docs --with dev --all-extras`
-
 ## Repository structure
 
 ```
@@ -52,6 +48,8 @@ Make sure you have poetry installed, then issue: `poetry install --with docs --w
 ```
 
 ## Release steps
+
+First of all, we need all the dependecies installed: `poetry install --with docs --with dev --all-extras`
 
 1. Make sure all tests pass: `poetry run pytest`
 2. Update the readme, if there are changes in `docs`: `poetry run docs/update_readme.py`

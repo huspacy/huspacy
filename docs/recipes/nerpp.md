@@ -1,3 +1,5 @@
+# :material-unfold-more-horizontal: Extended entity recognition
+
 There can be cases when the default four-type NER does not suffice, one needs a more fine-grained entity type system.
 Attila Novak developed a [corpus](https://github.com/novakat/NYTK-NerKor-Cars-OntoNotesPP) and an [entity recognition system](https://huggingface.co/novakat/nerkor-cars-onpp-hubert) consisting more than 30 entity types. We provide easy
 integration with his tool.

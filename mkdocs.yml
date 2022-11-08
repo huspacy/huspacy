@@ -5,8 +5,11 @@ site_url: https://huspacy.github.io
 repo_url: https://github.com/huspacy/huspacy
 repo_name: huspacy/huspacy
 
+copyright: >
+  <a href="#__consent">Change cookie settings</a>
+
 nav:
-  - Welcome: index.md
+  - "": index.md
   - Docs:
       - Installation: huspacy/installation.md
       - Quickstart: huspacy/quickstart.md
@@ -14,13 +17,13 @@ nav:
           - huspacy: reference/huspacy/__init__.md
           - components:
               - edit_tree_lemmatizer: reference/huspacy/components/edit_tree_lemmatizer.md
-              - sentencizer: reference/huspacy/components/sentencizer.md
-              - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
-              - sentiment: reference/huspacy/components/sentiment.md
-              - nerpp: reference/huspacy/components/nerpp.md
+              - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
+              - sentencizer: reference/huspacy/components/sentencizer.md
+          - integrations:
+              - nerpp: reference/huspacy/integrations/nerpp.md
+              - sentiment: reference/huspacy/integrations/sentiment.md
       - Under the hood: huspacy/under_the_hood.md
-      - Citing: huspacy/publications.md
       - Development: huspacy/develop.md
       - Changelog: huspacy/changelog.md
   - Models:
@@ -55,7 +58,10 @@ nav:
         - Usage in R: huspacy/usage_in_r.md
     - FAQ: recipes/faq.md
   - Demo: https://huggingface.co/spaces/huspacy/demo
-  - Contact us: contact.md
+  - About:
+    - Contact: contact.md
+    - Citing: huspacy/publications.md
+    - License: huspacy/license.md
 
 theme:
   name: material
@@ -115,7 +121,7 @@ plugins:
             separate_signature: True
             filters: ["!^_"]
   - git-revision-date-localized:
-      enable_creation_date: true
+#      enable_creation_date: true
       type: date
       fallback_to_build_date: true
 
@@ -167,6 +173,20 @@ extra:
   analytics:
     provider: google
     property: G-HQPTKYY3SL
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/huspacy/huspacy
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/huspacy/
+#    - icon: hugging
+#      link: https://huggingface.co/huspacy
 
 #  version:
 #    provider: mike

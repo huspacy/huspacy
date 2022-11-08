@@ -1,3 +1,5 @@
+# :material-roman-numeral-4: Converting Roman numbers
+
 In case you want to use the arabic value of roman numbers, you can use one of our optional pipeline steps.
 
 In order to process numbers, `roman_to_arabic` module should be added to the pipeline:

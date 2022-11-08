@@ -1,3 +1,5 @@
+# :material-heart-half: Matching sentiment lexicons
+
 HuSpaCy is shipped with two sentiment lexicons. 
 The component loads up a lexicon and match words with it. 
 The module can use two sentiment lexicons, the default one is the [PolText Lab's resource](https://github.com/poltextlab/sentiment_hun) 

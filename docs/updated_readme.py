@@ -31,13 +31,16 @@ API Documentation is available in [our website](https://huspacy.github.io/).
 {license}
 """
 
-ICON_PATTERN = re.compile(r":[a-z0-9\-]{10,}:")
+ICON_PATTERN = re.compile(r":[a-z0-9\-]{5,}:")
+
+URL_PATTERN = re.compile(r"\(/")
 
 
 def read_doc(path: str) -> str:
     raw_content = Path(path).open().read().strip()
     content = raw_content.replace(":fontawesome-solid-star:", "⭑").replace(":fontawesome-solid-star-half-stroke:", "⭒")
     content: str = ICON_PATTERN.sub("", content)
+    content = URL_PATTERN.sub("(https://huspacy.github.io/", content)
     return content
 
 

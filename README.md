@@ -50,7 +50,7 @@ You can install the latest models directly from 🤗 Hugging Face Hub:
 
 To speed up inference on GPUs, CUDA should be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
 
-Read more on the models [here](/models)
+Read more on the models [here](https://huspacy.github.io/models)
 
 #  Quickstart
 HuSpaCy is fully compatible with [spaCy's API](https://spacy.io/api/doc/), newcomers can easily get started with [spaCy 101](https://spacy.io/usage/spacy-101) guide.
@@ -108,7 +108,7 @@ To read more about the model's architecture we suggest reading [the relevant sec
 | Accuracy     | ⭑⭑⭑⭒                                                                                                                                     | ⭑⭑⭑⭑                                                                                                  | ⭑⭑⭑⭑⭒ |
 | Resource usage | ⭑⭑⭑⭑⭑  | ⭑⭑⭑⭑  | ⭑⭑                                                             |
 
-# Citing
+#  Citing
 
 If you use any of the models or HuSpaCy as library in your research, please cite this [paper](https://arxiv.org/abs/2201.01956):
 
@@ -132,7 +132,7 @@ For feature requests, issues and bugs please use the [GitHub Issue Tracker](http
 
 HuSpaCy is implemented in the [SzegedAI](https://szegedai.github.io/) team, coordinated by [Orosz György](mailto:gyorgy@orosz.link) in the [Hungarian AI National Laboratory, MILAB](https://mi.nemzetilabor.hu/) program.
 
-# License
+#  License
 
 This library is released under the [Apache 2.0 License](https://github.com/huspacy/huspacy/blob/master/LICENSE)
 

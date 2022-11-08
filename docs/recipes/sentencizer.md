@@ -1,3 +1,5 @@
+# :material-text: Rule-based sentencizer 
+
 All models come with a machine learning based sentencizer. If by any reason, you want to rely on a rule-base one,
 HuSpacy got your back as it contains a classic sentence boundary detector component.
 
