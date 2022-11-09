@@ -8,9 +8,6 @@ on:
 jobs:
   test_models:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: huspacy
     strategy:
       matrix:
         python-version: [ "3.7", "3.8", "3.9", "3.10" ]
@@ -33,4 +30,4 @@ jobs:
 
       - name: Smoke test
         run: |
-          python scripts/smoke_test.py
+          python scripts/smoke_test.py ${{ matrix.model-name }}
