@@ -3,7 +3,7 @@ name: Test models
 on:
   push:
     branches:
-      - never
+      - develop
 
 jobs:
   test_models:
@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        model-name: ["hu_core_news_md", "hu_core_news_lg", "hu_core_news_trf"]
 
     steps:
       - uses: actions/checkout@v2
@@ -24,15 +25,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: Gr1N/setup-poetry@v7
-        with:
-          poetry-version: 1.2.2
-
-      - name: Install Python dependencies
+      - name: Install the package
         run: |
-          poetry install --with dev --all-extras
+          pip install -U pip 
+          pip install spacy_conll typer
+          pip install https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
 
-
-      - name: Test with pytest
+      - name: Smoke test
         run: |
-          poetry run pytest -m "slow"
+          python scripts/smoke_test.py
