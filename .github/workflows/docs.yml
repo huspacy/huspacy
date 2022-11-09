@@ -60,7 +60,7 @@ jobs:
         mkdocs build -d --clean -d ../huspacy.github.io
 
     - name: Publish
-      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/master' #|| github.ref == 'refs/heads/develop'
       run: |
         cd huspacy.github.io
         git config user.email "gyorgy+bot@orosz.link"
