@@ -1,22 +1,18 @@
 import traceback
 from pathlib import Path
+from typing import Union
 
 import spacy
+
 # noinspection PyUnresolvedReferences
 import spacy_conll
 import typer
-
-# TODO: remove this workaround w/ lemmy
-import sys
-sys.path.append("../huspacy")
-# noinspection PyUnresolvedReferences
-import tools.custom_code
 
 app = typer.Typer()
 
 
 @app.command()
-def main(path: Path):
+def main(path: Union[Path, str]):
     try:
         nlp = spacy.load(path)
         nlp.add_pipe("conll_formatter")
@@ -24,9 +20,8 @@ def main(path: Path):
         print(doc._.conll_str)
     except Exception:
         print(traceback.format_exc())
-
         exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app()
