@@ -1,6 +1,4 @@
 import traceback
-from pathlib import Path
-from typing import Union
 
 import spacy
 
@@ -12,7 +10,7 @@ app = typer.Typer()
 
 
 @app.command()
-def main(path: Union[Path, str]):
+def main(path: str):
     try:
         nlp = spacy.load(path)
         nlp.add_pipe("conll_formatter")
