@@ -451,7 +451,7 @@ commands:
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
+      - ${vars.components_init}
       - ${vars.processed_data_path}/${vars.treebank}/test.conllu
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu
@@ -483,7 +483,7 @@ commands:
   - name: smoke_test
     help: "Smoke test the packaged model"
     script:
-      - "python ../scripts/smoke_test.py
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/smoke_test.py
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
