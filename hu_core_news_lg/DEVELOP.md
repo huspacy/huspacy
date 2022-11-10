@@ -3,6 +3,7 @@
 ## Train models
 
 1. Install dependencies: `poetry install` (CUDA 11.1 is supported out-of-the-box)
+   - Run `poetry run pip install -U pip setuptools wheel` if these packages are missing or not uptodate
 2. Activate the virtual environment `poetry shell`
 3. Fetch datafiles: `spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)

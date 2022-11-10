@@ -7,18 +7,24 @@ license = "cc-by-sa-4.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-spacy = {extras = ["cuda111"], version = "~3.4.0"}
-spacy-huggingface-hub = "0.0.6"
-spacy_conll = "^3.0"
-conllu = "^4.4"
-wheel = "^0.37.0"
-contexttimer = "^0.3.3"
-wandb = "^0.13.3"
-setuptools = "^65.4.1"
+
+spacy = {extras = ["cuda111"], version = "~3.4.1"}
+spacy-experimental = "0.6.1"
 
 [tool.poetry.dev-dependencies]
+spacy-huggingface-hub = "0.0.6"
+spacy-loggers = "~1.0.3"
+spacy_conll = "^3.0"
+conllu = "^4.4.1"
+wandb = "^0.13.3"
+contexttimer = "^0.3.3"
+
+wheel = ">=0.37.0"
+setuptools = ">=65.4.1"
+pip = ">=22.2.2"
+
 bump2version = "^1.0.1"
 
 [build-system]
-requires = ["poetry>=1.1.10", "pip>=22.2.2"]
+requires = ["poetry>=1.1.10", "pip>=22.2.2", "setuptools>=65.5.1", "wheel>=37.0"]
 build-backend = "poetry.masonry.api"
