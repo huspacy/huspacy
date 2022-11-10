@@ -4,6 +4,7 @@
 
 1. Install dependencies: `poetry install` (CUDA 11.1 is supported out-of-the-box)
     - To enable full GPU usage install PyTorch: `poetry run python -m pip install torch==1.10.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html`
+    - Run `poetry run pip install -U pip setuptools wheel` if these packages are missing or not uptodate
 2. Activate the virtual environment `poetry shell`
 3. Fetch datafiles: `spacy project assets -S` <br/>
    (`-S` won't retry fetch resources if they are already present)
