@@ -4,9 +4,9 @@ spacy_version: ">=3.4.0,<3.5.0"
 
 vars:
   lang: hu
-  # The convention is to use the format: modeltype_preferreddomain_modelsize
+  # Following spaCy's convention: https://spacy.io/models#conventions
   core_package_name: core_news_md
-  # Workaround: spacy project yaml cannot interpolate variables inside the `vars` sections
+  # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_md
   # Following spaCy's convention: https://spacy.io/models#model-versioning
   package_version: 3.4.1
@@ -26,32 +26,27 @@ vars:
 
   nerkor: NerKor
   szegedcorpus: SzegedCorpus
-  hunnerwiki: hunNERwiki
   szegedner: SzegedNER
   ner_merged: ner_merged
-  szfsszegedner: SZFSSzegedNER
   vectors: floret.vectors
 
-  package_init: ../huspacy/tools/custom_code.py
-  components_path: '../huspacy/tools/components/edit_tree_lemmatizer.py,../huspacy/tools/components/sentencizer.py,../huspacy/tools/components/lemma_postprocessing.py,../huspacy/tools/components/lookup_lemmatizer.py'
-  components_edit_tree_lemmatizer_path: ../huspacy/tools/components/edit_tree_lemmatizer.py
-  components_sentencizer_path: ../huspacy/tools/components/sentencizer.py
-  components_lemma_postprocessing_path: ../huspacy/tools/components/lemma_postprocessing.py
-  components_lookup_lemmatizer_path: ../huspacy/tools/components/lookup_lemmatizer.py
-
-  wandb_entity: spacy-hu
-  wandb_project: hu_core_news_md-3.4.1
+  components_init: ../scripts/huspacy_components.py
+  edit_tree_lemmatizer_path: ../huspacy/huspacy/components/edit_tree_lemmatizer.py
+  lemma_postprocessing_path: ../huspacy/huspacy/components/lemma_postprocessing.py
+  lookup_lemmatizer_path: ../huspacy/huspacy/components/lookup_lemmatizer.py
 
   assemble_config: assemble
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
 
+  wandb_entity: spacy-hu
+  wandb_project: hu_core_news_md-3.4.1
+
   gpu: 1
 
-# These are the directories that the project needs. The project CLI will make
-# sure that they always exist.
-directories: [configs, models, packages, data/raw, data/processed, data/external]
+# These are the directories that the project needs. The project CLI will make sure that they always exist.
+directories: [configs, models, packages, data/raw, data/processed, data/external, data/result]
 
 assets:
   # Universal dependencies
@@ -96,11 +91,24 @@ workflows:
     - preprocess_szegedner
     - preprocess_merge
 
-  train_models:
-    - pretrain_tagger_lemmatizer
+  # Due to non-deterministic behaviour we retrain the components 3 times
+  train_3x:
+    - pretrain_tagger
     - train_lookup_lemmatizer
+
     - train_parser
     - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - train_parser
+    - train_ner
+    - backup_models
+
+    - find_best_model
 
   all:
     - init_vectors
@@ -110,7 +118,7 @@ workflows:
     - preprocess_szegedner
     - preprocess_merge
 
-    - pretrain_tagger_lemmatizer
+    - pretrain_tagger
     - train_lookup_lemmatizer
     - train_parser
     - train_ner
@@ -132,14 +140,14 @@ workflows:
   tagger:
     - preprocess_szegedcorpus
     - preprocess_ud
-    - pretrain_tagger_lemmatizer
+    - pretrain_tagger
     - train_lookup_lemmatizer
     - train_parser
 
   parser:
     - preprocess_szegedcorpus
     - preprocess_ud
-    - pretrain_tagger_lemmatizer
+    - pretrain_tagger
     - train_lookup_lemmatizer
     - train_parser
 
@@ -303,14 +311,14 @@ commands:
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
 
 
-  - name: pretrain_tagger_lemmatizer
+  - name: pretrain_tagger
     help: "Pretrain the tagger and edit tree lemmatizer on the full Szeged Corpus"
     script:
       - "spacy train configs/${vars.tagger_config}.cfg
-            --output ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}
+            --code ${vars.edit_tree_lemmatizer_path}
+            --output ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
-            --code ${vars.components_edit_tree_lemmatizer_path}
             --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
@@ -319,7 +327,7 @@ commands:
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
       - configs/${vars.tagger_config}.cfg
     outputs:
-      - ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
 
 
   - name: train_lookup_lemmatizer
@@ -336,11 +344,10 @@ commands:
 
 
   - name: train_parser
-    help: "Train the parser on the Universal Dependencies
-           dataset with the pretrained tagger model"
+    help: "Train the parser on the Universal Dependencies dataset on top of the pretrained tagger"
     script:
       - "spacy train configs/${vars.parser_config}.cfg
-            --code ${vars.components_edit_tree_lemmatizer_path} 
+            --code ${vars.edit_tree_lemmatizer_path} 
             --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
             --training.logger.project_name ${vars.wandb_project}
@@ -349,26 +356,7 @@ commands:
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
             --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
     deps:
-      - ${vars.processed_data_path}/${vars.treebank}/train.spacy
-      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-      - ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best
-      - configs/${vars.parser_config}.cfg
-    outputs:
-      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-
-
-  - name: train_parser_ud
-    help: "Train the parser on the Universal Dependencies
-           dataset with the pretrained tagger model"
-    script:
-      - "spacy train configs/${vars.parser_config}_ud.cfg
-            --output ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
-            --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
-            --training.logger.project_name ${vars.wandb_project}
-            --paths.vectors ${vars.models_path}/${vars.vectors}
-            --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
-            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
-    deps:
+      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
       - configs/${vars.parser_config}.cfg
@@ -377,21 +365,23 @@ commands:
 
 
   - name: train_ner
-    help: "Train the NER model"
+    help: "Train the NER model on top of the pretrained tagger"
     script:
       - "spacy train configs/${vars.ner_config}.cfg
-          --code ${vars.components_edit_tree_lemmatizer_path} 
+          --code ${vars.edit_tree_lemmatizer_path} 
           --output ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
           --nlp.lang=${vars.lang} --gpu-id ${vars.gpu}
           --training.logger.project_name ${vars.wandb_project}
           --paths.vectors ${vars.models_path}/${vars.vectors}
           --paths.train ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
           --paths.dev ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
-          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
     deps:
+      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
       - ${vars.processed_data_path}/${vars.ner_merged}/train.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/dev.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+      - configs/${vars.ner_config}.cfg
     outputs:
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
 
@@ -419,19 +409,22 @@ commands:
 
 
   - name: assemble
-    help: "Assemble the parser, the lemmatizer and the NER components"
+    help: "Assemble the tagger, parser, lemmatizer and the NER components"
     script:
-      - "spacy assemble configs/${vars.assemble_config}.cfg
-          --code ${vars.package_init}
+      - bash -c "PYTHONPATH=\"../huspacy\" spacy assemble configs/${vars.assemble_config}.cfg
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
+          --code ${vars.components_init}          
+          --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
           --paths.lemmatizer_lookups ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
           --paths.ner_model ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best"
     deps:
+      - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
       - ${vars.models_path}/${vars.package_name}-lookup-lemmatizer-${vars.package_version}/lookups.bin
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}/model-best
-      - ${vars.package_init}
+      - configs/${vars.assemble_config}.cfg
+      - ${vars.components_init}
     outputs:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
 
@@ -440,16 +433,16 @@ commands:
     help: "Evaluate on the test data and save the metrics"
     script:
       # Intentionally using the CPU to measure tok/sec correctly
-      - "spacy evaluate
-            --gpu-id -1
-            --code ${vars.package_init}
+      - bash -c "PYTHONPATH=\"../huspacy\" spacy evaluate
             ${vars.models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.treebank}/test.spacy
-            --output ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json"
-      - "spacy evaluate
-            --gold-preproc
             --gpu-id -1
-            --code ${vars.package_init}
+            --code ${vars.components_init}
+            --output ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json"
+      - bash -c "PYTHONPATH=\"../huspacy\" spacy evaluate
+            --gold-preproc
+            --code ${vars.components_init}
+            --gpu-id -1
             ${vars.models_path}/${vars.package_name}-${vars.package_version}
             ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
             --output ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json"
@@ -461,6 +454,7 @@ commands:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
       - ${vars.processed_data_path}/${vars.treebank}/test.spacy
       - ${vars.processed_data_path}/${vars.ner_merged}/test.spacy
+      - ${vars.components_init}
     outputs:
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
@@ -471,7 +465,7 @@ commands:
     help: "Evaluate the model with the official conll script"
     script:
       - "mkdir -p ${vars.result_data_path}"
-      - "python ../scripts/huspacyv3_benchmark.py raw-text
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/huspacyv3_benchmark.py raw-text
         ${vars.processed_data_path}/${vars.treebank}/test.conllu
         --output-file ${vars.result_data_path}/ud_test.conllu
         --model-name ${vars.models_path}/${vars.package_name}-${vars.package_version}"
@@ -481,7 +475,7 @@ commands:
         -v | tee ${vars.result_data_path}/ud_test_conll18.log"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.package_init}
+      - ${vars.components_init}
       - ${vars.processed_data_path}/${vars.treebank}/test.conllu
     outputs_no_cache:
       - ${vars.result_data_path}/ud_test.conllu
@@ -493,18 +487,17 @@ commands:
     script:
       - "spacy package
           ${vars.models_path}/${vars.package_name}-${vars.package_version} ${vars.packages_path}
+          --code ${vars.edit_tree_lemmatizer_path},${vars.lemma_postprocessing_path},${vars.lookup_lemmatizer_path}
           --build 'wheel'
-          --code ${vars.components_path}
           --meta meta.json
           --name ${vars.core_package_name}
           --version ${vars.package_version}
           --force"
     deps:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}
-      - ${vars.components_edit_tree_lemmatizer_path}
-      - ${vars.components_sentencizer_path}
-      - ${vars.components_lemma_postprocessing_path}
-      - ${vars.components_lookup_lemmatizer_path}
+      - ${vars.edit_tree_lemmatizer_path}
+      - ${vars.lemma_postprocessing_path}
+      - ${vars.lookup_lemmatizer_path}
       - meta.json
     outputs_no_cache:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
@@ -514,7 +507,7 @@ commands:
   - name: smoke_test
     help: "Smoke test the packaged model"
     script:
-      - "python ../scripts/smoke_test.py
+      - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/smoke_test.py
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
