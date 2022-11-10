@@ -9,7 +9,6 @@ license = "cc-by-sa-4.0"
 python = "^3.8"
 
 spacy = {extras = ["cuda111"], version = "~3.4.1"}
-spacy-experimental = "0.6.1"
 
 [tool.poetry.dev-dependencies]
 spacy-huggingface-hub = "0.0.6"
@@ -21,7 +20,7 @@ contexttimer = "^0.3.3"
 
 wheel = ">=0.37.0"
 setuptools = ">=65.4.1"
-pip = ">=22.2.2"
+pip = ">=22.3.1"
 
 bump2version = "^1.0.1"
 
