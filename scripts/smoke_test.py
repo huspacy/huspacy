@@ -8,6 +8,8 @@ import typer
 
 app = typer.Typer()
 
+import huspacy.components
+
 
 @app.command()
 def main(path: str):
