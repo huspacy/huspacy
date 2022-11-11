@@ -7,7 +7,7 @@ import packaging.version
 
 from huspacy.utils import run_command
 
-__URL = "https://huggingface.co/huspacy/{model_name}/resolve/v{version}/{model_name}-any-py3-none-any.whl"
+__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
 __DEFAULT_VERSION = "main"
 __DEFAULT_MODEL = "hu_core_news_lg"
 
@@ -56,6 +56,9 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
     assert (
         model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
     ), f"{model_version} is not a valid version for {model_name}"
+
+    if model_version != __DEFAULT_VERSION:
+        model_version = "v" + model_version
 
     download_url = __URL.format(version=model_version, model_name=model_name)
     cmd = [sys.executable, "-m", "pip", "install"] + [download_url]

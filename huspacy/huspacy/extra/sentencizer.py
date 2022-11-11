@@ -1,3 +1,6 @@
+"""
+Facilities for rule-based sentence splitting
+"""
 import re
 from typing import Optional
 
@@ -10,6 +13,7 @@ from spacy.tokens.doc import Doc
 class HunSentencizer(Pipe):
     """Sentencizer component which uses simple rules to split the text to sentences."""
 
+    # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal
     @staticmethod
     @Language.factory("hun_sentencizer")
     def create_sentencizer(nlp: Language, name: str) -> "HunSentencizer":
