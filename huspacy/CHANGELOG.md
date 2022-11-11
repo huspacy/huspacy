@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New
 - Added a lookup component for sentiment lexicons
 - Added integration for novakat's onpp NER model (`nerpp`)
+- Added support for new models (`hu_core_news_trf-v3.4.0`, `hu_core_news_md-v3.4.2`, `hu_core_news_lg-v3.4.4`)
 
 ### Fixed
 - `packaging` dependency was implicit which might cause model loading failures
