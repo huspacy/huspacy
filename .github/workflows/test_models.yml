@@ -3,7 +3,10 @@ name: Test models
 on:
   push:
     branches:
-      - develop
+      - master
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 
