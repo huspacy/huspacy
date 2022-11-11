@@ -62,15 +62,10 @@ jobs:
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         run: |
           echo "Running the pipeline on $BRANCH_NAME branch"
-          if [[ "$BRANCH_NAME" == "master" ]]
-          then
-            poetry version --short
-          else
-            sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
-            poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
-            poetry version --short
-          fi
-
+          sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
+          poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
+          poetry version --short
+          
           poetry build -f wheel
 
       - uses: actions/upload-artifact@v3

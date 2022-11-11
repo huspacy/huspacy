@@ -8,7 +8,10 @@ import typer
 
 app = typer.Typer()
 
-import huspacy.components
+try:
+    import huspacy.components
+except ImportError as e:
+    print("Could not load the components")
 
 
 @app.command()
