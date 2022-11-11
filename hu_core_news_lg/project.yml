@@ -354,7 +354,7 @@ commands:
             --paths.vectors ${vars.models_path}/${vars.vectors}
             --paths.train ${vars.processed_data_path}/${vars.treebank}/train.spacy
             --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-            --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-etl-${vars.package_version}/model-best"
+            --paths.tagger_model ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best"
     deps:
       - ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}/model-best
       - ${vars.processed_data_path}/${vars.treebank}/train.spacy
