@@ -9,12 +9,11 @@
 [![spacy](https://img.shields.io/badge/built%20with-spaCy-09a3d5.svg)](https://spacy.io)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/huspacy)
 [![PyPI version](https://badge.fury.io/py/huspacy.svg)](https://pypi.org/project/huspacy/)
-[![license: Apache-2.0](https://img.shields.io/github/license/huspacy/huspacy)](https://github.com/huspacy/huspacy/blob/master/LICENSE)
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-<br/>
 [![Demo](https://img.shields.io/badge/Try%20the-Demo-important)](https://huggingface.co/spaces/huspacy/demo)
+<br/>
+[![Downloads](https://static.pepy.tech/personalized-badge/huspacy?period=month&units=international_system&left_color=grey&right_color=green&left_text=Downloads/month)](https://pepy.tech/project/huspacy)
+[![Downloads](https://static.pepy.tech/personalized-badge/huspacy?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/huspacy)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhuspacy%2Fhuspacy&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
-[![pip downloads](https://img.shields.io/pypi/dm/huspacy.svg)](https://pypi.org/project/huspacy/)
 [![stars](https://img.shields.io/github/stars/huspacy/huspacy?style=social)](https://github.com/huspacy/huspacy)
 </div>
 
@@ -76,6 +75,8 @@ nlp = hu_core_news_lg.load()
 ```
 
 To process texts, you can simply call the loaded model (i.e. the [`nlp` callable object](https://spacy.io/api/language#call)) 
+
+<!--pytest-codeblocks:cont-->
 
 ```python
 doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")

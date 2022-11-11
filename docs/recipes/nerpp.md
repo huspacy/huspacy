@@ -6,31 +6,43 @@ integration with his tool.
 
 ## Load
 
+<!--
+```python
+from spacy.lang.hu import Hungarian
+
+nlp = Hungarian()
+```
+-->
+
 Loading the model can be achieved by adding the `nerpp` component.
 
+<!--pytest-codeblocks:cont-->
 ```python
-import huspacy
 import huspacy.integrations
 
-# Load the default lexicon
-nlp = huspacy.load("hu_core_news_lg")
 nlp.add_pipe("nerpp")
 ```
 Please note that using this component requires `transformers`, `torch` and `spacy-alignments` to be installed.
-Installing HuSpaCy with `trf` extras automates this step:
+Installing HuSpaCy with `trf` extras installes all these dependencies: `pip install huspacy[trf]`
 
-```bash
-$ pip install huspacy[trf]
-```
 
 ## Get entity annotations
 
 The `nerpp` components stores entities as spans on the document under the `"ents"` key:
 
+<!--pytest-codeblocks:cont-->
 ```python
 doc = nlp("A Ford Focus egy alsó-középkategóriás családi autó")
-print(doc.spans["ents"]) # ["Ford Focus"]
-print(doc.spans["ents"][0].label_) # "CAR"
+print(doc.spans["ents"])
+print(doc.spans["ents"][0].label_) 
+```
+
+gives
+
+<!--pytest-codeblocks:expected-output-->
+```
+[Ford Focus]
+CAR
 ```
 ## Citing
 If you use this component, please cite:

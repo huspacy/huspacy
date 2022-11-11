@@ -7,21 +7,29 @@ while one can also load the [PrecoSenti](https://opendata.hu/dataset/hungarian-s
 
 ## Load the component
 
+<!--
 ```python
-import huspacy
+from spacy.lang.hu import Hungarian
+
+nlp = Hungarian()
+```
+-->
+
+Load the default sentiment lexicon (`poltext`)
+
+<!--pytest-codeblocks:cont-->
+```python
 import huspacy.integrations
 
-# Load the default lexicon
-nlp = huspacy.load("hu_core_news_lg")
 nlp.add_pipe("sentiment_lexicon")
-
-# Load a specific lexicon
-nlp = huspacy.load("hu_core_news_lg")
-nlp.add_pipe("sentiment_lexicon", config={"lexicon_id": "precognox"})
 ```
 
-## Extract sentiment values
+Or you can specify the lexicon to be used by passing addition configuration during initialization `nlp.add_pipe("sentiment_lexicon", config={"lexicon_id": "precognox"})
+`.
 
+Then you can start discovering sentiment values of spans and tokens:
+
+<!--pytest-codeblocks:cont-->
 ```python
 doc = nlp("Ez szuper jó")
 

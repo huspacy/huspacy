@@ -100,7 +100,10 @@ jobs:
           key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install Python dependencies
-        run: poetry install --with dev
+        run: poetry install --with docs --with dev --all-extras
+
+      - name: Run tests in markdown codeblocks
+        run: poetry run pytest --codeblocks --verbosity=3 ./README.md ../docs/huspacy/*.md ../docs/recipes/*.md
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3

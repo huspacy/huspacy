@@ -23,6 +23,8 @@ nlp = hu_core_news_lg.load()
 
 To process texts, you can simply call the loaded model (i.e. the [`nlp` callable object](https://spacy.io/api/language#call)) 
 
+<!--pytest-codeblocks:cont-->
+
 ```python
 doc = nlp("Csiribiri csiribiri zabszalma - négy csillag közt alszom ma.")
 ```

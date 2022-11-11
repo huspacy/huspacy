@@ -52,8 +52,8 @@
 First of all, we need all the dependecies installed: `poetry install --with docs --with dev --all-extras`
 
 1. Make sure all tests pass: `poetry run pytest`
-2. Update the readme, if there are changes in `docs`: `poetry run docs/update_readme.py`
-3. Test README.md code snippets: `poetry run pytest --codeblocks --verbosity=3 ./README.md`
+2. Update the readme, if there are changes in `docs`: `poetry run python ../docs/update_readme.py`
+3. Test README.md code snippets: `poetry run pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md`
 4. Bump version: `poetry run bumpversion --new-version NEW_VERSION --verbose major/minor/patch`
 5. Build wheel: `poetry build -f wheel`
 6. Publish on PyPI: `poetry publish`

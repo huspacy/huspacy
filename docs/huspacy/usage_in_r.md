@@ -2,6 +2,8 @@
 
 ## Recommended installation method
 
+<!--pytest-codeblocks:skipfile-->
+
 1. Make sure you have conda installed
 2. Install `spacyr`:
     ```R

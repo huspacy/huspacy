@@ -2,13 +2,13 @@ import re
 from pathlib import Path
 
 FILES = {
-    "intro": "docs/index.md",
-    "models": "docs/models/index.md",
-    "installation": "docs/huspacy/installation.md",
-    "quickstart": "docs/huspacy/quickstart.md",
-    "citing": "docs/huspacy/publications.md",
-    "contact": "docs/contact.md",
-    "license": "docs/huspacy/license.md",
+    "intro": "index.md",
+    "models": "models/index.md",
+    "installation": "huspacy/installation.md",
+    "quickstart": "huspacy/quickstart.md",
+    "citing": "huspacy/publications.md",
+    "contact": "contact.md",
+    "license": "huspacy/license.md",
 }
 
 TEMPLATE = """
@@ -37,7 +37,7 @@ URL_PATTERN = re.compile(r"\(/")
 
 
 def read_doc(path: str) -> str:
-    raw_content = Path(path).open().read().strip()
+    raw_content = (Path(__file__).parent / path).open().read().strip()
     content = raw_content.replace(":fontawesome-solid-star:", "⭑").replace(":fontawesome-solid-star-half-stroke:", "⭒")
     content: str = ICON_PATTERN.sub("", content)
     content = URL_PATTERN.sub("(https://huspacy.github.io/", content)

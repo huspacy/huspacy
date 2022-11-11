@@ -19,7 +19,9 @@ nav:
               - edit_tree_lemmatizer: reference/huspacy/components/edit_tree_lemmatizer.md
               - lemma_postprocessing: reference/huspacy/components/lemma_postprocessing.md
               - lookup_lemmatizer: reference/huspacy/components/lookup_lemmatizer.md
-              - sentencizer: reference/huspacy/components/sentencizer.md
+          - extra:
+                - sentencizer: reference/huspacy/extra/sentencizer.md
+                - roman_num_converter: reference/huspacy/extra/roman_num_converter.md
           - integrations:
               - nerpp: reference/huspacy/integrations/nerpp.md
               - sentiment: reference/huspacy/integrations/sentiment.md
