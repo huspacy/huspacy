@@ -8,7 +8,7 @@ license = "cc-by-sa-4.0"
 [tool.poetry.dependencies]
 python = "^3.8"
 
-spacy = {extras = ["cuda111"], version = "~3.4.1"}
+spacy = {extras = ["cuda111"], version = "~3.5.0"}
 
 [tool.poetry.dev-dependencies]
 spacy-huggingface-hub = "0.0.6"
