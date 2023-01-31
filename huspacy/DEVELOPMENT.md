@@ -1,7 +1,7 @@
 ## Repository structure
 
 ```
-├── .github            -- Github configuration files
+├── .github            -- GitHub configuration files
 ├── docs               -- Documentation source files
 ├── hu_core_news_lg    -- SpaCy 3.x project files for building the large model
 │   ├── configs        -- SpaCy pipeline configuration files
@@ -49,7 +49,7 @@
 
 ## Release steps
 
-First of all, we need all the dependecies installed: `poetry install --with docs --with dev --all-extras`
+First of all, we need all the dependencies installed: `poetry install --with docs --with dev --all-extras`
 
 1. Make sure all tests pass: `poetry run pytest`
 2. Update the readme, if there are changes in `docs`: `poetry run python ../docs/update_readme.py`

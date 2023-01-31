@@ -32,7 +32,7 @@ or
 nlp.disable_pipe("tagger")
 ```
    
-## The NER model usually confuses ORG and LOC entites, why is that?
+## The NER model usually confuses ORG and LOC entities, why is that?
 
 The underlying model has been trained on corpora following the "tag-for-meaning" guideline which yields context dependent labels. For example referring to "Budapest" in the context of the Hungarian government should yield the `ORG` label while in other contexts it should be tagged as a `LOC`.
 

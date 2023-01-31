@@ -2,7 +2,7 @@
 
 Using the DBpedia Spotlight integration for SpaCy[¹], we can easily extract and link DBpedia entities from any text.
 
-## Initalizing DBpedia Spotlight
+## Initializing DBpedia Spotlight
 
 ```python
 nlp = spacy.load("hu_core_news_trf")

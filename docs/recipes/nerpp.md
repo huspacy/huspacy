@@ -23,7 +23,7 @@ import huspacy.integrations
 nlp.add_pipe("nerpp")
 ```
 Please note that using this component requires `transformers`, `torch` and `spacy-alignments` to be installed.
-Installing HuSpaCy with `trf` extras installes all these dependencies: `pip install huspacy[trf]`
+Installing HuSpaCy with `trf` extras installs all these dependencies: `pip install huspacy[trf]`
 
 
 ## Get entity annotations
