@@ -6,8 +6,7 @@
     - To enable full GPU usage install PyTorch: `poetry run python -m pip install torch==1.10.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html`
     - Run `poetry run pip install -U pip setuptools wheel` if these packages are missing or not uptodate
 2. Activate the virtual environment `poetry shell`
-3. Fetch datafiles: `spacy project assets -S` <br/>
-   (`-S` won't retry fetch resources if they are already present)
+3. Fetch datafiles: `spacy project assets` 
 4. Build all the models: `spacy project run all`
 
 ## Fine-tune the models
