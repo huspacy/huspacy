@@ -457,7 +457,7 @@ commands:
       - ${vars.components_init}
     outputs:
       - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
-      - ${vars.models_path}/eval-parser-${vars.package_name}-${vars.package_version}.json
+      - ${vars.models_path}/eval-ner-${vars.package_name}-${vars.package_version}.json
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}/meta.json"
 
 
