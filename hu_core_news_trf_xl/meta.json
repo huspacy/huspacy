@@ -40,7 +40,7 @@
     }
   ],
   "requirements": [
-    "spacy-transformers ~= 1.1.4",
-    "spacy-experimental == 0.4.0"
+    "spacy-transformers ~= 1.1.8",
+    "spacy-experimental == 0.6.1"
   ]
 }
