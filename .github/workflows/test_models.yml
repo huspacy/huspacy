@@ -16,10 +16,10 @@ jobs:
     strategy:
       matrix:
         python-version: [ "3.7", "3.8", "3.9", "3.10" ]
-        model-name: ["hu_core_news_md", "hu_core_news_lg", "hu_core_news_trf"]
+        model-name: ["hu_core_news_md", "hu_core_news_lg", "hu_core_news_trf", "hu_core_news_trf_xl"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         name: Checkout
 
       - name: Set up Python ${{ matrix.python-version }}
