@@ -10,6 +10,8 @@
 [![PyPI version](https://badge.fury.io/py/huspacy.svg)](https://pypi.org/project/huspacy/)
 [![Demo](https://img.shields.io/badge/Try%20the-Demo-important)](https://huggingface.co/spaces/huspacy/demo)
 <br/>
+[![Build](https://github.com/huspacy/huspacy/actions/workflows/build.yml/badge.svg)](https://github.com/huspacy/huspacy/actions/workflows/build.yml)
+[![Models](https://github.com/huspacy/huspacy/actions/workflows/test_models.yml/badge.svg)](https://github.com/huspacy/huspacy/actions/workflows/test_models.yml)
 [![Downloads](https://static.pepy.tech/personalized-badge/huspacy?period=month&units=international_system&left_color=grey&right_color=green&left_text=Downloads/month)](https://pepy.tech/project/huspacy)
 [![Downloads](https://static.pepy.tech/personalized-badge/huspacy?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/huspacy)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhuspacy%2Fhuspacy&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)

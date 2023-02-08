@@ -12,6 +12,10 @@ We provide several pretrained models:
    We suggest using it with GPU support.
 3. [`hu_core_news_md`](https://huggingface.co/huspacy/hu_core_news_md) greatly improves on `hu_core_news_lg`'s
    throughput by loosing some accuracy. This model could be a good choice when processing speed is crucial.
+4. [`hu_core_news_trf_xl`](https://huggingface.co/huspacy/hu_core_news_trf) is an experimental model built
+   on [xlm-roberta-large](https://huggingface.co/xlm-roberta-large). It provides as the `hu_core_news_trf` model,
+   however it comes with slightly higher accuracy in the price of significantly increased computational resource usage.
+   We suggest using it with GPU support.
 
 HuSpaCy's model versions follows [spaCy's versioning scheme](https://spacy.io/models#model-versioning).
 
