@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: 'If you use this software in your work, please cite both the article from preferred-citation and the software itself: https://huspacy.github.io/huspacy/publications/'
+title: 'HuSpaCy: an industrial-strength Hungarian natural language processing toolkit'
+authors:
+  - given-names: György
+    family-names: Orosz
+  - given-names: Zsolt
+    family-names: Szántó
+  - given-names: Péter
+    family-names: Berkecz
+  - given-names: Gergő
+    family-names: Szabó
+  - given-names: Richárd
+    family-names: Farkas
+repository-code: https://github.com/huspacy/huspacy
+repository-artifact: https://huggingface.co/huspacy
+type: software
+url: https://huspacy.github.io
+date-released: 2022-01-05
+contact:
+    - email: "gyorgy@orosz.link"
+      family-names: Orosz
+      given-names: György
+preferred-citation:
+    type: conference-paper
+    title: 'HuSpaCy: an industrial-strength Hungarian natural language processing toolkit'
+    abstract: "Although there are a couple of open-source language processing pipelines available for Hungarian, none of them satisfies the requirements of today's NLP applications. A language processing pipeline should consist of close to state-of-the-art lemmatization, morphosyntactic analysis, entity recognition and word embeddings. Industrial text processing applications have to satisfy non-functional software quality requirements, what is more, frameworks supporting multiple languages are more and more favored. This paper introduces HuSpaCy, an industry-ready Hungarian language processing toolkit. The presented tool provides components for the most important basic linguistic analysis tasks. It is open-source and is available under a permissive license. Our system is built upon spaCy's NLP components resulting in an easily usable, fast yet accurate application. Experiments confirm that HuSpaCy has high accuracy while maintaining resource-efficient prediction capabilities."
+    doi: "10.48550/arXiv.2201.01956"
+    identifiers:
+    - type: other
+      value: "arXiv:2201.01956"
+      description: The ArXiv preprint of the paper
+    authors:
+      - given-names: György
+        family-names: Orosz
+      - given-names: Zsolt
+        family-names: Szántó
+      - given-names: Péter
+        family-names: Berkecz
+      - given-names: Gergő
+        family-names: Szabó
+      - given-names: Richárd
+        family-names: Farkas
+    year-original: "2022"
+    start: 59
+    end: 73
+    institution:
+        name: 'Szegedi Tudományegyetem'
+    location:
+        name: 'Szeged'
+    conference:
+        name: 'XVIII. Magyar Számítógépes Nyelvészeti Konferencia'
