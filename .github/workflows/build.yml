@@ -21,7 +21,7 @@ jobs:
         python-version: [ "3.7", "3.8", "3.9", "3.10" ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         name: Checkout
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -82,7 +82,7 @@ jobs:
         working-directory: huspacy
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         name: Checkout
 
       - uses: Gr1N/setup-poetry@v7
