@@ -1,14 +1,17 @@
 import traceback
 
 import spacy
+
 # noinspection PyUnresolvedReferences
 import spacy_conll
 import typer
 
-# noinspection PyUnresolvedReferences
-import huspacy.components
-
 app = typer.Typer()
+
+try:
+    import huspacy.components
+except ImportError as e:
+    print("Could not load the components")
 
 
 @app.command()
