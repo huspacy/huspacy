@@ -1,0 +1,1 @@
+../../hu_core_news_trf_xl/CHANGELOG.md

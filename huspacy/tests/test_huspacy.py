@@ -21,10 +21,10 @@ def test_download_fails(model_name: str, version: str):
 
 def test_get_all_valid_models():
     valid_models: Dict = huspacy.get_valid_models()
-    assert len(valid_models) == 3
+    assert len(valid_models) == 4
 
     valid_models: Dict = huspacy.get_valid_models(None)
-    assert len(valid_models) == 3
+    assert len(valid_models) == 4
 
 
 def test_get_valid_models():
@@ -35,4 +35,7 @@ def test_get_valid_models():
     assert len(valid_models) == 1
 
     valid_models: Dict = huspacy.get_valid_models("3.4.0")
-    assert len(valid_models) == 3
+    assert len(valid_models) == 4
+
+    valid_models: Dict = huspacy.get_valid_models("3.5.0")
+    assert len(valid_models) == 2

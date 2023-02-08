@@ -45,6 +45,11 @@ nav:
           - Installation: models_gen/install_trf.md
           - Development: models/develop_trf.md
           - Changelog: models/changelog_trf.md
+      - hu_core_news_trf_xl:
+          - Overview: models_gen/index_trf_xl.md
+          - Installation: models_gen/install_trf_xl.md
+          - Development: models/develop_trf_xl.md
+          - Changelog: models/changelog_trf_xl.md
   - Recipes:
     - Application examples:
         - Anonymizer: examples/anonymizer.md

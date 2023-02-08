@@ -31,6 +31,10 @@ or
 ```python
 nlp.disable_pipe("tagger")
 ```
+
+## Models require too much RAM, how can I reduce their memory footprint?
+
+HuSpaCy models use distinct language models for almost each of their components. This architecture decision enables the model achieving higher precision compromising on increased memory usage. However, if you only need certain components, others can be disabled as shown above.
    
 ## The NER model usually confuses ORG and LOC entities, why is that?
 

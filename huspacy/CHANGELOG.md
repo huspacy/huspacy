@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.7.0
 ### New
-- Added support for new models (`hu_core_news_md-v3.5.0`, `hu_core_news_lg-v3.5.0`)
+- Added support for new models (`hu_core_news_md-v3.5.0`, `hu_core_news_lg-v3.5.0`, `hu_core_news_trf_xl-v3.4.0`)
+- Updated documentation
 
 ## 0.6
 ### New
