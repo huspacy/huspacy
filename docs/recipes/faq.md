@@ -7,7 +7,7 @@
 Not it's not. :) You have several options to speed up your processing pipeline.
 
 1. If accuracy is not crucial use a smaller model: `md` < `lg` < `trf`
-2. Utilize GPU: use the following directive **before** loading the model (and [make sure](https://spacy.io/usage#gpu) all GPU related dependencies are installer).
+2. Utilize GPU: use the following directive **before** loading the model (and [make sure](https://spacy.io/usage#gpu) all GPU related dependencies are installer). [This simple notebook](https://colab.research.google.com/drive/1gD4OzCddbFM76yS1kWVDDbZd9rrCiho7#scrollTo=bPnMq5tGAiM7) might help you get started.
 
 ```python
 spacy.prefer_gpu()
