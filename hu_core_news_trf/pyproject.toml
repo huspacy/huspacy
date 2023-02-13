@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "hu_core_news_trf"
 version = "3.4.0"
-description = "Hungarian transformer pipeline (huBert) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner"
+description = "Hungarian transformer pipeline (huBERT) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
 
