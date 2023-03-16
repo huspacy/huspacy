@@ -8,8 +8,8 @@ from itertools import islice
 import numpy as np
 
 import srsly
-from thinc.api import Config, Model, SequenceCategoricalCrossentropy
-from thinc.types import Floats2d, Ints1d, Ints2d
+from thinc.api import Config, Model, SequenceCategoricalCrossentropy, NumpyOps
+from thinc.types import Floats2d, Ints2d
 
 from spacy.pipeline._edit_tree_internals.edit_trees import EditTrees
 from spacy.pipeline._edit_tree_internals.schemas import validate_edit_tree
@@ -21,6 +21,9 @@ from spacy.tokens import Doc, Token
 from spacy.training import Example, validate_examples, validate_get_examples
 from spacy.vocab import Vocab
 from spacy import util
+
+
+TOP_K_GUARDRAIL = 20
 
 
 default_model_config = """
@@ -86,6 +89,7 @@ def make_edit_tree_lemmatizer(
 def debug(*args):
     pass
 
+
 class EditTreeLemmatizer(TrainablePipe):
     """
     Lemmatizer that lemmatizes each word using a predicted edit tree.
@@ -129,6 +133,7 @@ class EditTreeLemmatizer(TrainablePipe):
 
         self.cfg: Dict[str, Any] = {"labels": []}
         self.scorer = scorer
+        self.numpy_ops = NumpyOps()
 
     def get_loss(
         self, examples: Iterable[Example], scores: List[Floats2d]
@@ -140,12 +145,17 @@ class EditTreeLemmatizer(TrainablePipe):
         for eg in examples:
             eg_truths = []
             for (predicted, gold_lemma, gold_pos, gold_sent_start) in zip(
-                eg.predicted, eg.get_aligned("LEMMA", as_string=True), eg.get_aligned("POS", as_string=True), eg.get_aligned_sent_starts()
+                eg.predicted,
+                eg.get_aligned("LEMMA", as_string=True),
+                eg.get_aligned("POS", as_string=True),
+                eg.get_aligned_sent_starts(),
             ):
                 if gold_lemma is None:
                     label = -1
                 else:
-                    form = self._get_true_cased_form(predicted.text, gold_sent_start, gold_pos)
+                    form = self._get_true_cased_form(
+                        predicted.text, gold_sent_start, gold_pos
+                    )
                     tree_id = self.trees.add(form, gold_lemma)
                     # debug(f"@get_loss: {predicted}/{gold_pos}[{gold_sent_start}]->{form}|{gold_lemma}[{tree_id}]")
                     label = self.tree2label.get(tree_id, 0)
@@ -160,31 +170,75 @@ class EditTreeLemmatizer(TrainablePipe):
         return float(loss), d_scores
 
     def predict(self, docs: Iterable[Doc]) -> List[Ints2d]:
+        if self.top_k == 1:
+            scores2guesses = self._scores2guesses_top_k_equals_1
+        elif self.top_k <= TOP_K_GUARDRAIL:
+            scores2guesses = self._scores2guesses_top_k_greater_1
+        else:
+            scores2guesses = self._scores2guesses_top_k_guardrail
+        # The behaviour of *_scores2guesses_top_k_greater_1()* is efficient for values
+        # of *top_k>1* that are likely to be useful when the edit tree lemmatizer is used
+        # for its principal purpose of lemmatizing tokens. However, the code could also
+        # be used for other purposes, and with very large values of *top_k* the method
+        # becomes inefficient. In such cases, *_scores2guesses_top_k_guardrail()* is used
+        # instead.
         n_docs = len(list(docs))
         if not any(len(doc) for doc in docs):
             # Handle cases where there are no tokens in any docs.
             n_labels = len(self.cfg["labels"])
-            guesses: List[Ints2d] = [
-                self.model.ops.alloc((0, n_labels), dtype="i") for doc in docs
-            ]
+            guesses: List[Ints2d] = [self.model.ops.alloc2i(0, n_labels) for _ in docs]
             assert len(guesses) == n_docs
             return guesses
         scores = self.model.predict(docs)
         assert len(scores) == n_docs
-        guesses = self._scores2guesses(docs, scores)
+        guesses = scores2guesses(docs, scores)
         assert len(guesses) == n_docs
         return guesses
 
-    def _scores2guesses(self, docs, scores):
+    def _scores2guesses_top_k_equals_1(self, docs, scores):
         guesses = []
         for doc, doc_scores in zip(docs, scores):
-            if self.top_k == 1:
-                doc_guesses = doc_scores.argmax(axis=1).reshape(-1, 1)
-            else:
-                doc_guesses = np.argsort(doc_scores)[..., : -self.top_k - 1 : -1]
+            doc_guesses = doc_scores.argmax(axis=1)
+            doc_guesses = self.numpy_ops.asarray(doc_guesses)
 
-            if not isinstance(doc_guesses, np.ndarray):
-                doc_guesses = doc_guesses.get()
+            doc_compat_guesses = []
+            for i, token in enumerate(doc):
+                tree_id = self.cfg["labels"][doc_guesses[i]]
+                form: str = self._get_true_cased_form_of_token(token)
+                if self.trees.apply(tree_id, form) is not None:
+                    doc_compat_guesses.append(tree_id)
+                else:
+                    doc_compat_guesses.append(-1)
+            guesses.append(np.array(doc_compat_guesses))
+
+        return guesses
+
+    def _scores2guesses_top_k_greater_1(self, docs, scores):
+        guesses = []
+        top_k = min(self.top_k, len(self.labels))
+        for doc, doc_scores in zip(docs, scores):
+            doc_scores = self.numpy_ops.asarray(doc_scores)
+            doc_compat_guesses = []
+            for i, token in enumerate(doc):
+                for _ in range(top_k):
+                    candidate = int(doc_scores[i].argmax())
+                    candidate_tree_id = self.cfg["labels"][candidate]
+                    form: str = self._get_true_cased_form_of_token(token)
+                    if self.trees.apply(candidate_tree_id, form) is not None:
+                        doc_compat_guesses.append(candidate_tree_id)
+                        break
+                    doc_scores[i, candidate] = np.finfo(np.float32).min
+                else:
+                    doc_compat_guesses.append(-1)
+            guesses.append(np.array(doc_compat_guesses))
+
+        return guesses
+
+    def _scores2guesses_top_k_guardrail(self, docs, scores):
+        guesses = []
+        for doc, doc_scores in zip(docs, scores):
+            doc_guesses = np.argsort(doc_scores)[..., : -self.top_k - 1 : -1]
+            doc_guesses = self.numpy_ops.asarray(doc_guesses)
 
             doc_compat_guesses = []
             for token, candidates in zip(doc, doc_guesses):
@@ -194,7 +248,6 @@ class EditTreeLemmatizer(TrainablePipe):
 
                     form: str = self._get_true_cased_form_of_token(token)
 
-                    # debug(f"@scores2guesses: {token}/{token.pos_}[{token.is_sent_start}]->{form}[{candidate_tree_id}]")
                     if self.trees.apply(candidate_tree_id, form) is not None:
                         tree_id = candidate_tree_id
                         break
