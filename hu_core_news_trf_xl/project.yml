@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Transformer - XLM-RoBERTa) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.4.0,<3.5.0"
+spacy_version: ">=3.5.0,<3.6.0"
 
 vars:
   lang: hu
