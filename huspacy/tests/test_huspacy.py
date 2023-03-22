@@ -38,4 +38,4 @@ def test_get_valid_models():
     assert len(valid_models) == 4
 
     valid_models: Dict = huspacy.get_valid_models("3.5.0")
-    assert len(valid_models) == 2
+    assert len(valid_models) == 4
