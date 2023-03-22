@@ -136,6 +136,7 @@ workflows:
     - evaluate_conll
     - package
     - smoke_test
+    - show_scores
 
   tagger:
     - preprocess_szegedcorpus
@@ -509,6 +510,14 @@ commands:
     script:
       - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/smoke_test.py
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
+    deps:
+      - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
+
+
+  - name: show_scores
+    help: "Show model scores"
+    script:
+      - bash -c "egrep '\"[a-z]+_(acc|.as|f)\"' ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}/meta.json | tr -d '\",' | cut -c 5-"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
 
