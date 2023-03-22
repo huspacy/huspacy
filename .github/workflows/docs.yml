@@ -46,7 +46,12 @@ jobs:
     - name: Install Python dependencies
       run: |
         cd repo/huspacy
-        poetry install --with docs
+        poetry install --with docs --with dev --all-extras
+
+    - name: Test code snippets in the documentation
+      run: |
+        cd repo/huspacy
+        poetry run pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md
 
     - name: Generate docs
       run: |
