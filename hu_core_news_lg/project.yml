@@ -529,11 +529,10 @@ commands:
       - "spacy huggingface-hub push
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
           --org huspacy
-          --local-repo ../../hub
           --msg \"Update spacy pipeline to ${vars.package_version}\"
           --verbose"
+      - "python ../scripts/tag_model.py ${vars.package_name} v${vars.package_version} -m \"Releasing version v${vars.package_version}\" "
       - "huggingface-cli logout"
-      - bash -c "cd ../../hub/${vars.package_name} && git tag -a v${vars.package_version} -m \"Releasing version v${vars.package_version}\" && git push origin v${vars.package_version}"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
 
