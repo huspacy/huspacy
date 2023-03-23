@@ -11,7 +11,7 @@ python = "^3.8"
 spacy = {extras = ["cuda111"], version = "~3.5.1"}
 
 [tool.poetry.dev-dependencies]
-spacy-huggingface-hub = "0.0.6"
+spacy-huggingface-hub = "0.0.9"
 spacy-loggers = "~1.0.3"
 spacy_conll = "^3.0"
 conllu = "^4.4.1"
