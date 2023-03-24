@@ -8,29 +8,22 @@ Not it's not. :) You have several options to speed up your processing pipeline.
 
 1. If accuracy is not crucial use a smaller model: `md` < `lg` < `trf`
 2. Utilize GPU: use the following directive **before** loading the model (and [make sure](https://spacy.io/usage#gpu) all GPU related dependencies are installer). [This simple notebook](https://colab.research.google.com/drive/1gD4OzCddbFM76yS1kWVDDbZd9rrCiho7#scrollTo=bPnMq5tGAiM7) might help you get started.
-
-```python
-spacy.prefer_gpu()
-```
-
-3. Batch processing of multiple documents are always faster. Use the [`Language.pipe()`](https://spacy.io/api/language#pipe) method, and increase the `batch_size` if needed:
-
-```python
-texts = ["first doc", "second doc"]
-docs = nlp.pipe(texts, batch_size=1024)
+   ```python
+   spacy.prefer_gpu()
    ```
-
+3. Batch processing of multiple documents are always faster. Use the [`Language.pipe()`](https://spacy.io/api/language#pipe) method, and increase the `batch_size` if needed:
+   ```python
+   texts = ["first doc", "second doc"]
+   docs = nlp.pipe(texts, batch_size=1024)
+      ```
 4. Disable components not needed. When mining documents for named entities, the default model unnecessarily computes lemmata, PoS tags and dependency trees. You can easily disable them during model loading (c.f. [`spacy.load()`](https://spacy.io/api/top-level/#spacy.load) or [`huspacy.load()`](/reference/huspacy/__init__/#huspacy.load)) or using [`Language.disable_pipe()`](https://spacy.io/api/language/#disable_pipe)
-
-```python
-nlp = huspacy.load("hu_core_news_lg", disable=["tagger"])
-```
-
-or
-
-```python
-nlp.disable_pipe("tagger")
-```
+   ```python
+   nlp = huspacy.load("hu_core_news_lg", disable=["tagger"])
+   ```
+   or
+   ```python
+   nlp.disable_pipe("tagger")
+   ```
 
 ## Models require too much RAM, how can I reduce their memory footprint?
 
