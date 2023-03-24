@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.1
+### Fixed
+- Replace bogus transformer model versions with fixed ones (`hu_core_news_trf_xl-v3.5.1`, `hu_core_news_trf_xl-v3.5.1`)
+- 
 ## 0.8.0
 ### Fixed
 - Applied an edit-tree lemmatizer fix, based on [explosion/spaCy#12017](https://github.com/explosion/spaCy/pull/12017)
 ### New
-- Added support for new models (`hu_core_news_md-v3.5.1`, `hu_core_news_lg-v3.5.1`, `hu_core_news_trf_xl-v3.5.0`, `hu_core_news_trf_xl-v3.5.1`)
+- Added support for new models (`hu_core_news_md-v3.5.1`, `hu_core_news_lg-v3.5.1`, `hu_core_news_trf_xl-v3.5.0`, `hu_core_news_trf_xl-v3.5.0`)
 
 ## 0.7.0
 ### New
