@@ -15,7 +15,7 @@ Not it's not. :) You have several options to speed up your processing pipeline.
    ```python
    texts = ["first doc", "second doc"]
    docs = nlp.pipe(texts, batch_size=1024, n_jobs=2)
-      ```
+   ```
 4. Disable components not needed. When mining documents for named entities, the default model unnecessarily computes lemmata, PoS tags and dependency trees. You can easily disable them during model loading (c.f. [`spacy.load()`](https://spacy.io/api/top-level/#spacy.load) or [`huspacy.load()`](/reference/huspacy/__init__/#huspacy.load)) or using [`Language.disable_pipe()`](https://spacy.io/api/language/#disable_pipe)
    ```python
    nlp = huspacy.load("hu_core_news_lg", disable=["tagger"])
