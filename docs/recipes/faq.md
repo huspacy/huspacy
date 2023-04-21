@@ -11,10 +11,10 @@ Not it's not. :) You have several options to speed up your processing pipeline.
    ```python
    spacy.prefer_gpu()
    ```
-3. Batch processing of multiple documents are always faster. Use the [`Language.pipe()`](https://spacy.io/api/language#pipe) method, and increase the `batch_size` if needed:
+3. Batch processing of multiple documents are always faster. Use the [`Language.pipe()`](https://spacy.io/api/language#pipe) method, and increase the `batch_size` if needed. Additionally, the `n_process` parameter can be used to orchestrate multiprocessing when running models on CPU.
    ```python
    texts = ["first doc", "second doc"]
-   docs = nlp.pipe(texts, batch_size=1024)
+   docs = nlp.pipe(texts, batch_size=1024, n_jobs=2)
       ```
 4. Disable components not needed. When mining documents for named entities, the default model unnecessarily computes lemmata, PoS tags and dependency trees. You can easily disable them during model loading (c.f. [`spacy.load()`](https://spacy.io/api/top-level/#spacy.load) or [`huspacy.load()`](/reference/huspacy/__init__/#huspacy.load)) or using [`Language.disable_pipe()`](https://spacy.io/api/language/#disable_pipe)
    ```python
