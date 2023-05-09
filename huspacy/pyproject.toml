@@ -40,9 +40,11 @@ importlib_resources = { version = "*", python = "<3.9" }
 transformers = { version = "^4.24.0", optional = true }
 spacy-alignments = { version = "^0.8.6", optional = true }
 torch = { version = "*", optional = true }
+benepar = { version = "0.2.0", optional = true}
 
 [tool.poetry.extras]
 trf = ["transformers", "spacy-alignments", "torch"]
+np = ["benepar"]
 
 [tool.poetry.group.dev]
 optional = true

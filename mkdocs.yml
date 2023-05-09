@@ -60,6 +60,7 @@ nav:
     - Tips and tricks:
         - Extended entity recognition: recipes/nerpp.md
         - Sentiment lexicons: recipes/sentiment.md
+        - Noun-phrase chunking: recipes/nounphrases.md
         - Rule-base sentencizer: recipes/sentencizer.md
         - Roman numbers: recipes/roman_nums.md
         - Usage in R: huspacy/usage_in_r.md
