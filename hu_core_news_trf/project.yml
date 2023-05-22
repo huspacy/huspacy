@@ -42,7 +42,7 @@ vars:
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_trf-3.5.1
 
-  gpu: 2
+  gpu: 4
 
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
@@ -91,14 +91,11 @@ workflows:
     - train_lookup_lemmatizer
 
     - train_parser
+
     - train_ner
     - backup_models
-
-    - train_parser
     - train_ner
     - backup_models
-
-    - train_parser
     - train_ner
     - backup_models
 
@@ -116,10 +113,8 @@ workflows:
     - train_parser
     - train_ner
     - backup_models
-    - train_parser
     - train_ner
     - backup_models
-    - train_parser
     - train_ner
     - backup_models
     - find_best_model
@@ -366,11 +361,9 @@ commands:
   - name: backup_models
     help: "Backup models by renaming the NER and Parser models's folder. This step allows running training steps multiple times."
     script:
-      - "bash ../scripts/backup.sh ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}"
       - "bash ../scripts/backup.sh ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}"
     deps:
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
-      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
 
 
   - name: find_best_model
@@ -378,11 +371,8 @@ commands:
     script:
       - "rm -rf ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}"
       - "python ../scripts/link_best_model.py ${vars.models_path}/${vars.package_name}-ner-${vars.package_version} ents_f"
-      - "rm -rf ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}"
-      - "python ../scripts/link_best_model.py ${vars.models_path}/${vars.package_name}-parser-${vars.package_version} dep_las"
     outputs:
       - ${vars.models_path}/${vars.package_name}-ner-${vars.package_version}
-      - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}
 
 
   - name: assemble
@@ -485,7 +475,8 @@ commands:
     help: "Smoke test the packaged model"
     script:
       - bash -c "PYTHONPATH=\"../huspacy\" python ../scripts/smoke_test.py
-          ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}"
+          ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
+          --with-random-text"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/${vars.package_name}/${vars.package_name}-${vars.package_version}
 
