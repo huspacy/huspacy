@@ -12,10 +12,11 @@ __DEFAULT_VERSION = "main"
 __DEFAULT_MODEL = "hu_core_news_lg"
 
 __AVAILABLE_MODELS: Dict[str, List[str]] = {
-    "hu_core_news_lg": ["3.2.1", "3.2.2", "3.3.0", "3.3.1", "3.4.0", "3.4.1", "3.4.2", "3.4.3", "3.4.4", "3.5.0", "3.5.1"],
-    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1"],
-    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1"],
-    "hu_core_news_trf_xl": ["3.4.0", "3.5.1"],
+    "hu_core_news_lg": ["3.2.1", "3.2.2", "3.3.0", "3.3.1", "3.4.0", "3.4.1", "3.4.2", "3.4.3", "3.4.4", "3.5.0",
+                        "3.5.1", "3.5.2"],
+    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2"],
+    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1", "3.5.2"],
+    "hu_core_news_trf_xl": ["3.4.0", "3.5.1", "3.5.2"],
 }
 
 
@@ -55,7 +56,7 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
     """
     assert model_name in __AVAILABLE_MODELS, f"{model_name} is not a valid model name"
     assert (
-        model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
+            model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
     ), f"{model_version} is not a valid version for {model_name}"
 
     if model_version != __DEFAULT_VERSION:
@@ -68,11 +69,11 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
 
 # noinspection PyDefaultArgument,PyUnresolvedReferences
 def load(
-    name: Union[str, Path] = __DEFAULT_MODEL,
-    vocab: Union["Vocab", bool] = True,
-    disable: Optional[Iterable[str]] = None,
-    exclude: Optional[Iterable[str]] = None,
-    config: Union[Dict[str, Any], "Config", None] = None,
+        name: Union[str, Path] = __DEFAULT_MODEL,
+        vocab: Union["Vocab", bool] = True,
+        disable: Optional[Iterable[str]] = None,
+        exclude: Optional[Iterable[str]] = None,
+        config: Union[Dict[str, Any], "Config", None] = None,
 ) -> "Language":
     """Loads a HuSpaCy model.
 
