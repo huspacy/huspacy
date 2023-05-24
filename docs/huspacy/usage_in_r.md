@@ -7,11 +7,11 @@
 1. Make sure you have `conda` installed
 2. Install a HuSpaCy model with `conda` (cf. [`md`](models_gen/install_md/), [`lg`](models_gen/install_lg/), [`trf`](models_gen/install_trf/)):
 
-    ```R
-    library(reticulate)
+```R
+library(reticulate)
 
-    conda_install(envname="huspacyr", "https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.5.2/hu_core_news_lg-any-py3-none-any.whl" ,pip=TRUE)
-     ```
+conda_install(envname="huspacyr", "https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.5.2/hu_core_news_lg-any-py3-none-any.whl" ,pip=TRUE)
+```
 
 ## Usage
 
