@@ -133,6 +133,12 @@ plugins:
 #      enable_creation_date: true
       type: date
       fallback_to_build_date: true
+  - meta-descriptions:
+      export_csv: false
+      quiet: false
+      enable_checks: false
+      min_length: 50
+      max_length: 160
 
 markdown_extensions:
   - abbr
