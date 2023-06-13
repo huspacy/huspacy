@@ -111,7 +111,8 @@ print(doc[1]._.ud_anas)
 ```
 rendőr
 NOUN
+[/N][Pl][Nom]
 Case=Nom|Number=Plur
-[('A', '[/N][Nom]'), ('a', '[/Det|Art.Def]'), ('a', '[/Det|Pro|(Post)]'), ('a', '[/N][Nom]'), ('a', '[/N|Pro|(Post)][Nom]')]
-[('PROPN', 'Case=Nom|Number=Sing'), ('DET', 'Definite=Def|PronType=Art'), ('DET', 'Definite=Def|PronType=Art'), ('NOUN', 'Case=Nom|Number=Sing'), ('NOUN', 'Case=Nom|Number=Sing')]
+[('rendőr', '[/N][Pl][Nom]')]
+[('NOUN', 'Case=Nom|Number=Plur')]
 ```
