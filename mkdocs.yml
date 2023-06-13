@@ -181,7 +181,7 @@ extra_css:
 extra:
   analytics:
     provider: google
-    property: G-HQPTKYY3SL
+    property: UA-246297792-1
   consent:
     title: Cookie consent
     description: >-
