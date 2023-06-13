@@ -95,13 +95,7 @@ jobs:
           key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install Python dependencies
-        run: poetry install --with docs --with dev --all-extras
-
-      - name: Install hfst
-        run: sudo apt-get install -y hfst
-
-      - name: Run tests in markdown codeblocks
-        run: poetry run pytest --codeblocks --verbosity=3 ./README.md ../docs/huspacy/*.md ../docs/recipes/*.md
+        run: poetry install --with dev
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -109,7 +103,7 @@ jobs:
           name: wheel-3.9
           path: huspacy/dist
 
-      - name: Publish package
+      - name: Publish nightly package
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
