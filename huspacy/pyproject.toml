@@ -86,7 +86,7 @@ testpaths = [
 
 [build-system]
 requires = [
-    "poetry-core>=1.2.0",
+    "poetry-core>=1.5.1",
     "wheel"
 ]
 build-backend = "poetry.core.masonry.api"
