@@ -98,7 +98,7 @@ jobs:
         run: poetry install --with docs --with dev --all-extras
 
       - name: Install hfst
-        run: apt install hfst
+        run: sudo apt-get install -y hfst
 
       - name: Run tests in markdown codeblocks
         run: poetry run pytest --codeblocks --verbosity=3 ./README.md ../docs/huspacy/*.md ../docs/recipes/*.md
