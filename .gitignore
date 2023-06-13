@@ -82,3 +82,6 @@ target/
 
 # Virtual envs
 .venv/
+
+# Spacy project lock files
+**/project.lock

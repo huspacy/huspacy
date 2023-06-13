@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hu_core_news_trf"
-version = "3.5.1"
+version = "3.5.2"
 description = "Hungarian transformer pipeline (huBERT) for HuSpaCy. Components: transformer, senter, tagger, morphologizer, lemmatizer, parser, ner"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
@@ -8,7 +8,7 @@ license = "cc-by-sa-4.0"
 [tool.poetry.dependencies]
 python = "^3.8"
 
-spacy = {extras = ["cuda111"], version = "~3.5.0"}
+spacy = {extras = ["cuda-autodetect"], version = "~3.5.3"}
 spacy-experimental = "0.6.2"
 torch = "~1.10.0+cu111"
 spacy-transformers = "~1.2.2"

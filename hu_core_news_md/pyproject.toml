@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hu_core_news_md"
-version = "3.5.1"
+version = "3.5.2"
 description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
@@ -8,7 +8,7 @@ license = "cc-by-sa-4.0"
 [tool.poetry.dependencies]
 python = "^3.8"
 
-spacy = {extras = ["cuda111"], version = "~3.5.1"}
+spacy = {extras = ["cuda-autodetect"], version = "~3.5.3"}
 
 [tool.poetry.dev-dependencies]
 spacy-huggingface-hub = "0.0.9"
