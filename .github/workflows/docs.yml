@@ -48,6 +48,9 @@ jobs:
         cd repo/huspacy
         poetry install --with docs --with dev --all-extras
 
+    - name: Install hfst
+      run: apt install hfst
+
     - name: Test code snippets in the documentation
       run: |
         cd repo/huspacy

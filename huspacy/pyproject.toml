@@ -41,10 +41,13 @@ transformers = { version = "^4.24.0", optional = true }
 spacy-alignments = { version = "^0.8.6", optional = true }
 torch = { version = "*", optional = true }
 benepar = { version = "0.2.0", optional = true}
+emmorphpy = { url = "https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl", optional = true}
+emmorph2ud2 = {url = "https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl", optional = true}
 
 [tool.poetry.extras]
 trf = ["transformers", "spacy-alignments", "torch"]
 np = ["benepar"]
+morph = ["emmorphpy", "emmorph2ud2"]
 
 [tool.poetry.group.dev]
 optional = true
