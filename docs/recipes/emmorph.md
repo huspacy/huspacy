@@ -97,7 +97,7 @@ Then, morph. analysis can be accessed in custom attributes of tokens. For exampl
 ```python
 doc = nlp("A rendőrök csak könnygázzal és gumibottal tudták megakadályozni.")
 
-print(doc[1]._._em_lemma)
+print(doc[1]._.em_lemma)
 print(doc[1]._.ud_tag)
 print(doc[1]._.em_tag)
 print(doc[1]._.ud_morph)
