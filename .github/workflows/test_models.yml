@@ -33,6 +33,9 @@ jobs:
           pip install spacy_conll typer
           pip install https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
 
+      - name: Workaround #https://github.com/explosion/spaCy/issues/12659
+        run: pip install typing_extensions=="4.5.0"
+
       - name: Smoke test
         run: |
           python scripts/smoke_test.py ${{ matrix.model-name }}
