@@ -5,6 +5,7 @@ HuSpaCy does nt employ an integrated morphological analyzer, however it might be
 ## Install dependencies
 
 `emMorph` depends on `hfst`, which must be installed by the package manager of your OS. In Debian/Ubuntu: `apt install hfst`. Further on, one must also install the tool's python wrapper and the UD converter:
+
 - `pip install https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl`
 - `pip install https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl`
 
