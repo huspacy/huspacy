@@ -47,6 +47,8 @@ jobs:
       run: |
         cd repo/huspacy
         poetry install --with docs --with dev --all-extras
+        poetry run pip install https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl
+        poetry run pip install https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl
 
     - name: Install hfst
       run: sudo apt-get install -y hfst
