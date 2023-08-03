@@ -5,9 +5,9 @@ spacy_version: ">=3.5.3,<3.6.0"
 vars:
   lang: hu
   # Following spaCy's convention: https://spacy.io/models#conventions
-  core_package_name: core_news_trf
+  core_package_name: core_kbc_trf
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
-  package_name: hu_core_news_trf
+  package_name: hu_core_kbc_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
   package_version: 3.5.2
 
@@ -40,7 +40,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.5.2
+  wandb_project: hu_core_kbc_trf-3.5.2
 
   gpu: 4
 
