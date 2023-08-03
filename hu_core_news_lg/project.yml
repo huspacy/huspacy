@@ -60,7 +60,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.nerkor}
     git:
       repo: https://github.com/nytud/NYTK-NerKor
-      branch: main
+      branch: v1.0
       path: data
 
   # SzegedNER
