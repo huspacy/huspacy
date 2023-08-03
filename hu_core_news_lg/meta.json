@@ -21,22 +21,16 @@
       "author": "Eszter Simon, Noémi Vadász (Department of Language Technology and Applied Linguistics)"
     },
     {
-      "name": "hunNERwiki",
-      "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
-      "license": "CC-BY-SA-3.0",
-      "author": "Eszter Simon, Dávid Márk Nemeskey (HLT Group, Budapest University of Technology and Economics)"
-    },
-    {
       "name": "Szeged NER Corpus",
       "url": "https://rgai.inf.u-szeged.hu/node/130",
       "license": "CC-BY-NC-SA-3.0",
       "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
     },
     {
-      "name": "Webcorpuswiki word2vec model",
-      "url": "https://github.com/oroszgy/hunlp-resources/releases/tag/webcorpuswiki_word2vec_v0.1",
+      "name": "Hungarian lg Floret vectors",
+      "url": "https://huggingface.co/huspacy/hu_vectors_web_lg",
       "license": "CC-BY-SA-4.0",
-      "author": "György Orosz"
+      "author": "Szeged AI"
     }
   ]
 }
