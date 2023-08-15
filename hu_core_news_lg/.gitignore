@@ -1,6 +1,6 @@
-.venv
-models
-data
-packages
-wandb
-metrics
+/.venv/
+/models/
+/data/
+/packages/
+/wandb/
+/metrics/

@@ -1,21 +1,19 @@
 command:
 - spacy
 - train
-- configs/ner.cfg
+- configs/tagger.cfg
 - --code
 - ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
 - ${envvar:GPU}
 - --training.logger.project_name
-- parser_finetune
+- tagger_finetune
 - --paths.vectors
 - models/floret.vectors
 - --paths.train
-- data/processed/ner_merged/train.spacy
+- data/processed/SzegedCorpus/train.spacy
 - --paths.dev
-- data/processed/ner_merged/dev.spacy
-- --paths.tagger_model
-- models/hu_core_news_lg-tagger-3.6.0/model-best
+- data/processed/UD_Hungarian-Szeged/dev.spacy
 - ${args}
 method: bayes
 metric:
@@ -24,6 +22,7 @@ metric:
 parameters:
   training.optimizer.learn_rate:
     values:
+    - 0.01
     - 0.006
     - 0.003
     - 0.001
