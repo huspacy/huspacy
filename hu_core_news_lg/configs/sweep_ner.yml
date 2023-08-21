@@ -15,7 +15,7 @@ command:
 - --paths.dev
 - data/processed/ner_merged/dev.spacy
 - --paths.tagger_model
-- models/hu_core_news_lg-tagger-3.6.0/model-best
+- models/hu_core_news_lg-tagger-3.6.1/model-best
 - ${args}
 method: bayes
 metric:
