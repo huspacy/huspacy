@@ -158,18 +158,18 @@ def generate_description(models_metadata: Dict[str, Dict]) -> str:
 
 def main():
     models_meta = {slug: read_metadata(slug) for slug in MODEL_SLUGS}
-    perf_doc_path = Path("models_gen/index.md")
+    perf_doc_path = Path("models/index.md")
     with mkdocs_gen_files.open(perf_doc_path, "w") as fd:
         print(generate_description(models_meta), file=fd)
 
     for slug in MODEL_SLUGS:
         install_doc = create_install_doc(slug)
-        doc_path = Path(f"models_gen/install_{slug}.md")
+        doc_path = Path(f"models/install_{slug}.md")
         with mkdocs_gen_files.open(doc_path, "w") as fd:
             print(install_doc, file=fd)
 
         details_docs = create_details_docs(slug)
-        doc_path = Path(f"models_gen/index_{slug}.md")
+        doc_path = Path(f"models/index_{slug}.md")
         with mkdocs_gen_files.open(doc_path, "w") as fd:
             print(details_docs, file=fd)
 
