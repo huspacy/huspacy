@@ -54,7 +54,9 @@ jobs:
       run: sudo apt-get install -y hfst
 
     - name: Test citation file
-      run: poetry run cffconvert --validate
+      run: |
+        cd repo
+        poetry run cffconvert --validate
 
     - name: Test code snippets in the documentation
       run: |
