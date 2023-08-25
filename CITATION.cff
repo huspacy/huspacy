@@ -48,7 +48,6 @@ preferred-citation:
     year: "2023"
     start: 58
     end: 69
-    volume-title: "TSD 2023: Text, Speech, and Dialogue"
     conference:
         name: 'Text, Speech, and Dialogue 2023'
     editors-series:
@@ -58,8 +57,8 @@ preferred-citation:
           given-names: Pártl
         - family-names: Miloslav
           given-names: Konopík
-    journal: Lecture Notes in Computer Science
-    issue: Text, Speech, and Dialogue
+    journal: "Text, Speech, and Dialogue: TSD 2023. Lecture Notes in Computer Science"
+    issue: "TSD 2023: Text, Speech, and Dialogue"
     volume: 14102
     isbn: 978-3-031-40498-6
     publisher:
