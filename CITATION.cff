@@ -48,10 +48,10 @@ preferred-citation:
     year: "2023"
     start: 58
     end: 69
-    collection-title: Text, Speech, and Dialogue
+    volume-title: TSD 2023: Text, Speech, and Dialogue
     conference:
         name: 'Text, Speech, and Dialogue 2023'
-    editors:
+    editors-series:
         - family-names: Kamil
           given-names: Ekštein
         - family-names: František
@@ -59,6 +59,7 @@ preferred-citation:
         - family-names: Miloslav
           given-names: Konopík
     journal: Lecture Notes in Computer Science
+    issue: Text, Speech, and Dialogue
     volume: 14102
     isbn: 978-3-031-40498-6
     publisher:
