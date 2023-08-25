@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: 'If you use this software in your work, please cite both the article from preferred-citation and the software itself: https://huspacy.github.io/huspacy/publications/'
-title: 'HuSpaCy: an industrial-strength Hungarian natural language processing toolkit'
+title: 'Advancing Hungarian Text Processing with HuSpaCy: Efficient and Accurate NLP Pipelines'
 authors:
   - given-names: György
     family-names: Orosz
@@ -14,6 +14,10 @@ authors:
     family-names: Farkas
 repository-code: https://github.com/huspacy/huspacy
 repository-artifact: https://huggingface.co/huspacy
+keywords:
+  - spaCy
+  - Hungarian
+  - NLP
 type: software
 url: https://huspacy.github.io
 date-released: 2022-01-05
@@ -22,31 +26,42 @@ contact:
       family-names: Orosz
       given-names: György
 preferred-citation:
-    type: conference-paper
-    title: 'HuSpaCy: an industrial-strength Hungarian natural language processing toolkit'
-    abstract: "Although there are a couple of open-source language processing pipelines available for Hungarian, none of them satisfies the requirements of today's NLP applications. A language processing pipeline should consist of close to state-of-the-art lemmatization, morphosyntactic analysis, entity recognition and word embeddings. Industrial text processing applications have to satisfy non-functional software quality requirements, what is more, frameworks supporting multiple languages are more and more favored. This paper introduces HuSpaCy, an industry-ready Hungarian language processing toolkit. The presented tool provides components for the most important basic linguistic analysis tasks. It is open-source and is available under a permissive license. Our system is built upon spaCy's NLP components resulting in an easily usable, fast yet accurate application. Experiments confirm that HuSpaCy has high accuracy while maintaining resource-efficient prediction capabilities."
-    doi: "10.48550/arXiv.2201.01956"
+    type: article
+    title: 'Advancing Hungarian Text Processing with HuSpaCy: Efficient and Accurate NLP Pipelines'
+    abstract: "This paper presents a set of industrial-grade text processing models for Hungarian that achieve near state-of-the-art performance while balancing resource efficiency and accuracy. Models have been implemented in the spaCy framework, extending the HuSpaCy toolkit with several improvements to its architecture. Compared to existing NLP tools for Hungarian, all of our pipelines feature all basic text processing steps including tokenization, sentence-boundary detection, part-of-speech tagging, morphological feature tagging, lemmatization, dependency parsing and named entity recognition with high accuracy and throughput. We thoroughly evaluated the proposed enhancements, compared the pipelines with state-of-the-art tools and demonstrated the competitive performance of the new models in all text preprocessing steps. All experiments are reproducible and the pipelines are freely available under a permissive license."
+    doi: "10.1007/978-3-031-40498-6_6"
     identifiers:
     - type: other
-      value: "arXiv:2201.01956"
+      value: "arXiv:2308.12635"
       description: The ArXiv preprint of the paper
     authors:
       - given-names: György
         family-names: Orosz
-      - given-names: Zsolt
-        family-names: Szántó
-      - given-names: Péter
-        family-names: Berkecz
       - given-names: Gergő
         family-names: Szabó
+      - given-names: Péter
+        family-names: Berkecz
+      - given-names: Zsolt
+        family-names: Szántó
       - given-names: Richárd
         family-names: Farkas
-    year-original: "2022"
-    start: 59
-    end: 73
-    institution:
-        name: 'Szegedi Tudományegyetem'
-    location:
-        name: 'Szeged'
+    year: "2023"
+    start: 58
+    end: 69
     conference:
-        name: 'XVIII. Magyar Számítógépes Nyelvészeti Konferencia'
+        name: 'Text, Speech, and Dialogue 2023'
+    editors-series:
+        - family-names: Kamil
+          given-names: Ekštein
+        - family-names: František
+          given-names: Pártl
+        - family-names: Miloslav
+          given-names: Konopík
+    journal: "Text, Speech, and Dialogue: TSD 2023. Lecture Notes in Computer Science"
+    issue-title: "TSD 2023: Text, Speech, and Dialogue"
+    volume-title: "TSD 2023: Text, Speech, and Dialogue"
+    volume: 14102
+    isbn: 978-3-031-40498-6
+    publisher:
+        name: "Springer Nature Switzerland"
+        city: Cham

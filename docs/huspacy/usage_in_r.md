@@ -5,7 +5,7 @@
 <!--pytest-codeblocks:skipfile-->
 
 1. Make sure you have `conda` installed
-2. Install a HuSpaCy model with `conda` (cf. [`md`](models_gen/install_md/), [`lg`](models_gen/install_lg/), [`trf`](models_gen/install_trf/)):
+2. Install a HuSpaCy model with `conda` (cf. [`md`](models/install_md/), [`lg`](models/install_lg/), [`trf`](models/install_trf/)):
 
 ```R
 library(reticulate)

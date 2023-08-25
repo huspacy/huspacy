@@ -53,6 +53,9 @@ jobs:
     - name: Install hfst
       run: sudo apt-get install -y hfst
 
+    - name: Test citation file
+      run: cffconvert --validate
+
     - name: Test code snippets in the documentation
       run: |
         cd repo/huspacy
