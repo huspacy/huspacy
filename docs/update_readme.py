@@ -24,6 +24,8 @@ API Documentation is available in [our website](https://huspacy.github.io/).
 
 {models}
 
+# Citation
+ 
 {citing}
 
 {contact}
@@ -41,6 +43,11 @@ def read_doc(path: str) -> str:
     content = raw_content.replace(":fontawesome-solid-star:", "⭑").replace(":fontawesome-solid-star-half-stroke:", "⭒")
     content: str = ICON_PATTERN.sub("", content)
     content = URL_PATTERN.sub("(https://huspacy.github.io/", content)
+    if "publications" in path:
+        first_heading = "## Main articles"
+        first_heading_idx = content.find(first_heading)
+        next_heading_idx = content.find("## ", first_heading_idx + len(first_heading))
+        content = content[first_heading_idx + len(first_heading) : next_heading_idx].strip()
     return content
 
 
