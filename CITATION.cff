@@ -58,7 +58,8 @@ preferred-citation:
         - family-names: Miloslav
           given-names: Konopík
     journal: "Text, Speech, and Dialogue: TSD 2023. Lecture Notes in Computer Science"
-    issue: "TSD 2023: Text, Speech, and Dialogue"
+    issue-title: "TSD 2023: Text, Speech, and Dialogue"
+    volume-title: "TSD 2023: Text, Speech, and Dialogue"
     volume: 14102
     isbn: 978-3-031-40498-6
     publisher:
