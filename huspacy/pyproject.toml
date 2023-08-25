@@ -60,6 +60,7 @@ flake8 = "*"
 twine = "^4.0.0"
 ### Quirks ###
 importlib-metadata = "<5"  # https://github.com/PyCQA/flake8/issues/1701
+typing-extensions = "<4.5.0"
 
 [tool.poetry.group.docs]
 optional = true

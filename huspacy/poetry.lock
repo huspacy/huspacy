@@ -2875,4 +2875,4 @@ trf = ["spacy-alignments", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.11"
-content-hash = "39be3244a7ef8392d537088d93f4c873bc13bc22a3e5a17ef5d6c421299925f6"
+content-hash = "99b93c0e1295d63604ca57137d42de719fca4cc3b1ff33619834e27e80afb455"
