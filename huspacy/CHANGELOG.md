@@ -5,9 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 - 2023-08-30
+### Changed
+- Python 3.11 support
+- Added support for new models  (`hu_core_news_md-v3.6.0`, `hu_core_news_md-v3.6.1`, `hu_core_news_lg-v3.6.0`, `hu_core_news_lg-v3.6.1`,`hu_core_news_trf-v3.5.3`)
+- `huspacy.download()` now warns if the spaCy required by the model would overwrite is not compatible with the spacy version installed
+
 ## 0.9.0 - 2023-05-23
 ### Changed
-- Added support for new models (`hu_core_news_md-v3.5.2`, `hu_core_news_lg-v3.5.2`, `hu_core_news_trf_xl-v3.5.2`, `hu_core_news_trf_xl-v3.5.2`)
+- Added support for new models (`hu_core_news_md-v3.5.2`, `hu_core_news_lg-v3.5.2`, `hu_core_news_trf-v3.5.2`, `hu_core_news_trf_xl-v3.5.2`)
 - Updated documentation with `benepar` usage and the noun chunking
 
 ## 0.8.1 - 2023-03-24
