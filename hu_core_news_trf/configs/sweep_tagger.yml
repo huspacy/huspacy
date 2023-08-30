@@ -1,38 +1,39 @@
 project: spacy_trf_tagger
 command:
-- python
-- -m
 - spacy
 - train
 - ./configs/tagger.cfg
-- --output
-- ../models/sweep_tagger
+- --code
+- ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
-- 0
+- ${envvar:GPU}
+- --paths.train
+- data/processed/SzegedCorpus/train.spacy
+- --paths.dev
+- data/processed/UD_Hungarian-Szeged/dev.spacy
 - ${args}
-method: grid
+method: bayes
+metric:
+  name: score
+  goal: maximize
 parameters:
-  components.experimental_edit_tree_lemmatizer.top_k:
-    values:
-      - 1
-      - 2
-      - 3
-  nlp.lang:
-    values:
-      - hu
-  paths.dev:
-    values:
-      - ../data/processed/SzegedCorpus/dev.spacy
-  paths.train:
-    values:
-      - ../data/processed/SzegedCorpus/train.spacy
   training.dropout:
     values:
     - 0.1
     - 0.2
     - 0.3
+  training.optimizer.learn_rate.initial_rate:
+    values:
+    - 1e-3
+    - 1e-4
+    - 5e-5
+    - 1e-5
   training.optimizer.L2:
     values:
-    - 0.1
-    - 0.01
-    - 0.001
+      - 1e-1
+      - 1e-2
+      - 1e-3
+  training.optimizer.use_averages:
+    values:
+      - true
+      - false

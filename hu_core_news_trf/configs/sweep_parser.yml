@@ -1,48 +1,40 @@
 project: spacy_trf_parser
 command:
-- python
-- -m
 - spacy
 - train
 - ./configs/parser.cfg
-- --output
-- ../transformer_models/sweep_parser
+- --code
+- ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
-- 0
+- ${envvar:GPU}
+- --paths.train
+- data/processed/UD_Hungarian-Szeged/train.spacy
+- --paths.dev
+- data/processed/UD_Hungarian-Szeged/dev.spacy
+- --paths.tagger_model
+- models/hu_core_news_trf-tagger-3.5.3/model-best
 - ${args}
-method: grid
+method: bayes
+metric:
+  name: score
+  goal: maximize
 parameters:
-  components.parser.model.extra_state_tokens:
-    values:
-      - true
-      - false
-  components.parser.model.hidden_width:
-    values:
-      - 64
-      - 128
-      - 256
-  components.parser.model.maxout_pieces:
-    values:
-      - 1
-      - 2
-      - 3
-  nlp.lang:
-    values:
-    - hu
-  paths.dev:
-    values:
-      - ../data/processed/UD_Hungarian_Szeged/dev.spacy
-  paths.train:
-    values:
-      - ../data/processed/UD_Hungarian_Szeged/train.spacy
   training.dropout:
     values:
     - 0.1
     - 0.2
     - 0.3
-    - 0.5
+  training.optimizer.learn_rate.initial_rate:
+    values:
+    - 1e-3
+    - 1e-4
+    - 5e-5
+    - 1e-5
   training.optimizer.L2:
     values:
-    - 0.1
-    - 0.01
-    - 0.001
+      - 1e-1
+      - 1e-2
+      - 1e-3
+  training.optimizer.use_averages:
+    values:
+      - true

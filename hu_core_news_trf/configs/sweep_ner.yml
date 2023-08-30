@@ -1,48 +1,41 @@
 project: spacy_trf_ner
 command:
-- python
-- -m
 - spacy
 - train
 - ./configs/ner.cfg
-- --output
-- ../transformer_models/sweep_ner_merged
+- --code
+- ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
-- 0
+- ${envvar:GPU}
+- --paths.train
+- data/processed/ner_merged/train.spacy
+- --paths.dev
+- data/processed/ner_merged/dev.spacy
+- --paths.tagger_model
+- models/hu_core_news_trf-tagger-3.5.3/model-best
 - ${args}
 method: bayes
 metric:
-  name: ents_f
+  name: score
   goal: maximize
 parameters:
-  components.ner.model.extra_state_tokens:
-    values:
-    - true
-    - false
-  components.ner.model.hidden_width:
-    values:
-    - 64
-    - 128
-  components.ner.model.maxout_pieces:
-    values:
-    - 2
-    - 3
-  nlp.lang:
-    values:
-    - hu
-  paths.dev:
-    values:
-      - ../data/processed/ner_merged/dev.spacy
-  paths.train:
-    values:
-      - ../data/processed/ner_merged/train.spacy
   training.dropout:
     values:
+    - 0.1
+    - 0.2
     - 0.3
-    - 0.4
     - 0.5
+  training.optimizer.learn_rate.initial_rate:
+    values:
+    - 1e-4
+    - 1e-5
+    - 3e-5
+    - 1e-6
   training.optimizer.L2:
     values:
-    - 1
-    - 0.1
-    - 0.5
+      - 1e-1
+      - 1e-2
+      - 1e-3
+  training.optimizer.use_averages:
+    values:
+      - true
