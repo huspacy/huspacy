@@ -22,6 +22,7 @@ classifiers = [
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Topic :: Text Processing',
     'Topic :: Text Processing :: Linguistic',
     'Topic :: Scientific/Engineering',
@@ -34,7 +35,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.7,<3.12"
 packaging = "^21.3"
 importlib_resources = { version = "*", python = "<3.9" }
 transformers = { version = "^4.24.0", optional = true }
