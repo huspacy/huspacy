@@ -60,6 +60,17 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
             model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
     ), f"{model_version} is not a valid version for {model_name}"
 
+    try:
+        import spacy
+        spacy_ver = packaging.version.parse(spacy.__version__)
+        model_ver = packaging.version.parse(model_version)
+        if not (spacy_ver.major == model_ver.major and spacy_ver.minor == model_ver.minor):
+            __LOGGER.warning(f"Installed spaCy version ({spacy.__version__}) is not compatible "
+                             f"with the model being downloaded {model_version}, installation process will overwrite "
+                             f"existing spaCy.")
+    except ImportError:
+        pass
+
     if model_version != __DEFAULT_VERSION:
         model_version = "v" + model_version
 
