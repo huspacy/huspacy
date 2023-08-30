@@ -29,25 +29,25 @@ nav:
       - Development: huspacy/develop.md
       - Changelog: huspacy/changelog.md
   - Models:
-      - Overview: models_gen/index.md
+      - Overview: models/index.md
       - hu_core_news_md:
-          - Overview: models_gen/index_md.md
-          - Installation: models_gen/install_md.md
+          - Overview: models/index_md.md
+          - Installation: models/install_md.md
           - Development: models/develop_md.md
           - Changelog: models/changelog_md.md
       - hu_core_news_lg:
-          - Overview: models_gen/index_lg.md
-          - Installation: models_gen/install_lg.md
+          - Overview: models/index_lg.md
+          - Installation: models/install_lg.md
           - Development: models/develop_lg.md
           - Changelog: models/changelog_lg.md
       - hu_core_news_trf:
-          - Overview: models_gen/index_trf.md
-          - Installation: models_gen/install_trf.md
+          - Overview: models/index_trf.md
+          - Installation: models/install_trf.md
           - Development: models/develop_trf.md
           - Changelog: models/changelog_trf.md
       - hu_core_news_trf_xl:
-          - Overview: models_gen/index_trf_xl.md
-          - Installation: models_gen/install_trf_xl.md
+          - Overview: models/index_trf_xl.md
+          - Installation: models/install_trf_xl.md
           - Development: models/develop_trf_xl.md
           - Changelog: models/changelog_trf_xl.md
   - Recipes:

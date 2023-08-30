@@ -53,6 +53,11 @@ jobs:
     - name: Install hfst
       run: sudo apt-get install -y hfst
 
+    - name: Test citation file
+      run: |
+        cd repo/huspacy
+        poetry run cffconvert -i ../CITATION.cff --validate
+
     - name: Test code snippets in the documentation
       run: |
         cd repo/huspacy
