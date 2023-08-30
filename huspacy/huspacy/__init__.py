@@ -71,8 +71,7 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
     except ImportError:
         pass
 
-    if model_version != __DEFAULT_VERSION:
-        model_version = "v" + model_version
+    model_version = "v" + model_version
 
     download_url = __URL.format(version=model_version, model_name=model_name)
     cmd = [sys.executable, "-m", "pip", "install"] + [download_url]
