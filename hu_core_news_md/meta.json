@@ -6,7 +6,7 @@
   "email": "gyorgy@orosz.link",
   "url": "https://github.com/huspacy/huspacy",
   "license": "cc-by-sa-4.0",
-  "spacy_version": ">=3.5.0,<3.6.0",
+  "spacy_version": ">=3.6.0,<3.7.0",
   "sources": [
     {
       "name": "UD Hungarian Szeged",
@@ -21,16 +21,16 @@
       "author": "Eszter Simon, Noémi Vadász (Department of Language Technology and Applied Linguistics)"
     },
     {
-      "name": "hunNERwiki",
-      "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
-      "license": "CC-BY-SA-3.0",
-      "author": "Eszter Simon, Dávid Márk Nemeskey (HLT Group, Budapest University of Technology and Economics)"
-    },
-    {
       "name": "Szeged NER Corpus",
       "url": "https://rgai.inf.u-szeged.hu/node/130",
       "license": "CC-BY-NC-SA-3.0",
       "author": "György Szarvas, Richárd Farkas, László Felföldi, András Kocsor, János Csirik (MTA-SZTE Research Group on Artificial Intelligence)"
+    },
+    {
+      "name": "Hungarian lg Floret vectors",
+      "url": "https://huggingface.co/huspacy/hu_vectors_web_lg",
+      "license": "CC-BY-SA-4.0",
+      "author": "Szeged AI"
     }
   ]
 }

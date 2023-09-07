@@ -1,54 +1,47 @@
 command:
-- python
-- -m
 - spacy
 - train
 - configs/ner.cfg
-- --output
-# TODO: This folder should be unique, as multiprocess run can override each other's model
-- ../models/sweep_ner_merged
+- --code
+- ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
-- 0
+- ${envvar:GPU}
+- --training.logger.project_name
+- parser_finetune
+- --paths.vectors
+- models/floret.vectors
+- --paths.train
+- data/processed/ner_merged/train.spacy
+- --paths.dev
+- data/processed/ner_merged/dev.spacy
+- --paths.tagger_model
+- models/hu_core_news_lg-tagger-3.6.1/model-best
 - ${args}
-method: random
+method: bayes
+metric:
+  name: score
+  goal: maximize
 parameters:
-  components.ner.model.extra_state_tokens:
+  training.optimizer.learn_rate:
+    values:
+    - 0.006
+    - 0.003
+    - 0.001
+    - 0.0005
+    - 0.0001
+    - 0.00001
+  training.optimizer.grad_clip:
+    values:
+    - 1.0
+    - 5.0
+  training.optimizer.L2:
+    values:
+    - 1e-2
+    - 1e-3
+    - 1e-4
+    - 1e-5
+    - 1e-6
+  training.optimizer.use_averages:
     values:
     - true
     - false
-  components.ner.model.hidden_width:
-    values:
-    - 32
-    - 64
-    - 128
-    - 512
-  components.ner.model.maxout_pieces:
-    values:
-    - 1
-    - 2
-    - 3
-  nlp.lang:
-    values:
-    - hu
-  paths.dev:
-    values:
-    - corpus/ner_merged/devel.spacy
-  paths.train:
-    values:
-    - corpus/ner_merged/train.spacy
-  training.dropout:
-    values:
-    - 0.1
-    - 0.3
-    - 0.5
-  training.optimizer.L2:
-    values:
-    - 0.1
-    - 0.01
-    - 0.001
-  training.optimizer.learn_rate:
-    values:
-    - 0.1
-    - 0.01
-    - 0.001
-    - 0.0001

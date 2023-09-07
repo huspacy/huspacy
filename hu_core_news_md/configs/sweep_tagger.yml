@@ -1,12 +1,15 @@
-project: spacy_trf_tagger
 command:
 - spacy
 - train
-- ./configs/tagger.cfg
+- configs/tagger.cfg
 - --code
 - ../huspacy/huspacy/components/edit_tree_lemmatizer.py
 - --gpu-id
 - ${envvar:GPU}
+- --training.logger.project_name
+- tagger_finetune
+- --paths.vectors
+- models/floret.vectors
 - --paths.train
 - data/processed/SzegedCorpus/train.spacy
 - --paths.dev
@@ -17,23 +20,27 @@ metric:
   name: score
   goal: maximize
 parameters:
-  training.dropout:
+  training.optimizer.learn_rate:
     values:
-    - 0.1
-    - 0.2
-    - 0.3
-  training.optimizer.learn_rate.initial_rate:
+    - 0.01
+    - 0.006
+    - 0.003
+    - 0.001
+    - 0.0005
+    - 0.0001
+    - 0.00001
+  training.optimizer.grad_clip:
     values:
-    - 1e-3
-    - 1e-4
-    - 5e-5
-    - 1e-5
+    - 1.0
+    - 5.0
   training.optimizer.L2:
     values:
-      - 1e-1
-      - 1e-2
-      - 1e-3
+    - 1e-2
+    - 1e-3
+    - 1e-4
+    - 1e-5
+    - 1e-6
   training.optimizer.use_averages:
     values:
-      - true
-      - false
+    - true
+    - false

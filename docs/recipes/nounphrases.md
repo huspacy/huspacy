@@ -6,6 +6,8 @@ Even though, spaCy's rule-based noun chunking facilities are not yet supported, 
 
 First you'll need to install the tool by issuing `pip install benepar` or `pip install huspacy[np]`
 
+## Usage
+
 <!--
 ```python
 try:

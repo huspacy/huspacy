@@ -21,12 +21,6 @@
       "author": "Eszter Simon, Noémi Vadász (Department of Language Technology and Applied Linguistics)"
     },
     {
-      "name": "hunNERwiki",
-      "url": "http://hlt.sztaki.hu/resources/hunnerwiki.html",
-      "license": "CC-BY-SA-3.0",
-      "author": "Eszter Simon, Dávid Márk Nemeskey (HLT Group, Budapest University of Technology and Economics)"
-    },
-    {
       "name": "Szeged NER Corpus",
       "url": "https://rgai.inf.u-szeged.hu/node/130",
       "license": "CC-BY-NC-SA-3.0",

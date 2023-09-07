@@ -2,6 +2,9 @@ title: "Core Hungarian spaCy model (Transformer - XLM-RoBERTa) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
 spacy_version: ">=3.5.3,<3.6.0"
 
+env:
+  GPU: "GPU"
+
 vars:
   lang: hu
   # Following spaCy's convention: https://spacy.io/models#conventions
@@ -42,8 +45,7 @@ vars:
   wandb_entity: spacy-hu
   wandb_project: hu_core_news_trf_xl-3.5.2
 
-  gpu: 3
-
+  gpu: ${env.GPU}
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
 directories: [configs, models, packages, data/raw, data/processed, data/external, data/result]
@@ -60,7 +62,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.nerkor}
     git:
       repo: https://github.com/nytud/NYTK-NerKor
-      branch: main
+      branch: v1.0
       path: data
 
   # SzegedNER

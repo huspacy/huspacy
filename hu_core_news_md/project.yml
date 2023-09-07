@@ -1,6 +1,9 @@
 title: "Core Hungarian spaCy model (Medium) "
 description: "Word vector, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.5.3,<3.6.0"
+spacy_version: ">=3.6.0,<3.7.0"
+
+env:
+  GPU: "GPU"
 
 vars:
   lang: hu
@@ -9,7 +12,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_md
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.5.2
+  package_version: 3.6.1
 
   models_path: models
   packages_path: packages
@@ -41,9 +44,9 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_md-3.5.2
+  wandb_project: hu_core_news_md-3.6.1
 
-  gpu: 1
+  gpu: ${env.GPU}
 
 # These are the directories that the project needs. The project CLI will make sure that they always exist.
 directories: [configs, models, packages, data/raw, data/processed, data/external, data/result]
@@ -60,7 +63,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.nerkor}
     git:
       repo: https://github.com/nytud/NYTK-NerKor
-      branch: main
+      branch: v1.0
       path: data
 
   # SzegedNER

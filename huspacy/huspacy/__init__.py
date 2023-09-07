@@ -1,23 +1,24 @@
+import logging
 import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, Dict, List, Optional, Union, Any
 
 import packaging.version
-
 from huspacy.utils import run_command
 
 __URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
-__DEFAULT_VERSION = "main"
-__DEFAULT_MODEL = "hu_core_news_lg"
-
 __AVAILABLE_MODELS: Dict[str, List[str]] = {
     "hu_core_news_lg": ["3.2.1", "3.2.2", "3.3.0", "3.3.1", "3.4.0", "3.4.1", "3.4.2", "3.4.3", "3.4.4", "3.5.0",
-                        "3.5.1", "3.5.2"],
-    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2"],
+                        "3.5.1", "3.5.2", "3.6.0", "3.6.1"],
+    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2", "3.6.0", "3.6.1"],
     "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1", "3.5.2"],
     "hu_core_news_trf_xl": ["3.4.0", "3.5.1", "3.5.2"],
 }
+__DEFAULT_MODEL: str = "hu_core_news_lg"
+__DEFAULT_VERSION: str = __AVAILABLE_MODELS[__DEFAULT_MODEL][-1]
+
+__LOGGER = logging.getLogger("huspacy")
 
 
 def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]]:
@@ -59,8 +60,18 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
             model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
     ), f"{model_version} is not a valid version for {model_name}"
 
-    if model_version != __DEFAULT_VERSION:
-        model_version = "v" + model_version
+    try:
+        import spacy
+        spacy_ver = packaging.version.parse(spacy.__version__)
+        model_ver = packaging.version.parse(model_version)
+        if not (spacy_ver.major == model_ver.major and spacy_ver.minor == model_ver.minor):
+            __LOGGER.warning(f"Installed spaCy version ({spacy.__version__}) is not compatible "
+                             f"with the model being downloaded {model_version}, installation process will overwrite "
+                             f"existing spaCy.")
+    except ImportError:
+        pass
+
+    model_version = "v" + model_version
 
     download_url = __URL.format(version=model_version, model_name=model_name)
     cmd = [sys.executable, "-m", "pip", "install"] + [download_url]

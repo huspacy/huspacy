@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "huspacy"
-version = "0.9.0"
+version = "0.10.1"
 description = "HuSpaCy: industrial strength Hungarian natural language processing"
 authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 maintainers = ["György Orosz <gyorgy@orosz.link>"]
@@ -22,6 +22,7 @@ classifiers = [
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Topic :: Text Processing',
     'Topic :: Text Processing :: Linguistic',
     'Topic :: Scientific/Engineering',
@@ -34,17 +35,20 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.7,<3.12"
 packaging = "^21.3"
 importlib_resources = { version = "*", python = "<3.9" }
 transformers = { version = "^4.24.0", optional = true }
 spacy-alignments = { version = "^0.8.6", optional = true }
 torch = { version = "*", optional = true }
 benepar = { version = "0.2.0", optional = true}
+#emmorphpy = { url = "https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl", optional = true}
+#emmorph2ud2 = {url = "https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl", optional = true}
 
 [tool.poetry.extras]
 trf = ["transformers", "spacy-alignments", "torch"]
 np = ["benepar"]
+#morph = ["emmorphpy", "emmorph2ud2"]
 
 [tool.poetry.group.dev]
 optional = true
@@ -70,6 +74,8 @@ mkdocs-git-revision-date-localized-plugin = "^1.1.0"
 mkdocstrings = { extras = ["python"], version = "^0.19.0" }
 mkdocs-gen-files = "^0.4.0"
 mkdocs-autorefs = "^0.4.1"
+mkdocs-meta-descriptions-plugin = "^2.2.0"
+cffconvert = "^2.0.0"
 
 
 [tool.pytest.ini_options]
@@ -83,7 +89,7 @@ testpaths = [
 
 [build-system]
 requires = [
-    "poetry-core>=1.2.0",
+    "poetry-core>=1.5.1",
     "wheel"
 ]
 build-backend = "poetry.core.masonry.api"
