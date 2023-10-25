@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Transformer - huBERT) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.5.3,<3.6.0"
+spacy_version: ">=3.5.4,<3.6.0"
 
 env:
   GPU: "GPU"
@@ -12,7 +12,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_trf
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.5.3
+  package_version: 3.5.4
 
   models_path: models
   packages_path: packages
@@ -43,7 +43,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_trf-3.5.3
+  wandb_project: hu_core_news_trf-3.5.4
 
   gpu: ${env.GPU}
 
