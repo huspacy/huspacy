@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.7.0 - 2023-10-25
+### Changed
+- spaCy 3.6.x compatibility
+### Fixed
+- Fixed a lemmatization bug: https://github.com/huspacy/huspacy/issues/62 
 
 ## 3.6.1 - 2023-08-15
 ### Changed
@@ -12,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 3.6.0 - 2023-08-03
 ### Changed
+- spaCy 3.6.x compatibility
 - Updated dependencies
 - Updated resource list in model description
 - Pinned NerKor version
