@@ -41,3 +41,17 @@ def test_lookup_lemmatizer(nlp, token, pos, morphs, expected_lemma):
     doc: Doc = Doc(nlp.vocab, words=[token], pos=[pos], morphs=[morphs])
     processed: Doc = nlp(doc)
     assert processed[0].lemma_ == expected_lemma
+
+
+@pytest.mark.skip(reason="Test needs a trained model")
+def test_issue62():
+    from huspacy.components.lookup_lemmatizer import LookupLemmatizer
+
+    nlp = Hungarian()
+    lookup_lemmatizer: LookupLemmatizer = nlp.add_pipe("lookup_lemmatizer")
+    lookup_lemmatizer.from_disk(
+        "/home/gorosz/workspace/huspacy/hu_core_news_md/models/hu_core_news_md-3.6.1/lookup_lemmatizer/")
+
+
+    doc: Doc = Doc(nlp.vocab, words=["800¥600"], pos=["X"])
+    processed: Doc = nlp(doc)
