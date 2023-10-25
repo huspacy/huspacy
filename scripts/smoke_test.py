@@ -31,7 +31,7 @@ def main(path: str, with_random_text: bool = False):
         print(doc._.conll_str)
         if with_random_text is not None:
             doc = nlp(get_random_text(nlp, 1024))
-            print(doc._.conll_str)
+            print("CONLL format length:", len(doc._.conll_str))
     except Exception:
         print(traceback.format_exc())
         exit(1)
