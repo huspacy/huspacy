@@ -41,3 +41,10 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages-dir: huspacy/dist
+
+      - name: Github release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: huspacy/dist/*.whl
+
+
