@@ -76,7 +76,7 @@ assets:
   - dest: ${vars.raw_data_path}/${vars.szegedcorpus}
     git:
       repo: https://github.com/huspacy/huspacy-resources
-      branch: v3
+      branch: v5
       path: data/processed/szeged-corpus/
 
   # Word embeddings
