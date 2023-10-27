@@ -1,10 +1,13 @@
-name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+name: Publish Python 🐍 distributions 📦 to PyPI and Github
+
 on:
   push:
     tags:
       - "huspacy-v*"
   workflow_dispatch:
 
+permissions:
+  contents: write
 
 jobs:
   build-n-publish:
