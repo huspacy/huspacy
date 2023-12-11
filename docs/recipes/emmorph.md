@@ -1,6 +1,6 @@
 # `emMorph` integration
 
-HuSpaCy does nt employ an integrated morphological analyzer, however it might be useful to include one in the pipeline in some cases. `emMorph` is one of the most popular morph. analyzers available having a Python interface. 
+HuSpaCy doesn't employ an integrated morphological analyzer, however it might be useful to include one in the pipeline in some cases. `emMorph` is one of the most popular morph. analyzers available having a Python interface. 
 
 ## Install dependencies
 
