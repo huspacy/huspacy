@@ -10,7 +10,7 @@ python = "^3.8"
 
 spacy = {extras = ["cuda-autodetect"], version = "~3.7.0"}
 spacy-experimental = "0.6.4"
-torch = "~1.10.0+cu111"
+torch = "~2.0.0+cu117"
 spacy-transformers = "~1.2.2"
 
 [tool.poetry.dev-dependencies]
