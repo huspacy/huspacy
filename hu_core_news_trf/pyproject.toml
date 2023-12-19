@@ -8,8 +8,8 @@ license = "cc-by-sa-4.0"
 [tool.poetry.dependencies]
 python = "^3.8"
 
-spacy = {extras = ["cuda-autodetect"], version = "~3.5.3"}
-spacy-experimental = "0.6.2"
+spacy = {extras = ["cuda-autodetect"], version = "~3.7.0"}
+spacy-experimental = "0.6.4"
 torch = "~1.10.0+cu111"
 spacy-transformers = "~1.2.2"
 

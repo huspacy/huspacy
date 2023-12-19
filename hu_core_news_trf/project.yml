@@ -1,6 +1,6 @@
 title: "Core Hungarian spaCy model (Transformer - huBERT) "
 description: "Transformer, Tokenization, Sentence splitting, Part-of-speech tagging, Lemmatization, Dependency parsing and Named entity recognition"
-spacy_version: ">=3.5.0,<3.6.0"
+spacy_version: ">=3.7.0,<3.8.0"
 
 env:
   GPU: "GPU"
