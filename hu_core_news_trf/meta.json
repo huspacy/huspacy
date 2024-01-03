@@ -35,6 +35,6 @@
   ],
   "requirements": [
     "spacy-transformers ~= 1.2.2",
-    "spacy-experimental == 0.6.2"
+    "spacy-experimental == 0.6.4"
   ]
 }
