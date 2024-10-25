@@ -24,4 +24,4 @@ docker run -it --rm --name trainer \
   -v "$(pwd)/${model_dir}"/project.lock:/app/model/project.lock \
   -v "$(pwd)/${model_dir}"/../huspacy:/app/huspacy \
   -v "$(pwd)/${model_dir}"/../scripts:/app/scripts \
-  trainer #"./train.sh"
+  trainer "./train.sh"
