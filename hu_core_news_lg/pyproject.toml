@@ -6,21 +6,22 @@ authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
 license = "cc-by-sa-4.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 
-spacy = {extras = ["cuda-autodetect"], version = "~3.7.0"}
+spacy = {version = "~3.8.0", extras = ["cuda-autodetect"]}
+cupy-cuda12x = "~13.3.0"
 
 [tool.poetry.dev-dependencies]
-spacy-huggingface-hub = "0.0.9"
-spacy-loggers = "~1.0.3"
-spacy_conll = "^3.0"
-conllu = "^4.4.1"
-wandb = "^0.13.3"
+spacy-huggingface-hub = "0.0.10"
+spacy-loggers = "~1.0.5"
+spacy_conll = "~4.0"
+conllu = "~6.0.0"
+wandb = "^0.18.5"
 contexttimer = "^0.3.3"
 
-wheel = ">=0.37.0"
-setuptools = ">=65.4.1"
-pip = ">=22.3.1"
+wheel = "^0.37.0"
+setuptools = "^65.4.1"
+pip = "^22.3.1"
 
 bump2version = "^1.0.1"
 
