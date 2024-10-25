@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# Allow a few files
+!pyproject.toml
+!poetry.lock
+!poetry.toml
+!meta.json
+!project.yml
+!train.sh
