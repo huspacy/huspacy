@@ -41,6 +41,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt install -y \
     python3.12 \
+    python3.12-distutils \
     git \
     && rm -rf /var/lib/apt/lists/*
 
