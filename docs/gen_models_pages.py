@@ -47,10 +47,10 @@ You can either install the model through `pip`:
 
 ```bash
 # Install the latest model
-$ pip install {name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/main/hu_core_news_{name}-any-py3-none-any.whl
+$ pip install hu_core_news_{name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/main/hu_core_news_{name}-any-py3-none-any.whl
 
 # Install a model with a specific version such as the latest one ({latest_version})
-$ pip install {name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/v{latest_version}/hu_core_news_{name}-any-py3-none-any.whl
+$ pip install hu_core_news_{name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/v{latest_version}/hu_core_news_{name}-any-py3-none-any.whl
 ```
 
 or by using `huspacy`'s built-in facilities:
