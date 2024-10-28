@@ -58,7 +58,7 @@ jobs:
         run: |
           pip install -U pip 
           pip install spacy_conll typer huspacy
-          pip install ${{ matrix.model-name }} @ https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
+          pip install ${{ matrix.model-name }}@https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
 #          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}')"
 
       - name: Smoke test
