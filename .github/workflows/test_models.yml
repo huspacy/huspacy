@@ -11,12 +11,12 @@ on:
 
 
 jobs:
-  test_models:
+  test_trf_models:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11"]
-        model-name: ["hu_core_news_md", "hu_core_news_lg", "hu_core_news_trf"]
+        python-version: [ "3.9", "3.10", "3.11" ]
+        model-name: [ "hu_core_news_trf" ]
 
     steps:
       - uses: actions/checkout@v3
@@ -30,11 +30,36 @@ jobs:
       - name: Install the package
         run: |
           pip install -U pip 
-          pip install spacy_conll typer
-          pip install https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
+          pip install spacy_conll typer huspacy
+          pip install ${{ matrix.model-name }} @ https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
+#          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}')"
 
-#      - name: Workaround #https://github.com/explosion/spaCy/issues/12659
-#        run: pip install typing_extensions=="4.5.0"
+      - name: Smoke test
+        run: |
+          python scripts/smoke_test.py ${{ matrix.model-name }}
+
+  test_standard_models:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        model-name: ["hu_core_news_md", "hu_core_news_lg"]
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the package
+        run: |
+          pip install -U pip 
+          pip install spacy_conll typer huspacy
+          pip install ${{ matrix.model-name }} @ https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
+#          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}')"
 
       - name: Smoke test
         run: |
