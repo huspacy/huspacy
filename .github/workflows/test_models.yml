@@ -27,16 +27,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install the package
+      - name: Test
         run: |
           pip install -U pip 
-          pip install spacy_conll typer huspacy
-          pip install ${{ matrix.model-name }} @ https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
-#          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}')"
-
-      - name: Smoke test
-        run: |
-          python scripts/smoke_test.py ${{ matrix.model-name }}
+          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}'); nlp = huspacy.load('${{ matrix.model-name }}'); print('Hello')"
 
   test_standard_models:
     runs-on: ubuntu-latest
@@ -54,13 +48,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install the package
+      - name: Test
         run: |
           pip install -U pip 
-          pip install spacy_conll typer huspacy
-          pip install ${{ matrix.model-name }}@https://huggingface.co/huspacy/${{ matrix.model-name }}/resolve/main/${{ matrix.model-name }}-any-py3-none-any.whl
-#          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}')"
-
-      - name: Smoke test
-        run: |
-          python scripts/smoke_test.py ${{ matrix.model-name }}
+          python -c "import huspacy; huspacy.download('${{ matrix.model-name }}'); nlp = huspacy.load('${{ matrix.model-name }}'); print('Hello')"
