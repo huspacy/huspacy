@@ -51,7 +51,7 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str | None = None
 
     Args:
         model_name (str): model name, if not provided it defaults to `hu_core_news_lg`
-        model_version (str | None): model version, if not provided it defaults to the latest version
+        model_version (str): model version, if not provided it defaults to the latest version
 
     Returns:
         None
