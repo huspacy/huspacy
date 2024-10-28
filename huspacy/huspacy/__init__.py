@@ -74,7 +74,8 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_V
     model_version = "v" + model_version
 
     download_url = __URL.format(version=model_version, model_name=model_name)
-    cmd = [sys.executable, "-m", "pip", "install"] + [download_url]
+    cmd = [sys.executable, "-m", "pip", "install"] + [model_name + " @ " + download_url]
+    print(cmd)
     run_command(cmd)
 
 

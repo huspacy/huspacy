@@ -1,8 +1,7 @@
+<!--pytest-codeblocks:skipfile-->
 # :octicons-arrow-switch-24: Usage in R
 
 ## Installation
-
-<!--pytest-codeblocks:skipfile-->
 
 1. Make sure you have `conda` installed
 2. Install a HuSpaCy model with `conda` (cf. [`md`](models/install_md/), [`lg`](models/install_lg/), [`trf`](models/install_trf/)):
