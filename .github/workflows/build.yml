@@ -2,6 +2,9 @@ name: Build
 
 on:
   push:
+    paths:
+      - huspacy/**
+      - .github/workflows/build.yml
     branches:
       - master
       - develop
@@ -74,41 +77,4 @@ jobs:
           name: wheel-${{ matrix.python-version }}
           path: huspacy/dist/*.whl
 
-#  publish_package:
-#    runs-on: ubuntu-latest
-#    needs: build_and_test
-#    defaults:
-#      run:
-#        working-directory: huspacy
-#    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-#    steps:
-#      - uses: actions/checkout@v3
-#        name: Checkout
-#
-#      - uses: Gr1N/setup-poetry@v8
-#        with:
-#          poetry-version: 1.8.1
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: huspacy/.venv
-#          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
-#
-#      - name: Install Python dependencies
-#        run: poetry install --with dev
-#
-#      - name: Build package
-#        env:
-#          BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
-#        run: |
-#          echo "Running the pipeline on $BRANCH_NAME branch"
-#          sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
-#          poetry version --short
-#
-#          poetry build -f wheel
-#
-#      - name: Publish nightly package
-#        env:
-#          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-#        run: poetry publish
+#  c
