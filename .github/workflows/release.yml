@@ -74,6 +74,7 @@ jobs:
         with:
           command: query
           version: latest
+          changelog: ../CHANGELOG.md
 
       - name: Display release info
         run: |
