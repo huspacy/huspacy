@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable, Dict, List, Optional, Union, Any
 
 import packaging.version
+
 from huspacy.utils import run_command
 
 __URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
@@ -16,7 +17,7 @@ __AVAILABLE_MODELS: Dict[str, List[str]] = {
     "hu_core_news_trf_xl": ["3.4.0", "3.5.1", "3.5.2"],
 }
 __DEFAULT_MODEL: str = "hu_core_news_lg"
-__DEFAULT_VERSION: str = __AVAILABLE_MODELS[__DEFAULT_MODEL][-1]
+# __DEFAULT_VERSION: str = __AVAILABLE_MODELS[__DEFAULT_MODEL][-1]
 
 __LOGGER = logging.getLogger("huspacy")
 
@@ -45,20 +46,23 @@ def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]
         return __AVAILABLE_MODELS
 
 
-def download(model_name: str = __DEFAULT_MODEL, model_version: str = __DEFAULT_VERSION) -> None:
+def download(model_name: str = __DEFAULT_MODEL, model_version: str | None = None) -> None:
     """Downloads a HuSpaCy model.
 
     Args:
         model_name (str): model name, if not provided it defaults to `hu_core_news_lg`
-        model_version (str): model version, if not provided it defaults to the latest version ("main")
+        model_version (str | None): model version, if not provided it defaults to the latest version
 
     Returns:
         None
     """
     assert model_name in __AVAILABLE_MODELS, f"{model_name} is not a valid model name"
+    if model_version is None:
+        model_version = __AVAILABLE_MODELS[model_name][-1]
     assert (
             model_version == "main" or model_version in __AVAILABLE_MODELS[model_name]
     ), f"{model_version} is not a valid version for {model_name}"
+
 
     try:
         import spacy

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## 0.12.0 - 2023-10-28
+### Fixed
+- Model download version check were using the default model's default version when not provided
+- Python version compatibility has been fixed
+
+## 0.12.0 - 2023-10-28
 ### Changed
 - Added support for new models  (`hu_core_news_md-v3.8.0`, `hu_core_news_lg-v3.8.0`)
 - Sunsetting EOL Pythonn versions
