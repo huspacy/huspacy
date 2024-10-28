@@ -103,6 +103,16 @@ jobs:
           name: wheel-3.9
           path: huspacy/dist
 
+      - name: Build package
+        env:
+          BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+        run: |
+          echo "Running the pipeline on $BRANCH_NAME branch"
+          sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
+          poetry version --short
+
+          poetry build -f wheel
+
       - name: Publish nightly package
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
