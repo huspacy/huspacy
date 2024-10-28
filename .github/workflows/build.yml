@@ -97,12 +97,6 @@ jobs:
       - name: Install Python dependencies
         run: poetry install --with dev
 
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: wheel-3.9
-          path: huspacy/dist
-
       - name: Build package
         env:
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
