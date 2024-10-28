@@ -44,7 +44,7 @@ DEFAULT_EDIT_TREE_LEMMATIZER_MODEL = Config().from_str(default_model_config)["mo
 
 
 @Language.factory(
-    "trainable_lemmatizer_v2",
+    "trainable_lemmatizer_v2_huspacy",
     assigns=["token.lemma"],
     requires=[],
     default_config={

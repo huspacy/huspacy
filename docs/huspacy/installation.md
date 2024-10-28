@@ -17,8 +17,8 @@ huspacy.download()
 
 You can install the latest models directly from 🤗 Hugging Face Hub:
 
-- CPU optimized [large model](https://huggingface.co/huspacy/hu_core_news_lg): `pip install https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
-- GPU optimized [transformers model](https://huggingface.co/huspacy/hu_core_news_trf): `pip install https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
+- CPU optimized [large model](https://huggingface.co/huspacy/hu_core_news_lg): `pip install hu_core_news_lg@https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
+- GPU optimized [transformers model](https://huggingface.co/huspacy/hu_core_news_trf): `pip install hu_core_news_trf@https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
 
 To speed up inference on GPU, CUDA must be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
 
