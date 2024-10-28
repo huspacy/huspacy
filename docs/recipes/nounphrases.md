@@ -1,3 +1,4 @@
+<!--pytest-codeblocks:skipfile-->
 # Extracting noun phrases
 
 Even though, spaCy's rule-based noun chunking facilities are not yet supported, you can still extract noun phrases using the Berkeley Neural Parser (`benepar`). 
