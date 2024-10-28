@@ -107,4 +107,4 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: poetry run twine upload --non-interactive dist/*
+        run: poetry publish
