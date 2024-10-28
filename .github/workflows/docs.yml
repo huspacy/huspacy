@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - docs/**
+      - huspacy/**
       - mkdocs.yml
       - .github/workflows/docs.yml
     branches:
