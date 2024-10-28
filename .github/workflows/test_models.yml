@@ -31,7 +31,7 @@ jobs:
 
       - name: Test
         run: |
-          pip install -U pip huspacy
+          pip install -U pip huspacy numpy<2.0
           python -c "import huspacy; huspacy.download('${{ matrix.model-name }}'); nlp = huspacy.load('${{ matrix.model-name }}'); print('Hello')"
 
   test_standard_models:
