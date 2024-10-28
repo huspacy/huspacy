@@ -46,7 +46,7 @@ def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]
         return __AVAILABLE_MODELS
 
 
-def download(model_name: str = __DEFAULT_MODEL, model_version: str | None = None) -> None:
+def download(model_name: str = __DEFAULT_MODEL, model_version: Optional[str] = None) -> None:
     """Downloads a HuSpaCy model.
 
     Args:
