@@ -12,9 +12,10 @@ if [ ! -d "$1" ]; then
 fi
 
 model_dir=$1
+model_name=$(basename $model_dir)
 
-docker buildx build -t trainer-${model_dir} "${model_dir}" --build-context root="." -f ./Dockerfile
-docker run -it --rm --name trainer-${model_dir} \
+docker buildx build -t trainer-${model_name} "${model_dir}" --build-context root="." -f ./Dockerfile
+docker run -it --rm --name trainer-${model_name} \
   --runtime=nvidia \
   -v "$(pwd)/${model_dir}"/data:/app/model/data \
   -v "$(pwd)/${model_dir}"/models:/app/model/models \
@@ -23,4 +24,4 @@ docker run -it --rm --name trainer-${model_dir} \
   -v "$(pwd)/${model_dir}"/wandb:/app/model/wandb \
   -v "$(pwd)/${model_dir}"/../huspacy:/app/huspacy \
   -v "$(pwd)/${model_dir}"/../scripts:/app/scripts \
-  trainer-${model_dir} "./train.sh"
+  trainer-${model_name} "./train.sh" "${@:2}"

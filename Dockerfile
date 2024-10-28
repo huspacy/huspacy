@@ -41,6 +41,8 @@ RUN add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt install -y \
     python3.12 \
+    python3.12-dev \
+    python3.12-venv \
     python3.12-distutils \
     git \
     && rm -rf /var/lib/apt/lists/*
@@ -57,6 +59,10 @@ COPY poetry.lock /app/model
 COPY poetry.toml /app/model
 
 RUN poetry install
+
+# Workaround for having setuptools available
+RUN poetry run python -m ensurepip --upgrade
+RUN poetry run python -m pip install --upgrade setuptools
 
 COPY meta.json /app/model
 COPY project.yml /app/model
