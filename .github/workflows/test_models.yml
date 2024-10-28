@@ -1,9 +1,11 @@
 name: Models
 
 on:
-#  push:
-#    branches:
-#      - master
+  push:
+    paths:
+      - .github/workflows/test_models.yml
+    branches:
+      - master
 #  pull_request:
 #    branches:
 #      - master
