@@ -18,7 +18,7 @@ jobs:
         working-directory: huspacy
     strategy:
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
 
       - uses: Gr1N/setup-poetry@v8
         with:
-          poetry-version: 1.5.1
+          poetry-version: 1.8.1
 
       - name: Install Python dependencies
         run: poetry install --with dev
@@ -69,7 +69,7 @@ jobs:
           poetry build -f wheel
 
       - uses: actions/upload-artifact@v3
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.10'
         with:
           name: wheel-${{ matrix.python-version }}
           path: huspacy/dist/*.whl
@@ -87,7 +87,7 @@ jobs:
 
       - uses: Gr1N/setup-poetry@v8
         with:
-          poetry-version: 1.5.1
+          poetry-version: 1.8.1
 
       - uses: actions/cache@v2
         with:
