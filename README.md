@@ -5,10 +5,12 @@
 
 ![project logo](https://raw.githubusercontent.com/huspacy/huspacy/develop/.github/resources/logo.png)
 
+
 [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/huspacy/huspacy)
 [![spacy](https://img.shields.io/badge/built%20with-spaCy-09a3d5.svg)](https://spacy.io)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/huspacy)
 [![PyPI version](https://badge.fury.io/py/huspacy.svg)](https://pypi.org/project/huspacy/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/huspacy/huspacy)
 [![Demo](https://img.shields.io/badge/Try%20the-Demo-important)](https://huggingface.co/spaces/huspacy/demo)
 <br/>
 [![Build](https://github.com/huspacy/huspacy/actions/workflows/build.yml/badge.svg)](https://github.com/huspacy/huspacy/actions/workflows/build.yml)
