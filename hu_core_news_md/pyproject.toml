@@ -1,30 +1,30 @@
-[tool.poetry]
+[project]
 name = "hu_core_news_md"
 version = "3.8.0"
 description = "Hungarian core pipeline for HuSpaCy. Components: senter, tagger, morphologizer, lemmatizer, parser, ner"
-authors = ["SzegedAI, MILAB <gyorgy@orosz.link>"]
+authors = [{ name = "SzegedAI, MILAB", email = "gyorgy@orosz.link" }]
+requires-python = "~=3.13"
 license = "cc-by-sa-4.0"
+dependencies = [
+    "spacy==3.8.7",
+    "cupy-cuda13x==13.6.0",
+    "pip>=22.3.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
+[dependency-groups]
+dev = [
+    "spacy-huggingface-hub==0.0.10",
+    "spacy-loggers~=1.0.5",
+    "spacy_conll>=4.0,<4.1",
+    "conllu~=6.0.0",
+    "wandb==0.22.3",
+    "contexttimer>=0.3.3,<0.4",
+    "wheel>=0.45.1.0,<0.46.0",
+#    "setuptools>=65.4.1,<66",
+#    "pip>=22.3.1,<23",
+    "bump2version>=1.0.1,<2",
+]
 
-spacy = {version = "~3.8.0", extras = ["cuda-autodetect"]}
-cupy-cuda12x = "~13.3.0"
-
-[tool.poetry.dev-dependencies]
-spacy-huggingface-hub = "0.0.10"
-spacy-loggers = "~1.0.5"
-spacy_conll = "~4.0"
-conllu = "~6.0.0"
-wandb = "^0.18.5"
-contexttimer = "^0.3.3"
-
-wheel = "^0.37.0"
-setuptools = "^65.4.1"
-pip = "^22.3.1"
-
-bump2version = "^1.0.1"
-
-[build-system]
-requires = ["poetry>=1.1.10", "pip>=22.2.2", "setuptools>=65.5.1", "wheel>=37.0"]
-build-backend = "poetry.masonry.api"
+#[build-system]
+#requires = ["poetry>=1.1.10", "pip>=22.2.2", "setuptools>=65.5.1", "wheel>=37.0"]
+#build-backend = "poetry.masonry.api"
