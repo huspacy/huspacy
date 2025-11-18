@@ -317,7 +317,7 @@ commands:
   - name: pretrain_tagger
     help: "Pretrain the tagger and edit tree lemmatizer on the full Szeged Corpus"
     script:
-      - "uv run spacy train configs/${vars.tagger_config}.cfg
+      - "spacy train configs/${vars.tagger_config}.cfg
             --code ${vars.edit_tree_lemmatizer_path}
             --output ${vars.models_path}/${vars.package_name}-tagger-${vars.package_version}
             --gpu-id ${vars.gpu} --nlp.lang=${vars.lang}
