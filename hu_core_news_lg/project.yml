@@ -11,7 +11,7 @@ vars:
   # Workaround: spacy project yaml facilities cannot interpolate variables inside the `vars` sections
   package_name: hu_core_news_lg
   # Following spaCy's convention: https://spacy.io/models#model-versioning
-  package_version: 3.8.0
+  package_version: 3.8.1
 
   models_path: models
   packages_path: packages
@@ -43,7 +43,7 @@ vars:
   ner_config: ner
 
   wandb_entity: spacy-hu
-  wandb_project: hu_core_news_lg-3.8.0
+  wandb_project: hu_core_news_lg-3.8.1
 
   gpu: ${env.GPU}
 
