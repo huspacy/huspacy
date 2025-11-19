@@ -2,11 +2,9 @@
 
 ## Train models
 
-1. Install dependencies: `poetry install` (CUDA 11.1 is supported out-of-the-box)
-   - Run `poetry run pip install -U pip setuptools wheel` if these packages are missing or not uptodate
-2. Activate the virtual environment `poetry shell`
-3. Fetch datafiles: `spacy project assets`
-4. Build all the models: `spacy project run all`
+1. Install dependencies: `uv sync` (CUDA 13.0 is supported out-of-the-box)
+2. Fetch datafiles: `uv run weasel assets`
+3. Build all the models: `GPU=1 uv run weasel run all`
 
 ## Fine-tune the models
 
@@ -14,7 +12,7 @@ Hyperparameters of the underlying models can be fine-tuned using Weights&Biases:
 
 ## Publish models
 
-1. Make sure dependencies are up-to-date: `poetry update`
-2. Bump version: `bumpversion --new-version x.x.x major/micro/patch --verbose`
+1. Make sure dependencies are up-to-date
+2. Bump version: `uv run bumpversion --new-version x.x.x major/micro/patch --verbose`
 3. Build the model as described in the previous section
-4. Publish the new model to Hugging Face Hub: `poetry run spacy project run publish` (must be executed in the model's directory)
+4. Publish the new model to Hugging Face Hub: `uv run weasel run publish` (must be executed in the model's directory)
