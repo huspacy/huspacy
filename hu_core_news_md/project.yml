@@ -528,12 +528,11 @@ commands:
     help: "Upload the trained model to the Hugging Face Hub"
     script:
       - "huggingface-cli login"
-      - "spacy huggingface-hub push
+      - bash -c "uv run spacy huggingface-hub push
           ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl
           --org huspacy
           --msg \"Update spacy pipeline to ${vars.package_version}\"
-          --verbose"
-      - "python ../scripts/tag_model.py ${vars.package_name} v${vars.package_version} -m \"Releasing version v${vars.package_version}\" "
+          --verbose; uv run python ../scripts/tag_model.py ${vars.package_name} v${vars.package_version} -m \"Releasing version v${vars.package_version}\" -d"
       - "huggingface-cli logout"
     deps:
       - ${vars.packages_path}/${vars.package_name}-${vars.package_version}/dist/${vars.package_name}-${vars.package_version}-py3-none-any.whl

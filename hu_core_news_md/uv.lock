@@ -386,6 +386,7 @@ version = "3.8.1"
 source = { virtual = "." }
 dependencies = [
     { name = "cupy-cuda13x" },
+    { name = "huggingface-hub" },
     { name = "spacy" },
 ]
 
@@ -407,6 +408,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cupy-cuda13x", specifier = "==13.6.0" },
+    { name = "huggingface-hub", specifier = ">=1.0.1" },
     { name = "spacy", specifier = "==3.8.7" },
 ]
 
