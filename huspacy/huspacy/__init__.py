@@ -14,7 +14,7 @@ __AVAILABLE_MODELS: Dict[str, List[str]] = {
                         "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0", "3.8.1"],
     "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0", "3.8.1"],
     "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1", "3.5.2", "3.5.3", "3.5.4",
-                         "3.7.0"],
+                         "3.7.0", "3.7.1"],
     "hu_core_news_trf_xl": ["3.4.0", "3.5.1", "3.5.2"],
 }
 # Models published from this version on carry their version in the wheel filename,
@@ -22,6 +22,7 @@ __AVAILABLE_MODELS: Dict[str, List[str]] = {
 __VERSIONED_TAG_WHEELS: Dict[str, str] = {
     "hu_core_news_lg": "3.8.1",
     "hu_core_news_md": "3.8.1",
+    "hu_core_news_trf": "3.7.1",
 }
 # Models whose versioned wheel was added after their release: Hugging Face tags are
 # immutable, so the file lives on `main` instead of under the version tag.
