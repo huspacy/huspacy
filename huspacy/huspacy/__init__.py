@@ -8,13 +8,26 @@ import packaging.version
 
 from huspacy.utils import run_command
 
-__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{version}/{model_name}-any-py3-none-any.whl"
+__URL = "https://huggingface.co/huspacy/{model_name}/resolve/{ref}/{filename}"
 __AVAILABLE_MODELS: Dict[str, List[str]] = {
     "hu_core_news_lg": ["3.2.1", "3.2.2", "3.3.0", "3.3.1", "3.4.0", "3.4.1", "3.4.2", "3.4.3", "3.4.4", "3.5.0",
-                        "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0"],
-    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0"],
-    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1", "3.5.2", "3.5.3", "3.5.4"],
+                        "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0", "3.8.1"],
+    "hu_core_news_md": ["3.4.1", "3.4.2", "3.5.0", "3.5.1", "3.5.2", "3.6.0", "3.6.1", "3.7.0", "3.8.0", "3.8.1"],
+    "hu_core_news_trf": ["3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.4.0", "3.5.1", "3.5.2", "3.5.3", "3.5.4",
+                         "3.7.0"],
     "hu_core_news_trf_xl": ["3.4.0", "3.5.1", "3.5.2"],
+}
+# Models published from this version on carry their version in the wheel filename,
+# as pip>=25.3 and uv require (PEP 427).
+__VERSIONED_TAG_WHEELS: Dict[str, str] = {
+    "hu_core_news_lg": "3.8.1",
+    "hu_core_news_md": "3.8.1",
+}
+# Models whose versioned wheel was added after their release: Hugging Face tags are
+# immutable, so the file lives on `main` instead of under the version tag.
+__VERSIONED_MAIN_WHEELS: Dict[str, str] = {
+    "hu_core_news_trf": "3.7.0",
+    "hu_core_news_trf_xl": "3.5.2",
 }
 __DEFAULT_MODEL: str = "hu_core_news_lg"
 # __DEFAULT_VERSION: str = __AVAILABLE_MODELS[__DEFAULT_MODEL][-1]
@@ -46,6 +59,33 @@ def get_valid_models(spacy_version: Optional[str] = None) -> Dict[str, List[str]
         return __AVAILABLE_MODELS
 
 
+def _wheel_url(model_name: str, model_version: str) -> str:
+    """Returns the download URL of a model wheel.
+
+    Args:
+        model_name (str): model name
+        model_version (str): model version
+
+    Returns:
+        str: URL of the wheel belonging to the given model version
+    """
+    if model_version == "main":
+        # `main` is a moving target: only the legacy, version-less wheel name is stable there
+        return __URL.format(model_name=model_name, ref="main", filename=f"{model_name}-any-py3-none-any.whl")
+
+    filename = f"{model_name}-{model_version}-py3-none-any.whl"
+    versioned_from = __VERSIONED_TAG_WHEELS.get(model_name)
+    if versioned_from is not None and packaging.version.parse(model_version) >= packaging.version.parse(versioned_from):
+        ref = f"v{model_version}"
+    elif __VERSIONED_MAIN_WHEELS.get(model_name) == model_version:
+        ref = "main"
+    else:
+        ref = f"v{model_version}"
+        filename = f"{model_name}-any-py3-none-any.whl"
+
+    return __URL.format(model_name=model_name, ref=ref, filename=filename)
+
+
 def download(model_name: str = __DEFAULT_MODEL, model_version: Optional[str] = None) -> None:
     """Downloads a HuSpaCy model.
 
@@ -75,11 +115,8 @@ def download(model_name: str = __DEFAULT_MODEL, model_version: Optional[str] = N
     except ImportError:
         pass
 
-    model_version = "v" + model_version
-
-    download_url = __URL.format(version=model_version, model_name=model_name)
+    download_url = _wheel_url(model_name, model_version)
     cmd = [sys.executable, "-m", "pip", "install"] + [model_name + " @ " + download_url]
-    print(cmd)
     run_command(cmd)
 
 
