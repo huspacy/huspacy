@@ -35,8 +35,7 @@
 ├── huspacy            -- subproject for the PyPI distributable package
 │   ├── huspacy        -- huspacy python package
 │   ├── tests          -- huspacy tests
-│   ├── poetry.lock    -- Poetry lock file
-│   ├── poetry.toml    -- Poetry configs
+│   ├── uv.lock        -- uv lock file
 │   ├── pyproject.toml -- Python project definition file
 │   ├── CHANGELOG.md   -- HuSpaCy changelog
 │   └── README.md      -> ../README.md
@@ -49,12 +48,12 @@
 
 ## Release steps
 
-First of all, we need all the dependencies installed: `poetry install --with docs --with dev --all-extras`
+First of all, we need all the dependencies installed: `uv sync --group docs --group dev --all-extras`
 
-1. Make sure all tests pass: `poetry run pytest`
-2. Update the readme, if there are changes in `docs`: `poetry run python ../docs/update_readme.py`
-3. Test README.md code snippets: `poetry run pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md`
-4. Bump version: `poetry run bumpversion --new-version NEW_VERSION --verbose major/minor/patch`
-5. Build wheel: `poetry build -f wheel`
-6. Publish on PyPI: `poetry publish`
+1. Make sure all tests pass: `uv run pytest`
+2. Update the readme, if there are changes in `docs`: `uv run python ../docs/update_readme.py`
+3. Test README.md code snippets: `uv run pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md`
+4. Bump version: `uv run bumpversion --new-version NEW_VERSION --verbose major/minor/patch`
+5. Build wheel: `uv build --wheel`
+6. Publish on PyPI: `uv publish`
 7. Publish on GitHub: `VERSION=$(cat .bumpversion.cfg | grep "current_version =" | cut -c 19-) gh release create huspacy-v$VERSION dist/huspacy-$VERSION-py3-none-any.whl -t huspacy-v$VERSION`

@@ -22,21 +22,18 @@ jobs:
       run:
         working-directory: huspacy
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.13.8"
+
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: 1.8.1
-
-      - name: Install Python dependencies
-        run: poetry install --with dev
+        run: uv python install 3.10
 
       - name: Build package
-        run: poetry build -f wheel
+        run: uv build --wheel
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -52,21 +49,18 @@ jobs:
       run:
         working-directory: huspacy
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.13.8"
+
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: 1.8.1
-
-      - name: Install Python dependencies
-        run: poetry install --with dev
+        run: uv python install 3.10
 
       - name: Build package
-        run: poetry build -f wheel
+        run: uv build --wheel
 
       - name: Get latest release info
         id: query-release-info
@@ -87,5 +81,3 @@ jobs:
         with:
           files: huspacy/dist/*.whl
           body_path: release.md
-
-

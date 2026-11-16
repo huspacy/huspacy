@@ -24,36 +24,24 @@ jobs:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         name: Checkout
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          version: "0.13.8"
+          enable-cache: true
 
-      - uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: 1.8.1
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Install Python dependencies
-        run: poetry install --with dev
-
-      - uses: actions/cache@v2
-        with:
-          path: huspacy/.venv
-          key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
+        run: uv sync --locked --python ${{ matrix.python-version }} --group dev
 
       - name: Test with pytest
         run: |
-          poetry run pytest -m "not slow"
-
-#      - name: Setup flake8 annotations
-#        uses: rbialon/flake8-annotations@v1
-#
-#      - name: Lint with flake8
-#        run: |
-#          poetry run flake8 huspacy ../scripts
+          uv run --locked pytest -m "not slow"
 
       - name: Extract branch name
         shell: bash
@@ -65,16 +53,12 @@ jobs:
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         run: |
           echo "Running the pipeline on $BRANCH_NAME branch"
-          sed -i -E 's/name = \"huspacy\"/name = \"huspacy-nightly\"/' pyproject.toml
-          poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
-          poetry version --short
-          
-          poetry build -f wheel
+          sed -i -E 's/name = "huspacy"/name = "huspacy-nightly"/' pyproject.toml
+          uv version "$(uv version --short)-dev.$GITHUB_RUN_NUMBER"
+          uv build --wheel
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v7
         if: matrix.python-version == '3.10'
         with:
           name: wheel-${{ matrix.python-version }}
           path: huspacy/dist/*.whl
-
-#  c
