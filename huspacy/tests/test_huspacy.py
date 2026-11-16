@@ -67,6 +67,11 @@ def test_get_valid_models():
         ),
         (
             "hu_core_news_trf",
+            "3.7.1",
+            "https://huggingface.co/huspacy/hu_core_news_trf/resolve/v3.7.1/hu_core_news_trf-3.7.1-py3-none-any.whl",
+        ),
+        (
+            "hu_core_news_trf",
             "3.5.4",
             "https://huggingface.co/huspacy/hu_core_news_trf/resolve/v3.5.4/hu_core_news_trf-any-py3-none-any.whl",
         ),
