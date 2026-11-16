@@ -5,7 +5,6 @@
 
 ![project logo](https://raw.githubusercontent.com/huspacy/huspacy/develop/.github/resources/logo.png)
 
-
 [![python version](https://img.shields.io/badge/Python-%3E=3.7-blue)](https://github.com/huspacy/huspacy)
 [![spacy](https://img.shields.io/badge/built%20with-spaCy-09a3d5.svg)](https://spacy.io)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/huspacy)
@@ -46,10 +45,18 @@ huspacy.download()
 
 ### Install the models directly
 
-You can install the latest models directly from 🤗 Hugging Face Hub:
+You can install the models directly from 🤗 Hugging Face Hub:
 
-- CPU optimized [large model](https://huggingface.co/huspacy/hu_core_news_lg): `pip install hu_core_news_lg@https://huggingface.co/huspacy/hu_core_news_lg/resolve/main/hu_core_news_lg-any-py3-none-any.whl`
-- GPU optimized [transformers model](https://huggingface.co/huspacy/hu_core_news_trf): `pip install hu_core_news_trf@https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-any-py3-none-any.whl`
+- CPU optimized [large model](https://huggingface.co/huspacy/hu_core_news_lg): `pip install hu_core_news_lg@https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.8.1/hu_core_news_lg-3.8.1-py3-none-any.whl`
+- GPU optimized [transformers model](https://huggingface.co/huspacy/hu_core_news_trf): `pip install hu_core_news_trf@https://huggingface.co/huspacy/hu_core_news_trf/resolve/main/hu_core_news_trf-3.7.0-py3-none-any.whl`
+
+The model wheels carry their version in the filename, as `pip>=25.3` and `uv` require. The same URLs are installed with `uv`:
+
+```console
+$ uv add https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.8.1/hu_core_news_lg-3.8.1-py3-none-any.whl
+```
+
+The transformers model keeps its versioned wheel on the `main` branch of its repository, because its release tag predates the filename change.
 
 To speed up inference on GPU, CUDA must be installed as described in [https://spacy.io/usage](https://spacy.io/usage).
 
