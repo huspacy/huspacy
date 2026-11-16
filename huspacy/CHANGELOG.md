@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.13.0 - 2026-11-16
 ### Fixed
 - `download()` requests the real wheel filename of the model: models published with a PEP 427 compliant name
   (`hu_core_news_lg`/`hu_core_news_md` 3.8.1, `hu_core_news_trf` 3.7.0, `hu_core_news_trf_xl` 3.5.2) are fetched
@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Added support for new models (`hu_core_news_lg-v3.8.1`, `hu_core_news_md-v3.8.1`, `hu_core_news_trf-v3.7.0`)
+- Packaging migrated from Poetry to uv: PEP 621 metadata, `uv.lock`, and uv-based CI. The built wheel is unchanged
+  apart from the newer metadata version and the SPDX license expression
 
 ## 0.12.1 - 2024-10-28
 ### Fixed
