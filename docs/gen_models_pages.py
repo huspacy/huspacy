@@ -5,14 +5,14 @@ from typing import Dict
 import mkdocs_gen_files
 import requests
 
-from huspacy import get_valid_models
+from huspacy import _wheel_url, get_valid_models
 
 MODEL_SLUGS = ["md", "lg", "trf", "trf_xl"]
 
 META_URI_TEMPLATE = "https://huggingface.co/huspacy/hu_core_news_{slug}/raw/main/meta.json"
 
 MODEL_PATH_TEMPLATE = (
-    "https://huggingface.co/huspacy/hu_core_news_{slug}/blob/main/hu_core_news_{slug}-any-py3-none-any.whl"
+    "https://huggingface.co/huspacy/hu_core_news_{slug}/blob/main/{filename}"
 )
 
 DOC_URI_TEMPLATE = "https://huggingface.co/huspacy/hu_core_news_{slug}/raw/main/README.md"
@@ -46,11 +46,11 @@ You can either install the model through `pip`:
 ## Installation
 
 ```bash
-# Install the latest model
-$ pip install hu_core_news_{name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/main/hu_core_news_{name}-any-py3-none-any.whl
+# Install the latest model ({latest_version})
+$ pip install hu_core_news_{name}@{latest_url}
 
-# Install a model with a specific version such as the latest one ({latest_version})
-$ pip install hu_core_news_{name}@https://huggingface.co/huspacy/hu_core_news_{name}/resolve/v{latest_version}/hu_core_news_{name}-any-py3-none-any.whl
+# or, using uv
+$ uv add {latest_url}
 ```
 
 or by using `huspacy`'s built-in facilities:
@@ -66,6 +66,9 @@ huspacy.download("hu_core_news_{name}", "{latest_version}")
 ```
 
 Available model versions: {versions}
+
+Note: wheels released before `{latest_version}` use the legacy `-any-py3-none-any.whl` filename, which
+`pip>=25.3` and `uv` refuse to install.
 """
 
 DETAILS_TEMPLATE = """
@@ -82,7 +85,8 @@ MODEL_SIZE_PATTERN = re.compile(r"(\d+(\.\d+)? [MG]B)")
 
 def read_metadata(slug: str) -> Dict:
     metadata = requests.get(META_URI_TEMPLATE.format(slug=slug)).json()
-    model_lfs_desc = requests.get(MODEL_PATH_TEMPLATE.format(slug=slug)).text
+    filename = f"hu_core_news_{slug}-{metadata['version']}-py3-none-any.whl"
+    model_lfs_desc = requests.get(MODEL_PATH_TEMPLATE.format(slug=slug, filename=filename)).text
     model_size = MODEL_SIZE_PATTERN.search(model_lfs_desc).group(1)
     metadata["size"] = model_size
     return metadata
@@ -101,8 +105,14 @@ def create_details_docs(slug: str) -> str:
 def create_install_doc(name: str) -> str:
     versions_available = get_valid_models()[f"hu_core_news_{name}"]
     versions = ", ".join([f"`{version}`" for version in versions_available])
+    latest_version = versions_available[-1]
 
-    return INSTALL_TEMPLATE.format(name=name, versions=versions, latest_version=versions_available[-1])
+    return INSTALL_TEMPLATE.format(
+        name=name,
+        versions=versions,
+        latest_version=latest_version,
+        latest_url=_wheel_url(f"hu_core_news_{name}", latest_version),
+    )
 
 
 def generate_description(models_metadata: Dict[str, Dict]) -> str:

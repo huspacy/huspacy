@@ -22,38 +22,35 @@ jobs:
 
     steps:
     - name: Checkout huspacy
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         path: repo
 
     - name: Checkout huspacy/huspacy.github.io
-      uses: actions/checkout@v3
+      # Only the deploy needs the pages repository, and only from master
+      if: github.ref == 'refs/heads/master'
+      uses: actions/checkout@v7
       with:
         repository: huspacy/huspacy.github.io
         path: huspacy.github.io
         ssh-key: ${{ secrets.GH_PAGES_GIT_KEY }}
         fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
       with:
-        python-version: 3.9
+        version: "0.13.8"
+        enable-cache: true
 
-    - uses: Gr1N/setup-poetry@v8
-      with:
-        poetry-version: 1.5.1
-
-    - uses: actions/cache@v2
-      with:
-        path: huspacy/.venv
-        key: ${{ runner.os }}-py${{ matrix.python-version }}-poetry-${{ hashFiles('poetry.lock') }}
+    - name: Set up Python 3.10
+      run: uv python install 3.10
 
     - name: Install Python dependencies
       run: |
         cd repo/huspacy
-        poetry install --with docs --with dev --all-extras
-        poetry run pip install https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl
-        poetry run pip install https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl
+        uv sync --locked --python 3.10 --group docs --group dev --all-extras
+        uv pip install --python .venv/bin/python https://github.com/nytud/emmorphpy/releases/download/v1.1.0/emmorphpy-1.1.0-py3-none-any.whl
+        uv pip install --python .venv/bin/python https://github.com/vadno/emmorph2ud2/releases/download/v1.0.1/emmorph2ud2-1.0.1-py3-none-any.whl
 
     - name: Install hfst
       run: sudo apt-get install -y hfst
@@ -61,24 +58,27 @@ jobs:
     - name: Test citation file
       run: |
         cd repo/huspacy
-        poetry run cffconvert -i ../CITATION.cff --validate
+        uv run --locked cffconvert -i ../CITATION.cff --validate
 
     - name: Test code snippets in the documentation
       run: |
         cd repo/huspacy
-        poetry run pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md
+        uv run --locked pytest --codeblocks --verbosity=3 ./README.md  ../docs/huspacy/*.md ../docs/recipes/*.md
 
     - name: Generate docs
       run: |
-        cd repo/huspacy
-        source ./.venv/bin/activate
-        
-        cd ../../huspacy.github.io
-        git checkout gh-pages
-        git pull --rebase
-        
-        cd ../repo
-        mkdocs build -d --clean -d ../huspacy.github.io
+        cd repo
+        source huspacy/.venv/bin/activate
+
+        if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+          cd ../huspacy.github.io
+          git checkout gh-pages
+          git pull --rebase
+          cd ../repo
+          mkdocs build --clean -d ../huspacy.github.io
+        else
+          mkdocs build --clean -d ../site
+        fi
 
     - name: Publish
       if: github.ref == 'refs/heads/master' #|| github.ref == 'refs/heads/develop'

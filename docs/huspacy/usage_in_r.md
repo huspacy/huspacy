@@ -9,7 +9,7 @@
 ```R
 library(reticulate)
 
-conda_install(envname="huspacyr", "https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.5.2/hu_core_news_lg-any-py3-none-any.whl" ,pip=TRUE)
+conda_install(envname="huspacyr", "https://huggingface.co/huspacy/hu_core_news_lg/resolve/v3.8.1/hu_core_news_lg-3.8.1-py3-none-any.whl" ,pip=TRUE)
 ```
 
 ## Usage
