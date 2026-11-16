@@ -56,12 +56,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New
 - Added support for new models (`hu_core_news_md-v3.5.1`, `hu_core_news_lg-v3.5.1`, `hu_core_news_trf_xl-v3.5.0`, `hu_core_news_trf_xl-v3.5.0`)
 
-## 0.7.0 - 2023-02.08
+## 0.7.0 - 2023-02-08
 ### New
 - Added support for new models (`hu_core_news_md-v3.5.0`, `hu_core_news_lg-v3.5.0`, `hu_core_news_trf_xl-v3.4.0`, `hu_core_news_trf-v3.4.0`)
 - Updated documentation
 
-## 0.6 - 2022-11-11
+## 0.6.0 - 2022-11-11
 ### New
 - Added a lookup component for sentiment lexicons
 - Added integration for novakat's onpp NER model (`nerpp`)
@@ -77,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New
 - Added support for `hu_core_news_lg` `v3.4.3`
 
-## 0.5 - 2022-10-12
+## 0.5.0 - 2022-10-12
 ### New
 - `trainable_lemmatizer_v2`: fork and minor improvement of spaCy's trainable lemmatizer
 - `LemmaSmoother` for improving lemmatization output of the `trainable_lemmatizer`
