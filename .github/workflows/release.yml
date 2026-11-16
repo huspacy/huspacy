@@ -68,7 +68,8 @@ jobs:
         with:
           command: query
           version: latest
-          changelog: ../CHANGELOG.md
+          # `uses:` steps ignore `defaults.run.working-directory`
+          changelog: huspacy/CHANGELOG.md
 
       - name: Display release info
         run: |
@@ -80,4 +81,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: huspacy/dist/*.whl
-          body_path: release.md
+          # Written by the step above in the `huspacy` working directory
+          body_path: huspacy/release.md
